@@ -10,20 +10,24 @@ from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckS
 from app_initialization import init_uds_client
 from hex_parser.SRecordParser import DataRecord, SRecordParser
 from ECDSA_handler.ECDSA import ECDSAManager, ECDSAConstants
-
+from compressor.compressor import Compressor, CompressionAlgorithm
 def main():
     parser = SRecordParser()
-    parser.parse_file(filename="test-file.s19")
-    print(parser._merged_records)
-    print(parser._records)
+    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/new_app.srec")
+    # print(parser._merged_records)
+    # print(parser._records)
     segments:DataRecord=[]
-    segments=parser.get_record()
+    segments=parser.get_merged_records()
 
     alldata = bytearray()
     for x in segments:
-        alldata.extend(x.data)
-    print(alldata)
-    print(type(alldata))
+        print(len(x.data))
+        # compressor=Compressor(algorithm=CompressionAlgorithm.LZ4)
+        # Compressed_data=compressor.compress(data=x.data)
+        # print(len(Compressed_data))
+
+    # print(alldata)
+    # print(type(alldata))
     # Create ECDSA manager instance
     ecdsa = ECDSAManager()
     

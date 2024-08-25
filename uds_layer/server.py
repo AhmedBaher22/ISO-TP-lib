@@ -329,7 +329,7 @@ class Server:
 
 
         # Calculate DataFormatIdentifier
-        data_format_identifier = (transfer_request.compression_method.value << 4) | transfer_request.encryption_method.value
+        data_format_identifier = (transfer_request.compression_method.value << 4)
 
         # Calculate AddressAndLengthFormatIdentifier
         address_length = len(transfer_request.memory_address)
@@ -734,7 +734,7 @@ class Server:
         # Add memory size
         size_bytes = transfer_request.data_size.to_bytes(size_length, byteorder='big')
         message.extend(size_bytes)
-        message.append(0x00)  # Reserved byte
+        # message.append(0x00)  # Reserved byte
 
         # Create and add operation
         operation = Operation(OperationType.ERASE_MEMORY, message)
@@ -848,9 +848,9 @@ class Server:
 
         # Calculate and add checksum based on method
         if transfer_request.checksum_required == CheckSumMethod.CRC_16:
-            checksum
+            checksum:bytearray=None
             if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
-                checksum = self.calculate_crc16(transfer_request.unCompressedData)
+                checksum = self.calculate_crc16(transfer_request.deCompressed_data)
             else:
                 checksum = self.calculate_crc16(transfer_request.data)
             
@@ -860,8 +860,12 @@ class Server:
         elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
             try:
                 
-                checksum = self.calculate_crc32(transfer_request.data)
-                
+                checksum:bytearray=None
+                if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
+                    checksum = self.calculate_crc32(transfer_request.deCompressed_data)
+                else:
+                    checksum = self.calculate_crc32(transfer_request.data)
+                    
                 message.extend(checksum)
                 
                 log_msg = f"{transfer_request.get_req()} Using CRC-32 checksum: {[hex(x) for x in checksum]}"
@@ -1025,6 +1029,10 @@ class Server:
         if flashing_ECU_Request.encryption_method == EncryptionMethod.SEC_P_256_R1:
             alldata = bytearray()
             for x in flashing_ECU_Request.segments:
+                self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=f"length : {len(x.data)}"
+                )
                 alldata.extend(x.data)
             #print(alldata)
             #print(type(alldata))

@@ -1,5 +1,5 @@
 from enum import Enum
-import lz4.frame
+import lz4.frame, lz4.block
 
 class CompressionAlgorithm(Enum):
     LZ4 = 'lz4'
@@ -10,14 +10,14 @@ class Compressor:
 
     def compress(self, data: bytearray) -> bytearray:
         if self.algorithm == CompressionAlgorithm.LZ4:
-            compressed = lz4.frame.compress(bytes(data),)
+            compressed = lz4.block.compress(bytes(data), store_size=False)
             return bytearray(compressed)
         else:
             raise NotImplementedError(f"Compression for {self.algorithm} is not implemented.")
 
     def decompress(self, data: bytearray) -> bytearray:
         if self.algorithm == CompressionAlgorithm.LZ4:
-            decompressed = lz4.frame.decompress(bytes(data))
+            decompressed = lz4.block.decompress(data)
             return bytearray(decompressed)
         else:
             raise NotImplementedError(f"Decompression for {self.algorithm} is not implemented.")
