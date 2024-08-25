@@ -16,6 +16,11 @@ from logger import LogType
 class InitialState(RequestState):
     def handle(self, request, message):
         try:
+            
+            request.logger.log_message(
+                log_type=LogType.RECEIVE,
+                message="ENTERED HANDLE"
+            )
             if message.frameType == FrameType.SingleFrame:
                 request.logger.log_message(
                     log_type=LogType.RECEIVE,
@@ -33,6 +38,11 @@ class InitialState(RequestState):
                     log_type=LogType.RECEIVE,
                     message=f"[RecvRequest-{request._id}] Received {message}"
                 )
+                request.set_state(FirstFrameState())
+                request.logger.log_message(
+                    log_type=LogType.RECEIVE,
+                    message="CHANGED TO FIRSTSTATE"
+                )
                 request.set_data_length(message.dataLength)
                 request.append_bits(message.data)
 
@@ -40,8 +50,12 @@ class InitialState(RequestState):
 
                 request.reset_timeout_timer()
                 request.start_timeout_timer()
-                request.set_state(FirstFrameState())
+
             else:
+                request.logger.log_message(
+                    log_type=LogType.RECEIVE,
+                    message="ENTERED THE ELSE"
+                )
                 # f"The first frame can't be {frame_type}"
                 raise InvalidFirstFrameException(message.frameType)
         except Exception as e:

@@ -863,9 +863,15 @@ class Server:
                 
                 checksum:bytearray=None
                 if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
-                    checksum = self.calculate_crc32(transfer_request.deCompressed_data)
+                    newdata=transfer_request.deCompressed_data
+                    while len(newdata) %4 != 0 :
+                        newdata.append(0xFF)
+                    checksum = self.calculate_crc32(newdata)
                 else:
-                    checksum = self.calculate_crc32(transfer_request.data)
+                    newdata=transfer_request.data
+                    while len(newdata) %4 != 0 :
+                        newdata.append(0xFF)
+                    checksum = self.calculate_crc32(newdata)
                     
                 message.extend(checksum)
                 

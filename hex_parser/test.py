@@ -4,7 +4,7 @@ from SRecordParser import SRecordParser
 
 parser = SRecordParser()
 # parser.parse_file(filename="hello_world_mpc5748g.srec")
-parser.parse_file(filename="s19file.s19")
+parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/bootloader.srec")
 
 
 # print("\nParsed Records:")
@@ -14,4 +14,4 @@ parser.parse_file(filename="s19file.s19")
 #
 print("\nMerged Records:")
 for rec in parser._merged_records:
-    print(rec)
+    print(rec.data_length)

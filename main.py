@@ -28,7 +28,8 @@ def main():
     parser = SRecordParser()
     parser2 = SRecordParser()
     parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/timer2.srec")
-    parser2.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/timer8.srec")
+    # parser2.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/bootloader.srec")
+    parser2.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/NEW_TEST.srec")
     old_data_records=parser.get_merged_records()
     new_data_records=parser2.get_merged_records()
     deltagenerator=DeltaGenerator(algorithm=DeltaAlgorithm.SENDING_COMPLETE_SECTOR)
@@ -50,7 +51,7 @@ def main():
     flag=True
     while flag:
         if len(servers) > 0:
-            client.Flash_ECU(segments=old_data_records ,recv_DA=servers[0].can_id,
+            client.Flash_ECU(segments=new_data_records ,recv_DA=servers[0].can_id,
                                             encryption_method=EncryptionMethod.SEC_P_256_R1,
                                             compression_method=CompressionMethod.LZ4,
                                             checksum_required=CheckSumMethod.CRC_32,
