@@ -64,8 +64,8 @@ class UdsClient:
             message=f"message receivid: {[hex(x) for x in data]} is being proccessed ..."
         )
         
-        diagnostic_address,data=self.extract_diagnostic_address(data=data)
-        # diagnostic_address=address._rxid
+        # diagnostic_address,data=self.extract_diagnostic_address(data=data)
+        diagnostic_address=address._rxid
         service_id = data[0]
 
         if service_id == 0x7F:  # Negative response
@@ -201,7 +201,7 @@ class UdsClient:
                
             server:Server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)
             if server:
-                server.session = SessionType(data[1])
+                server.session = SessionType.PROGRAMMING
                 # Set timing parameters
                 if len(data) >= 6:  # Ensure we have enough bytes for timing parameters
                     server.p2_timing = (data[2] << 8) | data[3]  # Combine third and fourth bytes
@@ -245,7 +245,7 @@ class UdsClient:
 
         if len(message) <= 4095:
             message = bytearray(message)
-            message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
+            # message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
 
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
@@ -253,7 +253,7 @@ class UdsClient:
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
                 message = bytearray(message)
-                chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
+                # chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
         self._logger.log_message(

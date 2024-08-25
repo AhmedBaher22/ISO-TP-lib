@@ -17,7 +17,7 @@ from uds_layer.uds_enums import SessionType
 from uds_layer.server import Server
 
 def init_uds_client(
-    client_id: int = 0x55,
+    client_id: int = 0x33,
     can_config: Optional[CANConfiguration] = None,
     isotp_config: Optional[IsoTpConfig] = None,
     filters: Optional[List[Dict]] = None
@@ -45,7 +45,7 @@ def init_uds_client(
                 stmin=10,
                 on_recv_success=client.receive_message,
                 on_recv_error=client.on_fail_receive,
-                recv_id=0x33
+                recv_id=0x55
             )
         isotp_layer = IsoTp(isotp_config)
         client.set_isotp_send(isotp_layer.send)
@@ -53,7 +53,7 @@ def init_uds_client(
         # Step 3: Configure CAN communication
         if not can_config:
             can_config = CANConfiguration(
-                interface=CANInterface.VECTOR,
+                interface=CANInterface.SOCKETCAN,
                 serial_number=100,
                 channel=0,
                 app_name="UDS",

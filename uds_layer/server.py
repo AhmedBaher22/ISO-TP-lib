@@ -100,7 +100,7 @@ class Server:
             OperationType.TRANSFER_DATA: [SessionType.PROGRAMMING],
             OperationType.REQUEST_DOWNLOAD: [SessionType.PROGRAMMING],
             OperationType.REQUEST_TRANSFER_EXIT: [SessionType.PROGRAMMING],
-            OperationType.ERASE_MEMORY:[SessionType.EXTENDED, SessionType.PROGRAMMING]
+            OperationType.ERASE_MEMORY:[SessionType.PROGRAMMING]
         }
 
         required_sessions = session_requirements.get(operation_type, [])

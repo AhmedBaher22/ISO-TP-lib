@@ -4,8 +4,8 @@ from enum import Enum, auto
 class SessionType(Enum):
     NONE = 0
     DEFAULT = 1
-    EXTENDED = 2
-    PROGRAMMING = 3
+    PROGRAMMING = 2
+    EXTENDED = 3
 
 
 class OperationType(Enum):

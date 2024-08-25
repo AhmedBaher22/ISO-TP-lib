@@ -162,10 +162,10 @@ def init_isotp_client(
         # Step 3: Configure CAN communication
         if not can_config:
             can_config = CANConfiguration(
-                interface=CANInterface.VECTOR,
+                interface=CANInterface.SOCKETCAN,
                 serial_number=100,
                 channel=0,
-                app_name="UDS",
+                app_name="can0",
                 fd_flag=False,
                 extended_flag=False,
                 recv_callback=isotp_layer.recv_can_message
@@ -174,7 +174,7 @@ def init_isotp_client(
 
         # Step 4: Set CAN filters
         if not filters:
-            filters = [{"can_id": 0x33, "can_mask": 0x7FF, "extended": False}]
+            filters = [{"can_id": 0x123, "can_mask": 0x000, "extended": False}]
         can_comm.set_filters(filters)
 
         # Step 5: Start receiving CAN messages
@@ -193,7 +193,7 @@ def init_isotp_client(
 
 
 # Define CAN address
-address = Address(txid=0x33, rxid=0x55)
+address = Address(txid=0x33, rxid=0x123)
 iso_tp = init_isotp_client()
 
 while True:

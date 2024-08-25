@@ -22,28 +22,27 @@ from hex_parser.SRecordParser import DataRecord, SRecordParser
 
 def main():
     parser = SRecordParser()
-    parser.parse_file(filename="test-file.s19")
-    print(parser._merged_records)
-    print(parser._records)
+    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/hex_parser/test.srec")
     client = init_uds_client()
 
     # opening session control
     # Initialize communication with an ECU
     print("\n=== Initializing Communication with ECU ===")
-    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
+    ecu_address = Address(addressing_mode=0, txid=0X55, rxid=0X55)
     client.add_server(ecu_address, SessionType.PROGRAMMING)
     servers: List[Server] = client.get_servers()
     sleep(1)
 
-
-
-
-    client.Flash_ECU(segments=parser.send_file() ,recv_DA=servers[0].can_id,
-                                    encryption_method=EncryptionMethod.SEC_P_256_R1,
-                                    compression_method=CompressionMethod.NO_COMPRESSION,
-                                    checksum_required=CheckSumMethod.CRC_16,
-                                    )
-    
+    flag=True
+    while True:
+        if len(servers) >0:
+            client.Flash_ECU(segments=parser.get_record() ,recv_DA=servers[0].can_id,
+                                            encryption_method=EncryptionMethod.SEC_P_256_R1,
+                                            compression_method=CompressionMethod.NO_COMPRESSION,
+                                            checksum_required=CheckSumMethod.CRC_16,
+                                            )
+            flag=False
+        sleep(1)
     # client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],
     #                                 encryption_method=EncryptionMethod.NO_ENCRYPTION,
     #                                 compression_method=CompressionMethod.NO_COMPRESSION,
