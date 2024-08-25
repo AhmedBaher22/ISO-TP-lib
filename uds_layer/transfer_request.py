@@ -11,7 +11,8 @@ class TransferRequest:
                  memory_address: bytearray,
                  checksum_required: bool,
                  is_multiple_segments:bool=False,
-                 flashing_ECU_REQ:FlashingECU=None):
+                 flashing_ECU_REQ:FlashingECU=None,
+                 deCompressed_data:bytearray=None):
         self.recv_DA = recv_DA
         self.data = data
         self.encryption_method = encryption_method
@@ -21,6 +22,7 @@ class TransferRequest:
         self.is_multiple_segments=is_multiple_segments
         self.flashing_ECU_REQ:FlashingECU=flashing_ECU_REQ
         self.iteration: int = 1
+        self.deCompressed_data:bytearray=deCompressed_data
         
         # Computed or later initialized attributes
         self.data_size = len(data)

@@ -848,8 +848,11 @@ class Server:
 
         # Calculate and add checksum based on method
         if transfer_request.checksum_required == CheckSumMethod.CRC_16:
-            
-            checksum = self.calculate_crc16(transfer_request.data)
+            checksum
+            if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
+                checksum = self.calculate_crc16(transfer_request.unCompressedData)
+            else:
+                checksum = self.calculate_crc16(transfer_request.data)
             
             message.extend(checksum)
             
