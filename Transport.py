@@ -110,7 +110,7 @@ class Transport:
         # Transmit the frame
         self.txfn(hex_frame)
 
-    def send_control_frame(self, flow_status=0, block_size=0, separation_time=0):
+    def _send_control_frame(self, flow_status=0, block_size=0, separation_time=0):
         """
         Send a Flow Control (FC) frame.
 
@@ -202,7 +202,7 @@ class Transport:
         if total_length == 0:
             raise ValueError("Invalid first-frame data length: 0.")
 
-        self.send_control_frame()
+        self._send_control_frame()
 
         # Initialize a buffer to store the full message
         full_message = raw_data[2:]  # Start with the data from this frame
@@ -223,8 +223,12 @@ class Transport:
             # Extract the data length from the next 4 bits
             new_seq_number = first_byte & 0xF
 
-            if not next_frame or len(next_frame) < 1 or frame_type != 0x2 or seq_number != new_seq_number:
+            if not next_frame or len(next_frame) < 1 or frame_type != 0x2:
                 raise ValueError("Invalid or incomplete consecutive frame received.")
+
+            if seq_number != new_seq_number:
+                self._send_control_frame(flow_status=2)
+                raise ValueError("UnExpected Sequence Number.\nAbort")
 
             seq_number = (seq_number + 1) % 16
 

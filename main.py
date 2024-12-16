@@ -12,7 +12,7 @@ def main():
         # Example of received frames in bytes
         test_frames = [
             b"\x10\x14\xAA\xBB\xCC\xDD\xEE\xFF",  # First frame
-            b"\x20\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
+            b"\x21\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
             b"\x21\x88\x99\xAA\xBB\xCC\xDD\xEE"   # Consecutive frame 1
         ]
         # Simulate receiving each frame one at a time
@@ -38,7 +38,7 @@ def main():
 
     # Test Scenario 3: Send a Flow Control frame
     print("\nTest Scenario 3: Sending Flow Control Frame")
-    transport.send_control_frame(flow_status=0x0, block_size=0x10, separation_time=0x05)
+    transport._send_control_frame(flow_status=0x0, block_size=0x10, separation_time=0x05)
 
     # Test Scenario 4: Receive a multi-frame message
     print("\nTest Scenario 4: Receiving Multi-Frame Message")
