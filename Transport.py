@@ -325,6 +325,7 @@ class Transport:
         # Extract the data length from the next 4 bits
         data_length = first_byte & 0xF
         if data_length == 0:
+            logger.error("Invalid single-frame data length: 0.")
             raise ValueError("Invalid single-frame data length: 0.")
 
         # Return only the data of the specified length
@@ -335,6 +336,7 @@ class Transport:
         # Extract the total message length from the next 12 bits
         total_length = ((first_byte & 0xF) << 8) | raw_data[1]
         if total_length == 0:
+            logger.error("Invalid first-frame data length: 0.")
             raise ValueError("Invalid first-frame data length: 0.")
 
         self._send_control_frame()
@@ -357,11 +359,13 @@ class Transport:
         while len(full_message) < total_length:
             next_frame = self.rxfn()
             if not next_frame:
+                logger.error(f"Message with expected sequence number: {seq_number} not received.")
                 raise ValueError(f"Message with expected sequence number: {seq_number} not received.")
 
             frame_type = self._get_frame_type(next_frame)
             if frame_type != 0x2:
                 self._send_control_frame(flow_status=2)  # Abort
+                logger.error("Invalid frame type: Expected consecutive frame.")
                 raise ValueError("Invalid frame type: Expected consecutive frame.")
 
             first_byte = next_frame[0]
@@ -369,6 +373,7 @@ class Transport:
 
             if seq_number != new_seq_number:
                 self._send_control_frame(flow_status=2)  # Abort
+                logger.error(f"Unexpected sequence number. Expected: {seq_number}, received: {new_seq_number}")
                 raise ValueError(f"Unexpected sequence number. Expected: {seq_number}, received: {new_seq_number}")
 
             seq_number = (seq_number + 1) % 16

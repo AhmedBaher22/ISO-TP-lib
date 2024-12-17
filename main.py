@@ -42,12 +42,12 @@ def main():
     transport._send_control_frame(flow_status=0x0, block_size=0x10, separation_time=0x05)
 
     # Test Scenario 4: Receive a multi-frame message
-    print("\nTest Scenario 4: Receiving Multi-Frame Message")
-    try:
-        message = transport.recv()
-        print(f"Received Complete Message: {message.hex().upper()}")
-    except Exception as e:
-        print(f"Error during reception: {e}")
+    # print("\nTest Scenario 4: Receiving Multi-Frame Message")
+    # try:
+    #     message = transport.recv()
+    #     print(f"Received Complete Message: {message.hex().upper()}")
+    # except Exception as e:
+    #     print(f"Error during reception: {e}")
 
 
 rflag= True
@@ -106,6 +106,6 @@ def send_file(file_path: str):
 
 
 if __name__ == "__main__":
-    # send_file("receive.py")
-    main()
+    send_file("receive.py")
+    # main()
 
