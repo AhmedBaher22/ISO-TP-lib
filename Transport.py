@@ -90,7 +90,7 @@ class Transport:
         print("heklfndonv")
         
         flow_status = control_frame[0] & 0x0F
-        print(hex(flow_status))
+ 
         self.block_size = control_frame[1]
         self.stmin = control_frame[2]
 
