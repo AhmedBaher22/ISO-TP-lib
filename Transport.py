@@ -1,10 +1,16 @@
 from typing import Callable
 from Address import Address
 
+# class AddressingMode(Enum):
+#     Normal_11bits = 0  # Standard 11-bit CAN identifier
+#     Extended_29bits = 1  # Extended 29-bit CAN identifier
 
+# class AddressingMode(Enum):
+#     Normal_11bits = 0  # Standard 11-bit CAN identifier
+#     Extended_29bits = 1  # Extended 29-bit CAN identifier
 class Transport:
     def __init__(self, address: Address, txfn: Callable, rxfn: Callable, tx_padding=0xFF, tx_data_length=8, stmin=0,
-                 block_size=0):
+                 block_size=0,fd=False):
         """
         Initialize the Transport Layer with address, transmit, and receive functions.
         """
@@ -15,6 +21,7 @@ class Transport:
         self.block_size = block_size  # No block size limit by default
         self.txfn = txfn
         self.rxfn = rxfn
+        self.fd=fd
 
     def send(self, data: int):
         """Send data in hexadecimal format using ISO-TP protocol."""
@@ -160,7 +167,15 @@ class Transport:
             raw_data = self.rxfn()
             if not raw_data:
                 raise ValueError("No data received.")
-
+            
+            #check the length of the length of frame
+            if not self.fd:
+                if len(raw_data) != 8:
+                    raise ValueError("Invalid frame length: Frame must be 8 bytes.")
+            else:
+                if len(raw_data) != 64:
+                    raise ValueError("Invalid frame length: Frame must be 64 bytes for FD.")   
+                                        
             # Ensure raw_data is in bytes format
             if not isinstance(raw_data, bytes):
                 raise TypeError("Received data must be in bytes format.")
@@ -176,7 +191,7 @@ class Transport:
                 raise ValueError(f"Error: Consecutive Frame received before First Frame")
             elif frame_type == 0x3:
                 # Handle receive control frame
-                raise ValueError(f"Error: Received Error Frame {raw_data[:2]}")
+                raise ValueError(f"Error: Received control flow Frame {raw_data[:2]} withot first frame")
             else:
                 raise ValueError(f"Unknown frame type: 0x{frame_type:X}")
 
@@ -217,18 +232,32 @@ class Transport:
         # Loop to receive consecutive frames until the message is complete
         while len(full_message) < total_length:
             next_frame = self.rxfn()
+
+            #check successful receive of the frame
+            if not next_frame:
+                raise ValueError(f"Message with expected sequence number : {seq_number} Not Recieved")
+            
+            #check the length of the length of frame based on type
+            if not self.fd:
+                if len(next_frame) != 8:
+                    raise ValueError("Invalid frame length: Frame must be 8 bytes.")
+            else:
+                if len(next_frame) != 64:
+                    raise ValueError("Invalid frame length: Frame must be 64 bytes for FD.")
+                            
             frame_type = self._get_frame_type(next_frame)
 
             first_byte = next_frame[0]
-            # Extract the data length from the next 4 bits
+    
+            # Extract the sequence number
             new_seq_number = first_byte & 0xF
 
-            if not next_frame or len(next_frame) < 1 or frame_type != 0x2:
-                raise ValueError("Invalid or incomplete consecutive frame received.")
-
+            if frame_type != 0x2:  # Verify this is a consecutive frame
+                raise ValueError("Invalid frame type: Expected consecutive frame.")
+                
             if seq_number != new_seq_number:
                 self._send_control_frame(flow_status=2)
-                raise ValueError("UnExpected Sequence Number.\nAbort")
+                raise ValueError(f"UnExpected Sequence Number. expexted: {seq_number} received {new_seq_number}\nAbort")
 
             seq_number = (seq_number + 1) % 16
 
@@ -243,3 +272,6 @@ class Transport:
         first_byte = raw_data[0]
         first_4_bits = (first_byte >> 4) & 0xF  # Most significant 4 bits
         return first_4_bits
+
+
+    # def set_control_frame_variables:

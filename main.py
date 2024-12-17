@@ -12,8 +12,8 @@ def main():
         # Example of received frames in bytes
         test_frames = [
             b"\x10\x14\xAA\xBB\xCC\xDD\xEE\xFF",  # First frame
-            b"\x21\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
-            b"\x21\x88\x99\xAA\xBB\xCC\xDD\xEE"   # Consecutive frame 1
+            b"\x20\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
+            b"\x24\x88\x99\xAA\xBB\xCC\xDD\xEE"   # Consecutive frame 1
         ]
         # Simulate receiving each frame one at a time
         if main.rx_index < len(test_frames):
