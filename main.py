@@ -11,6 +11,7 @@ def main():
     def test_rxfn():
         # Example of received frames in bytes
         test_frames = [
+
             b"\x10\x14\xAA\xBB\xCC\xDD\xEE\xFF",  # First frame
             b"\x20\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
             b"\x24\x88\x99\xAA\xBB\xCC\xDD\xEE"   # Consecutive frame 1
@@ -49,13 +50,35 @@ def main():
         print(f"Error during reception: {e}")
 
 
-
+rflag= True
 def send_file(file_path: str):
     def test_txfn(frame: str):
         print(f"Transmitted Frame: {frame}")
 
-    def test_rxfn(frame: str):
-        print(f"Receiving Frame: {frame}")
+    def test_rxfn():
+        # Example of received frames in bytes
+        test_frames = [
+            b"\x30\x02\x00\x00\x00\xDD\xEE\xFF",
+            b"\x31\x00\x00\xBB\xCC\xDD\xEE\xFF",
+            b"\x10\x14\xAA\xBB\xCC\xDD\xEE\xFF",  # First frame
+            b"\x20\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
+            b"\x24\x88\x99\xAA\xBB\xCC\xDD\xEE"   # Consecutive frame 1
+        ]
+
+        # Simulate receiving each frame one at a time
+        # if main.rx_index < len(test_frames):
+        #     frame = test_frames[main.rx_index]
+        #     main.rx_index += 1
+        global rflag
+        if rflag:
+            rflag=False
+
+            return test_frames[1]
+
+        return test_frames[0]
+
+        return b""  # Simulate end of data
+
 
     # Initialize the address and transport
     address = Address(addressing_mode=0x00, txid=0x123, rxid=0x456)  # Replace 0x00 with the appropriate mode
@@ -83,6 +106,6 @@ def send_file(file_path: str):
 
 
 if __name__ == "__main__":
-    # send_file("main.py")
-    main()
+    send_file("receive.py")
+    # main()
 

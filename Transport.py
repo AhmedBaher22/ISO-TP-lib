@@ -83,24 +83,88 @@ class Transport:
         self.txfn(hex_frame)
 
         # RECEIVE CONTROL FRAME HERE
+        control_frame = self.rxfn()
 
-        # Call _send_consecutive for the rest of the data
-        remaining_data = data[6:]  # Data after the first 6 bytes
-        if remaining_data:
-            self._send_consecutive(remaining_data)
+        if not control_frame :
+            raise ValueError("Invalid or missing control frame received.")
+        print("heklfndonv")
+        
+        flow_status = control_frame[0] & 0x0F
+        print(hex(flow_status))
+        self.block_size = control_frame[1]
+        self.stmin = control_frame[2]
+
+        if flow_status == 0:  # Continue to send
+            print("Flow status: Continue to send.")
+            remaining_data = data[6:]  # Data after the first 6 bytes
+            if remaining_data:
+                self._send_consecutive(remaining_data)
+        elif flow_status == 1:  # Wait
+            print("Flow status: Wait.")
+            while True:
+                control_frame = self.rxfn()
+                
+                if control_frame and (control_frame[0] & 0x0F) == 0:
+                    print("Received continue signal. Resuming...")
+                    remaining_data = data[6:]
+                    if remaining_data:
+                        self._send_consecutive(remaining_data)
+                    break
+                else:
+                    print("Still waiting for continue signal...")
+        elif flow_status == 2:  # Abort
+            raise ValueError("Flow status: Abort received. Transmission terminated.")
+        else:
+            raise ValueError(f"Unknown flow status: {flow_status}.")
+
 
     def _send_consecutive(self, data: bytes):
-        """Send consecutive frames of a multi-frame message."""
+        """
+        Send consecutive frames of a multi-frame message, respecting block size and stmin.
+        """
         index = 0
-        sequence_num = 0  # Start sequence number from 0
+        sequence_num = 0
+        block_counter = 0
+
         while index < len(data):
-            first_byte = (0x2 << 4) | (sequence_num & 0x0F)  # 4 MSBs = 0x2, next 4 bits = sequence number
+            # Check if block size limit is reached
+            if self.block_size > 0 and block_counter >= self.block_size:
+                print(f"Block size limit reached. Waiting for next control frame...")
+                control_frame = self.rxfn()
+                print(control_frame)
+                if not control_frame :
+                    raise ValueError("Invalid or missing control frame received.")
+                
+                flow_status = control_frame[0] & 0x0F
+                self.block_size = control_frame[1]
+                self.stmin = control_frame[2]
+
+                if flow_status == 0:  # Continue to send
+                    print("Flow status: Continue to send.")
+                    block_counter = 0
+                elif flow_status == 1:  # Wait
+                    print("Flow status: Wait. Waiting for continue signal...")
+                    continue
+                elif flow_status == 2:  # Abort
+                    raise ValueError("Flow status: Abort received. Transmission terminated.")
+                else:
+                    raise ValueError(f"Unknown flow status: {flow_status}.")
+
+            first_byte = (0x2 << 4) | (sequence_num & 0x0F)
             frame = bytes([first_byte]) + data[index:index + 7].ljust(7, self.tx_padding.to_bytes(1, 'little'))
-            hex_frame = frame.hex()  # Convert to hex
+            hex_frame = frame.hex()
             print(f"Consecutive frame (hex): {hex_frame}")
             self.txfn(hex_frame)
+
             index += 7
             sequence_num = (sequence_num + 1) % 16
+            block_counter += 1
+
+            # Wait for stmin time if specified
+            if self.stmin > 0:
+                import time
+                time.sleep(self.stmin / 1000.0)
+
 
     def _send_single(self, data: bytes):
         """Send a single frame message."""
@@ -228,43 +292,42 @@ class Transport:
         return full_message[:total_length]
 
     def _recv_consecutive(self, full_message, total_length):
+        """
+        Receive consecutive frames, send control frames at block intervals, and handle errors.
+        """
         seq_number = 0
-        # Loop to receive consecutive frames until the message is complete
+        block_counter = 0
+
         while len(full_message) < total_length:
             next_frame = self.rxfn()
-
-            #check successful receive of the frame
             if not next_frame:
-                raise ValueError(f"Message with expected sequence number : {seq_number} Not Recieved")
-            
-            #check the length of the length of frame based on type
-            if not self.fd:
-                if len(next_frame) != 8:
-                    raise ValueError("Invalid frame length: Frame must be 8 bytes.")
-            else:
-                if len(next_frame) != 64:
-                    raise ValueError("Invalid frame length: Frame must be 64 bytes for FD.")
-                            
+                raise ValueError(f"Message with expected sequence number: {seq_number} not received.")
+
             frame_type = self._get_frame_type(next_frame)
+            if frame_type != 0x2:
+                self._send_control_frame(flow_status=2)  # Abort
+                raise ValueError("Invalid frame type: Expected consecutive frame.")
 
             first_byte = next_frame[0]
-    
-            # Extract the sequence number
-            new_seq_number = first_byte & 0xF
+            new_seq_number = first_byte & 0x0F
 
-            if frame_type != 0x2:  # Verify this is a consecutive frame
-                raise ValueError("Invalid frame type: Expected consecutive frame.")
-                
             if seq_number != new_seq_number:
-                self._send_control_frame(flow_status=2)
-                raise ValueError(f"UnExpected Sequence Number. expexted: {seq_number} received {new_seq_number}\nAbort")
+                self._send_control_frame(flow_status=2)  # Abort
+                raise ValueError(f"Unexpected sequence number. Expected: {seq_number}, received: {new_seq_number}")
 
             seq_number = (seq_number + 1) % 16
-
-            # Extract the consecutive frame data (ignore header byte)
             full_message += next_frame[1:]
 
-        # Return the message up to the total length
+            block_counter += 1
+            if self.block_size > 0 and block_counter >= self.block_size:
+                self._send_control_frame(flow_status=0)  # Continue
+                block_counter = 0
+
+            # Wait for stmin if specified
+            if self.stmin > 0:
+                import time
+                time.sleep(self.stmin / 1000.0)
+
         return full_message[:total_length]
 
     def _get_frame_type(self, raw_data):
