@@ -60,9 +60,9 @@ def send_file(file_path: str):
         test_frames = [
             b"\x30\x02\x00\x00\x00\xDD\xEE\xFF",
             b"\x31\x00\x00\xBB\xCC\xDD\xEE\xFF",
-            b"\x10\x14\xAA\xBB\xCC\xDD\xEE\xFF",  # First frame
-            b"\x20\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
-            b"\x24\x88\x99\xAA\xBB\xCC\xDD\xEE"   # Consecutive frame 1
+            # b"\x10\x14\xAA\xBB\xCC\xDD\xEE\xFF",  # First frame
+            # b"\x20\x11\x22\x33\x44\x55\x66\x77",  # Consecutive frame 0
+            # b"\x24\x88\x99\xAA\xBB\xCC\xDD\xEE"   # Consecutive frame 1
         ]
 
         # Simulate receiving each frame one at a time
@@ -106,6 +106,6 @@ def send_file(file_path: str):
 
 
 if __name__ == "__main__":
-    send_file("receive.py")
-    # main()
+    # send_file("receive.py")
+    main()
 
