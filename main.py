@@ -106,6 +106,7 @@ def send_file(file_path: str):
 
 
 if __name__ == "__main__":
-    send_file("receive.py")
-    # main()
+    # send_file("receive.py")
+    main()
+
 
