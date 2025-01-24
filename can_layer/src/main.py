@@ -1,5 +1,7 @@
 from can_communication import CANCommunication, CANConfiguration
 from enums import CANInterface
+from exceptions import CANError
+ 
 def main():
     try:
         # Create configuration
