@@ -1117,3 +1117,9 @@
 2024-12-17 20:00:04 - INFO - Flow status: Continue to send.
 2024-12-17 20:00:04 - INFO - Consecutive frame (hex): 20def012345678ff
 2024-12-17 20:00:05 - INFO - Sent control frame: 301005
+2025-01-24 16:16:40 - INFO - transport layer ISO-Tp initialized.
+2025-01-24 16:16:40 - INFO - Single frame (hex): 02abcdffffffffff
+2025-01-24 16:16:40 - INFO - First frame (hex): 100c123456789abc
+2025-01-24 16:16:40 - INFO - Flow status: Continue to send.
+2025-01-24 16:16:40 - INFO - Consecutive frame (hex): 20def012345678ff
+2025-01-24 16:16:41 - INFO - Sent control frame: 301005
