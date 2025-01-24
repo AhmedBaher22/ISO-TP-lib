@@ -8,10 +8,34 @@ class Request:
     """
     Represents a request containing a bitarray message and a state.
     """
-    def __init__(self, address: Address):
+    def __init__(self, address: Address, timeout, block_size):
         self._message = bitarray()  # Initialize with an empty bitarray
         self._state = InitialState()  # Start with the initial state
         self._address = address
+        self._expected_sequence_number = 1
+        self._timeout = timeout
+        self._max_block_size = block_size
+        self._current_block_size = 0
+
+    def set_max_block_size(self, max_block_size):
+        self._max_block_size = max_block_size
+
+    def set_current_block_size(self, current_block_size):
+        self._current_block_size = current_block_size
+
+
+    def get_current_block_size(self):
+        return self._current_block_size
+
+    def get_max_block_size(self):
+        return self._max_block_size
+
+    def set_expected_sequence_number(self, number):
+        self._expected_sequence_number = number
+
+
+    def get_expected_sequence_number(self):
+        return self._expected_sequence_number
 
     def set_state(self, state):
         """
