@@ -20,9 +20,13 @@ class Request:
         self._state = state
         print(f"State has been changed to {state.__class__.__name__}")
 
+    def get_state(self):
+        return self._state.__class__.__name__
+
     def set_address(self, address: Address):
         self._address = address
         print(f"Address has been changed to {address}")
+
 
     def append_bits(self, bits: str):
         """
@@ -37,4 +41,4 @@ class Request:
         Delegate processing to the current state.
         The state will modify the request as needed.
         """
-        self._state.handle(self)
+        self._state.handle(self, frameMessage)
