@@ -8,7 +8,7 @@ from frames.FrameMessage import FrameMessage
 from frames.SingleFrameMessage import SingleFrameMessage
 from frames.FirstFrameMessage import FirstFrameMessage
 from frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
-from request.InitialState import InitialState
+from recv_request.InitialState import InitialState
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     address = Address("0x1234")
 
     # Initialize the Request object with the address
-    request1 = Request(address)
+    request1 = Request(address,0,0)
 
     # Test InitialState with a SingleFrame
     print("\n--- Testing InitialState with SingleFrame ---")
@@ -31,7 +31,7 @@ def main():
 
 
     # Initialize the Request object with the address
-    request2 = Request(address)
+    request2 = Request(address,0,0)
 
     # Test InitialState with a SingleFrame
     print("\n--- Testing InitialState with SingleFrame ---")
@@ -45,7 +45,7 @@ def main():
     request2.process(consicative_frame2)
     print(request2.get_state())
     # Initialize the Request object with the address
-    request3 = Request(address)
+    request3 = Request(address,0,0)
 
     # Test InitialState with a SingleFrame
     print("\n--- Testing InitialState with SingleFrame ---")
@@ -54,33 +54,33 @@ def main():
     print(request3.get_state())
     # # Test InitialState with a FirstFrame
     # print("\n--- Testing InitialState with FirstFrame ---")
-    # request.set_state(InitialState())
+    # recv_request.set_state(InitialState())
     # first_frame = FrameMessage(frameType=FrameType.FirstFrame, data="1100")
-    # request.process(first_frame)
+    # recv_request.process(first_frame)
     #
     # # Test FirstFrameState with a ConsecutiveFrame
     # print("\n--- Testing FirstFrameState with ConsecutiveFrame ---")
     # consecutive_frame = FrameMessage(frameType=FrameType.ConsecutiveFrame, data="1110", sequenceNumber=0)
-    # request.process(consecutive_frame)
+    # recv_request.process(consecutive_frame)
     #
     # # Test ConsecutiveFrameState with correct sequence number
     # print("\n--- Testing ConsecutiveFrameState with correct sequence number ---")
     # consecutive_frame_correct = FrameMessage(frameType=FrameType.ConsecutiveFrame, data="1111", sequenceNumber=1)
-    # request.process(consecutive_frame_correct)
+    # recv_request.process(consecutive_frame_correct)
     #
     # # Test ConsecutiveFrameState with incorrect sequence number
     # print("\n--- Testing ConsecutiveFrameState with incorrect sequence number ---")
     # consecutive_frame_incorrect = FrameMessage(frameType=FrameType.ConsecutiveFrame, data="0001", sequenceNumber=3)
-    # request.process(consecutive_frame_incorrect)
+    # recv_request.process(consecutive_frame_incorrect)
     #
     # # Test FlowControlFrameState with FlowControlFrame (Wait)
     # print("\n--- Testing FlowControlFrameState with FlowControlFrame (Wait) ---")
     # flow_control_wait = FrameMessage(frameType=FrameType.FlowControlFrame, flowStatus=FlowStatus.Wait, separationTime=1000)
-    # request.process(flow_control_wait)
+    # recv_request.process(flow_control_wait)
     #
     # # Test WaitState handling (before time elapsed)
     # print("\n--- Testing WaitState (before time elapsed) ---")
-    # request.process(flow_control_wait)
+    # recv_request.process(flow_control_wait)
     #
     # # Simulate time passage (manually for demonstration purposes)
     # import time
@@ -88,7 +88,7 @@ def main():
     #
     # # Test WaitState handling (after time elapsed)
     # print("\n--- Testing WaitState (after time elapsed) ---")
-    # request.process(flow_control_wait)
+    # recv_request.process(flow_control_wait)
 
 
 if __name__ == "__main__":

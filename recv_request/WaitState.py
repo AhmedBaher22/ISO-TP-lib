@@ -23,7 +23,7 @@ class WaitState(RequestState):
 
     def handle(self, request, message):
         """
-        Handle the request. Only proceed if the wait time has passed.
+        Handle the recv_request. Only proceed if the wait time has passed.
 
         :param request: The Request object.
         :param message: The message to process.
@@ -33,6 +33,6 @@ class WaitState(RequestState):
             return
 
         print("Wait time elapsed. Proceeding with handling the message.")
-        # Handle the message and update the request as needed
+        # Handle the message and update the recv_request as needed
         # Example:
-        # request.message.append(message)
+        # recv_request.message.append(message)

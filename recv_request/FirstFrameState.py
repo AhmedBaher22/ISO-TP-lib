@@ -1,7 +1,7 @@
 from RequestState import RequestState
 from frames.FrameType import FrameType
-from request.ConsecutiveFrameState import ConsecutiveFrameState
-from request.ErrorState import ErrorState
+from recv_request.ConsecutiveFrameState import ConsecutiveFrameState
+from recv_request.ErrorState import ErrorState
 
 
 class FirstFrameState(RequestState):

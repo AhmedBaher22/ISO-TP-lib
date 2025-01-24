@@ -1,0 +1,3 @@
+class SendRequest:
+    pass
+

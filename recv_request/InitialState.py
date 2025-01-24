@@ -1,8 +1,8 @@
 from RequestState import RequestState
 from frames.FrameType import FrameType
-from request.FinalState import FinalState
-from request.FirstFrameState import FirstFrameState
-from request.ErrorState import ErrorState
+from recv_request.FinalState import FinalState
+from recv_request.FirstFrameState import FirstFrameState
+from recv_request.ErrorState import ErrorState
 
 
 class InitialState(RequestState):
@@ -18,4 +18,4 @@ class InitialState(RequestState):
             request.set_state(FirstFrameState())
         else:
             request.set_state(ErrorState())
-        print("request is in the initial state.")
+        print("recv_request is in the initial state.")

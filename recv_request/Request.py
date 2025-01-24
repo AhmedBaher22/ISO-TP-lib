@@ -6,7 +6,7 @@ from Address import Address
 
 class Request:
     """
-    Represents a request containing a bitarray message and a state.
+    Represents a recv_request containing a bitarray message and a state.
     """
     def __init__(self, address: Address, timeout, block_size):
         self._message = bitarray()  # Initialize with an empty bitarray
@@ -39,7 +39,7 @@ class Request:
 
     def set_state(self, state):
         """
-        Change the state of the request.
+        Change the state of the recv_request.
         """
         self._state = state
         print(f"State has been changed to {state.__class__.__name__}")
@@ -63,6 +63,6 @@ class Request:
     def process(self, frameMessage: FrameMessage):
         """
         Delegate processing to the current state.
-        The state will modify the request as needed.
+        The state will modify the recv_request as needed.
         """
         self._state.handle(self, frameMessage)
