@@ -1,0 +1,6 @@
+2025-01-23 23:47:25 - ERROR - Error Details:
+Message: Failed to send message 0x33 after all retries
+Original Exception: None
+Traceback:
+NoneType: None
+

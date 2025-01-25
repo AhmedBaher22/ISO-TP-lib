@@ -8,7 +8,7 @@ class Request:
     """
     Represents a recv_request containing a bitarray message and a state.
     """
-    def __init__(self, address: Address, timeout, block_size):
+    def __init__(self, address: Address, timeout, block_size,data_lenght):
         self._message = bitarray()  # Initialize with an empty bitarray
         self._state = InitialState()  # Start with the initial state
         self._address = address
@@ -16,6 +16,7 @@ class Request:
         self._timeout = timeout
         self._max_block_size = block_size
         self._current_block_size = 0
+        self._data_length=data_lenght
 
     def set_max_block_size(self, max_block_size):
         self._max_block_size = max_block_size
@@ -24,6 +25,14 @@ class Request:
         self._current_block_size = current_block_size
 
 
+    def get_data_length(self):
+        return self._data_length
+    def get_current_data_length(self):
+        return len(self._message) 
+    
+    def set_data_length(self,data_length):
+        self._data_length=data_length
+    
     def get_current_block_size(self):
         return self._current_block_size
 

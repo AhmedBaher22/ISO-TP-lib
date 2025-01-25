@@ -1,0 +1,54 @@
+2025-01-23 23:46:01 - ERROR - Error Details:
+Message: Failed to initialize CAN bus
+Original Exception: xlGetApplConfig failed (Vector HW Config: Channel '0' of application 'casda' is not assigned to any interface) [Error Code 255]
+Traceback:
+Traceback (most recent call last):
+  File "d:\ASU\graduationProject\ISO-TP\can_layer\src\can_communication.py", line 74, in _initialize_bus
+    self.bus = can.Bus(
+               ^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\util.py", line 379, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interface.py", line 135, in Bus
+    bus = cls(channel, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\util.py", line 379, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interfaces\vector\canlib.py", line 225, in __init__
+    channel_index = self._find_global_channel_idx(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interfaces\vector\canlib.py", line 409, in _find_global_channel_idx
+    hw_type, hw_index, hw_channel = self.get_application_config(
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interfaces\vector\canlib.py", line 1072, in get_application_config
+    raise VectorInitializationError(
+can.interfaces.vector.exceptions.VectorInitializationError: xlGetApplConfig failed (Vector HW Config: Channel '0' of application 'casda' is not assigned to any interface) [Error Code 255]
+
+2025-01-23 23:46:56 - ERROR - Error Details:
+Message: Failed to initialize CAN bus
+Original Exception: xlGetApplConfig failed (Vector HW Config: Channel '0' of application 'casda' is not assigned to any interface) [Error Code 255]
+Traceback:
+Traceback (most recent call last):
+  File "d:\ASU\graduationProject\ISO-TP\can_layer\src\can_communication.py", line 74, in _initialize_bus
+    self.bus = can.Bus(
+               ^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\util.py", line 379, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interface.py", line 135, in Bus
+    bus = cls(channel, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\util.py", line 379, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interfaces\vector\canlib.py", line 225, in __init__
+    channel_index = self._find_global_channel_idx(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interfaces\vector\canlib.py", line 409, in _find_global_channel_idx
+    hw_type, hw_index, hw_channel = self.get_application_config(
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\can\interfaces\vector\canlib.py", line 1072, in get_application_config
+    raise VectorInitializationError(
+can.interfaces.vector.exceptions.VectorInitializationError: xlGetApplConfig failed (Vector HW Config: Channel '0' of application 'casda' is not assigned to any interface) [Error Code 255]
+

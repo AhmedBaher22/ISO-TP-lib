@@ -1,0 +1,17 @@
+2025-01-23 23:54:57 - INFO - CAN bus initialized successfully for receiving messages.
+2025-01-23 23:54:57 - INFO - Waiting to receive a CAN message...
+2025-01-23 23:55:05 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x00\x19\x00\x01\x03\x01\x04\x01') , and hole message = Timestamp: 1737669305.106770    ID:      033    S Rx                DL:  8    00 19 00 01 03 01 04 01     Channel: 0
+2025-01-23 23:55:05 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-01-23 23:55:05 - INFO - Waiting to receive a CAN message...
+2025-01-23 23:55:15 - INFO - Timeout: No message received.
+2025-01-23 23:55:15 - INFO - CAN receive operation complete.
+2025-01-24 00:00:06 - INFO - CAN bus initialized successfully for receiving messages.
+2025-01-24 00:00:06 - INFO - Waiting to receive a CAN message...
+2025-01-24 00:00:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x00\x19\x00\x01\x03\x01\x04\x01') , and hole message = Timestamp: 1737669611.918570    ID:      033    S Rx                DL:  8    00 19 00 01 03 01 04 01     Channel: 0
+2025-01-24 00:00:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-01-24 00:00:11 - INFO - Waiting to receive a CAN message...
+2025-01-24 00:00:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x00\x19\x00\x01\x03\x01\x04\x01') , and hole message = Timestamp: 1737669620.855984    ID:      033    S Rx                DL:  8    00 19 00 01 03 01 04 01     Channel: 0
+2025-01-24 00:00:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-01-24 00:00:20 - INFO - Waiting to receive a CAN message...
+2025-01-24 00:00:30 - INFO - Timeout: No message received.
+2025-01-24 00:00:30 - INFO - CAN receive operation complete.
