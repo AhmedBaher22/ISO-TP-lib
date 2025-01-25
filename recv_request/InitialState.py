@@ -8,9 +8,11 @@ from recv_request.ErrorState import ErrorState
 class InitialState(RequestState):
     def handle(self, request, message):
         if message.frameType == FrameType.SingleFrame:
+            request.set_data_length(message.dataLength)
             request.append_bits(message.data)
             request.set_state(FinalState())
         elif message.frameType == FrameType.FirstFrame:
+            request.set_data_length(message.dataLength)
             request.append_bits(message.data)
 
             # SEND ACK

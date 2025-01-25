@@ -11,6 +11,7 @@ class ConsecutiveFrameState(RequestState):
         if message.frameType == FrameType.ConsecutiveFrame:
             if message.sequenceNumber == request.get_expected_sequence_number():
                 max_block_size = request.get_max_block_size()
+                current_block_size = request.get_current_block_size()
                 if max_block_size > 0:
                     if current_block_size < max_block_size:
                         current_block_size = request.get_current_block_size()

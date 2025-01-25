@@ -14,10 +14,10 @@ from recv_request.InitialState import InitialState
 def main():
     address = Address(addressing_mode=0x00, txid=0x123, rxid=0x456)  # Replace 0x00 with the appropriate mode
     # Create an address object (assuming Address takes an address string as input)
-    address = Address("0x1234")
+    # address = Address("0x1234")
 
     # Initialize the Request object with the address
-    request1 = Request(address,0,0)
+    request1 = Request(address, 0, 0)
 
     # Test InitialState with a SingleFrame
     print("\n--- Testing InitialState with SingleFrame ---")
@@ -31,26 +31,26 @@ def main():
 
 
     # Initialize the Request object with the address
-    request2 = Request(address,0,0)
+    request2 = Request(address, 0, 0)
 
     # Test InitialState with a SingleFrame
     print("\n--- Testing InitialState with SingleFrame ---")
     first_frame = FirstFrameMessage(data=bitarray("1010"), dataLength=4)
     request2.process(first_frame)
     print(request2.get_state())
-    consicative_frame1 = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=1)
-    request2.process(consicative_frame1)
+    consecutive_frame_1 = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=1)
+    request2.process(consecutive_frame_1)
     print(request2.get_state())
-    consicative_frame2 = ConsecutiveFrameMessage(data=bitarray("1111"), sequenceNumber=2)
-    request2.process(consicative_frame2)
+    consecutive_frame_2 = ConsecutiveFrameMessage(data=bitarray("1111"), sequenceNumber=2)
+    request2.process(consecutive_frame_2)
     print(request2.get_state())
     # Initialize the Request object with the address
-    request3 = Request(address,0,0)
+    request3 = Request(address, 0, 0)
 
     # Test InitialState with a SingleFrame
     print("\n--- Testing InitialState with SingleFrame ---")
-    consicative_frame = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=0)
-    request3.process(consicative_frame)
+    consecutive_frame_3 = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=0)
+    request3.process(consecutive_frame_3)
     print(request3.get_state())
     # # Test InitialState with a FirstFrame
     # print("\n--- Testing InitialState with FirstFrame ---")
