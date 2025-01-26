@@ -6,7 +6,7 @@ import time
 
 
 # Mock transmit function
-def mock_txfn(frame):
+def mock_txfn(frame, message):
     print(f"Transmitted frame: {frame}")
 
 

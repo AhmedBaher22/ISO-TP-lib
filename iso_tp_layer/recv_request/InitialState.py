@@ -1,9 +1,9 @@
-from RequestState import RequestState
 from iso_tp_layer.frames.FrameType import FrameType
 from iso_tp_layer.Exceptions import InvalidFirstFrameException
 from iso_tp_layer.recv_request.FinalState import FinalState
 from iso_tp_layer.recv_request.FirstFrameState import FirstFrameState
 from iso_tp_layer.recv_request.ErrorState import ErrorState
+from iso_tp_layer.recv_request.RequestState import RequestState
 
 
 class InitialState(RequestState):
@@ -11,20 +11,21 @@ class InitialState(RequestState):
         try:
             if message.frameType == FrameType.SingleFrame:
                 request.set_data_length(message.dataLength)
-                request.append_bits(message._data)
+                request.append_bits(message.data)
                 request.set_state(FinalState())
-                request._on_success()
+                request.on_success()
             elif message.frameType == FrameType.FirstFrame:
                 request.set_data_length(message.dataLength)
-                request.append_bits(message._data)
+                request.append_bits(message.data)
 
                 request.send_flow_control_frame()
 
                 request.update_last_received_time()
                 request.set_state(FirstFrameState())
             else:
+                # f"The first frame can't be {frame_type}"
                 raise InvalidFirstFrameException(message.frameType)
         except Exception as e:
             request.set_state(ErrorState())
             request.send_error_frame()
-            request._on_error(e)
+            request.on_error(e)

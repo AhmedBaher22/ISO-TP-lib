@@ -1,4 +1,4 @@
-from RequestState import RequestState
+from iso_tp_layer.recv_request.RequestState import RequestState
 
 
 class FinalState(RequestState):

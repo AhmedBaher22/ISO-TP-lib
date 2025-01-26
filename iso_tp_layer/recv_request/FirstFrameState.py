@@ -1,4 +1,4 @@
-from RequestState import RequestState
+from iso_tp_layer.recv_request.RequestState import RequestState
 from iso_tp_layer.frames.FrameType import FrameType
 from iso_tp_layer.recv_request.ConsecutiveFrameState import ConsecutiveFrameState
 from iso_tp_layer.recv_request.ErrorState import ErrorState
@@ -14,17 +14,19 @@ class FirstFrameState(RequestState):
                     return
                 if message.sequenceNumber == request.get_expected_sequence_number():
                     request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)
-                    request.append_bits(message._data)
+                    request.append_bits(message.data)
                     request.set_state(ConsecutiveFrameState())
                 else:
+                    # f"Consecutive message out of sequence! Expected sequence number {expected_seq} and received {received_seq}"
                     raise ConsecutiveFrameOutOfSequenceException(request.get_expected_sequence_number(),
                                                                  message.sequenceNumber)
 
             else:
+                # f"Was expecting {expected_type} and received {received_type}"
                 raise UnexpectedFrameTypeException("FrameType.ConsecutiveFrame", message.frameType)
 
 
         except Exception as e:
             request.set_state(ErrorState())
             request.send_error_frame()
-            request._on_error(e)
+            request.on_error(e)

@@ -2,13 +2,13 @@ from math import ceil
 from typing import Callable
 from bitarray import bitarray
 from iso_tp_layer.Exceptions import TimeoutException
-from InitialState import InitialState
 from iso_tp_layer.frames import FrameMessage
 from Address import Address
 import time
 from iso_tp_layer.frames.ErrorFrameMessage import ErrorFrameMessage
 from iso_tp_layer.frames.FlowControlFrameMessage import FlowControlFrameMessage
 from iso_tp_layer.frames.FlowStatus import FlowStatus
+from iso_tp_layer.recv_request.InitialState import InitialState
 
 
 class RecvRequest:

@@ -28,6 +28,19 @@ class SendRequest:
         self._sequence_num = 0
         self._block_counter = 0
         self._isFinished = False
+        self._received_error_frame = False  # New attribute for error frame tracking
+
+    def set_received_error_frame(self, value: bool):
+        self._received_error_frame = value
+
+    def get_received_error_frame(self) -> bool:
+        return self._received_error_frame
+
+    def is_finished(self):
+        return self._isFinished
+
+    def has_received_error_frame(self):
+        return self._received_error_frame
 
     def send(self, data: bitarray):
         """Entry point to send data."""
@@ -50,7 +63,7 @@ class SendRequest:
             frame = bytes([first_byte]) + self._data.ljust(7, self._tx_padding.to_bytes(1, 'little'))
             hex_frame = frame.hex()
             print(f"Single frame (hex): {hex_frame}")
-            self._txfn(hex_frame)
+            self._txfn(self._address, hex_frame)
             self._end_request()  # Successful completion
         except Exception as e:
             print(f"Error in _send_single: {e}")
@@ -61,6 +74,7 @@ class SendRequest:
         try:
             message_length = len(self._data)
             if message_length > 4095:
+                # "Message length exceeds the maximum limit of 4095 bytes for ISO-TP."
                 raise MessageLengthExceededException()
 
             first_byte = (0x1 << 4) | ((message_length >> 8) & 0x0F)
@@ -69,7 +83,7 @@ class SendRequest:
             frame = bytes([first_byte, second_byte]) + first_frame_data
             hex_frame = frame.hex()
             print(f"First frame (hex): {hex_frame}")
-            self._txfn(hex_frame)
+            self._txfn(self._address, hex_frame)
 
             # Start listening for control frames in a separate thread
             listener_thread = threading.Thread(
@@ -91,6 +105,9 @@ class SendRequest:
 
 
             while self._index < len(self._remaining_data):
+                if self._received_error_frame:
+                    return
+
                 if 0 < self._block_size <= self._block_counter:
                     print(f"block_counter: {self._block_counter}\nblock_size: {self._block_size}")
                     print("Block size limit reached. Waiting for next control frame...")
@@ -102,19 +119,20 @@ class SendRequest:
                     listener_thread.start()
                     return
 
+                if self._stmin > 0:
+                    print(f"Sleeping for {self._stmin / 100.0}")
+                    time.sleep(self._stmin / 100.0)
+
                 first_byte = (0x2 << 4) | (self._sequence_num & 0x0F)
                 frame = bytes([first_byte]) + self._remaining_data[self._index:self._index + 7].ljust(7, self._tx_padding.to_bytes(1, 'little'))
                 hex_frame = frame.hex()
                 print(f"Consecutive frame (hex): {hex_frame}")
-                self._txfn(hex_frame)
+                self._txfn(self._address, hex_frame)
 
                 self._index += 7
                 self._sequence_num = (self._sequence_num + 1) % 16
                 self._block_counter += 1
 
-                if self._stmin > 0:
-                    print(f"Sleeping for {self._stmin / 100.0}")
-                    time.sleep(self._stmin / 100.0)
             self._end_request()
         except Exception as e:
             print(f"Error in _send_consecutive: {e}")
@@ -123,11 +141,14 @@ class SendRequest:
     def listen_for_control_frame(self, callBackFn: Callable):
         """Thread function to listen for control frames."""
         try:
+            if self._received_error_frame:
+                return
             is_control_frame_received = False
             start_time = time.time()  # Record the start time
             while not is_control_frame_received:
                 elapsed_time_ms = (time.time() - start_time) * 1000
                 if elapsed_time_ms > self._timeout:
+                    # "Timeout Elapsed!"
                     raise TimeoutException()
 
                 control_frame = self._rxfn(self._address)
@@ -153,8 +174,10 @@ class SendRequest:
                         time.sleep(stmin / 100.0)
                         is_control_frame_received = True
                 elif flow_status == FlowStatus.Abort:
+                    # "Flow status: Abort received. Transmission terminated."
                     raise FlowStatusAbortException()
                 else:
+                    # f"Invalid flow status received: {flow_status_value}"
                     raise InvalidFlowStatusException(flow_status_value)
 
             if is_control_frame_received:
@@ -209,7 +232,7 @@ class SendRequest:
             control_frame = bytes([first_byte, second_byte, third_byte])
 
             # Transmit the control frame
-            self._txfn(control_frame)
+            self._txfn(self._address, control_frame)
             # logger.info(f"Sent control frame: {control_frame.hex().upper()}")
             print(f"Sent control frame: {control_frame.hex().upper()}")
             self._end_request()
@@ -218,3 +241,7 @@ class SendRequest:
             # logger.error(f"Error in send_control_frame method: {e}")
             print(f"Error in send_control_frame method: {e}")
             self._on_error(e)
+
+
+    def get_address(self):
+        return self._address

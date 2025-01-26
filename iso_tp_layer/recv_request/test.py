@@ -18,7 +18,7 @@ def on_error(error):
     print(f"❌ Transmission failed: {error}")
 
 
-def send_frame(frame: FrameMessage):
+def send_frame(address: Address, frame: FrameMessage):
     print(frame)
 
 

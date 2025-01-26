@@ -48,7 +48,7 @@ print(f"SingleFrameMessage: {single_frame}")
 print(f"SingleFrameMessage: {single_frame.frameType}")
 
 # FlowControlFrameMessage test
-flow_control_frame = FlowControlFrameMessage(flowStatus=1, blockSize=5, separationTime=2)
+flow_control_frame = FlowControlFrameMessage(flowStatus=FlowStatus.Wait, blockSize=5, separationTime=2)
 print(f"FlowControlFrameMessage: {flow_control_frame}")
 print(f"FlowControlFrameMessage: {flow_control_frame.frameType}")
 

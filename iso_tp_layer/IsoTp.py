@@ -1,4 +1,6 @@
 from typing import Callable, List, Union
+
+import can.message
 from bitarray import bitarray
 from Address import Address
 from iso_tp_layer.IsoTpConfig import IsoTpConfig
@@ -68,7 +70,6 @@ def message_to_bitarray(message: FrameMessage) -> bitarray:
     bits = bitarray()
 
     if isinstance(message, SingleFrameMessage):
-        print(message.dataLength)
         pci_byte = (FrameType.SingleFrame.value << 4) | message.dataLength
         bits.frombytes(bytes([pci_byte]))  # PCI byte
         bits.extend(message.data)  # Data bits
@@ -102,6 +103,7 @@ class IsoTp:
     def __init__(self, iso_tp_config: IsoTpConfig):
         self._config = iso_tp_config
         self._recv_requests: List[RecvRequest] = []
+        self._send_requests: List[SendRequest] = []
         self._control_frames: List[tuple[Address, FlowControlFrameMessage]] = []  # List to store control frames and addresses
 
 
@@ -117,9 +119,15 @@ class IsoTp:
                 timeout=self._config.timeout,
                 block_size=self._config.max_block_size,
             )
+            self._send_requests.append(send_request)
             send_request.send(data)
+
+            for request in self._send_requests:
+                if request.is_finished() or request.has_received_error_frame():
+                    self._send_requests.remove(request)
+
         except Exception as e:
-            pass
+            on_error(e)
 
     def recv(self, message: bitarray, address: Address):
         try:
@@ -130,6 +138,11 @@ class IsoTp:
                 # Add control frame and its address to the control frame list
                 self._control_frames.append((address, new_message))
                 return  # Exit after storing the control frame
+            elif isinstance(new_message, ErrorFrameMessage):
+                for request in self._send_requests:
+                    if request.get_address() == address:
+                        request.set_received_error_frame(True)
+                        return  # Exit
 
             # Check if there is an existing request with the same address
             for request in self._recv_requests:
@@ -160,7 +173,7 @@ class IsoTp:
             new_request.process(new_message)
 
         except Exception as e:
-            pass
+            self._config.on_recv_error()
 
     def _get_control_frame_by_address(self, address: Address) -> Union[FlowControlFrameMessage, None]:
         """
@@ -177,5 +190,8 @@ class IsoTp:
         message_in_bits = message_to_bitarray(frame)
         # can send here ( i have the address and the bits to send )
 
-    def _send_hex(self, message):
+    def _send_hex(self, address: Address, message):
+        pass
+
+    def _convert_can_message(self, message: can.message.Message):
         pass
