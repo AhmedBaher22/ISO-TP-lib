@@ -1,7 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
-from frames.FrameMessage import FrameMessage
-from frames.FrameType import FrameType
+from iso_tp_layer.frames.FrameMessage import FrameMessage
+from iso_tp_layer.frames.FrameType import FrameType
 
 
 @dataclass

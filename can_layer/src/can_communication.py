@@ -212,7 +212,7 @@ class CANCommunication:
             if message:
                 self.logger.log_receive(
                     f"Message received: ID=0x{message.arbitration_id:X}, "
-                    f"Data={message.data}"
+                    f"Data={message._data}"
                 )
                 return message
             

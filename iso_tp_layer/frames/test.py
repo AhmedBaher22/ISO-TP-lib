@@ -1,8 +1,9 @@
-from frames.FirstFrameMessage import FirstFrameMessage
-from frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
-from frames.SingleFrameMessage import SingleFrameMessage
-from frames.FlowControlFrameMessage import FlowControlFrameMessage
-from frames.ErrorFrameMessage import ErrorFrameMessage
+from iso_tp_layer.frames.FirstFrameMessage import FirstFrameMessage
+from iso_tp_layer.frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
+from iso_tp_layer.frames.FlowStatus import FlowStatus
+from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
+from iso_tp_layer.frames.FlowControlFrameMessage import FlowControlFrameMessage
+from iso_tp_layer.frames.ErrorFrameMessage import ErrorFrameMessage
 from bitarray import bitarray
 
 
@@ -22,7 +23,7 @@ print(f"SingleFrameMessage: {single_frame}")
 print(f"SingleFrameMessage: {single_frame.frameType}")
 
 # FlowControlFrameMessage test
-flow_control_frame = FlowControlFrameMessage(flowStatus=1, blockSize=5, separationTime=2)
+flow_control_frame = FlowControlFrameMessage(flowStatus=FlowStatus.Continue, blockSize=5, separationTime=2)
 print(f"FlowControlFrameMessage: {flow_control_frame}")
 print(f"FlowControlFrameMessage: {flow_control_frame.frameType}")
 

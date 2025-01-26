@@ -1,8 +1,8 @@
 import numpy as np
 from dataclasses import dataclass
 from bitarray import bitarray
-from frames.DataFrame import DataFrame
-from frames.FrameType import FrameType
+from iso_tp_layer.frames.DataFrame import DataFrame
+from iso_tp_layer.frames.FrameType import FrameType
 
 
 @dataclass

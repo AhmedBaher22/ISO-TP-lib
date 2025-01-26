@@ -67,7 +67,7 @@ try:
                 # Send the CAN message
                 bus.send(msg)
                 print(f"Message sent: {msg}")
-                logger.info("Message sent with arbitration_id=0x%X and data=%s", msg.arbitration_id, msg.data)
+                logger.info("Message sent with arbitration_id=0x%X and data=%s", msg.arbitration_id, msg._data)
 
                 # Wait for acknowledgment
                 ack = bus.recv(timeout=time_out_in_seconds)  # Wait for acknowledgment

@@ -64,7 +64,7 @@ try:
             msg = bus.recv(timeout=time_out_in_seconds)  # Adjust timeout as needed
             if msg:
 
-                logger.info("Message received with arbitration_id=0x%X and data=%s , and hole message = %s", msg.arbitration_id, msg.data, msg)
+                logger.info("Message received with arbitration_id=0x%X and data=%s , and hole message = %s", msg.arbitration_id, msg._data, msg)
 
                 # Send acknowledgment
                 ack_msg = can.Message(arbitration_id=msg.arbitration_id, data=[1], is_extended_id=extended_flag,is_fd=fd_flag)

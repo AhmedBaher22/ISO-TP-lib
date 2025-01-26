@@ -287,7 +287,7 @@ class CANCommunication:
         """Convert python-can Message to internal CANMessage format"""
         return CANMessage(
             arbitration_id=msg.arbitration_id,
-            data=msg.data,
+            data=msg._data,
             timestamp=msg.timestamp,
             is_extended_id=msg.is_extended_id,
             is_fd=msg.is_fd,

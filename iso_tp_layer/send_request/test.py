@@ -1,5 +1,7 @@
 from bitarray import bitarray
-from send_request.SendRequest import SendRequest
+
+from Address import Address
+from iso_tp_layer.send_request.SendRequest import SendRequest
 import time
 
 
@@ -9,17 +11,17 @@ def mock_txfn(frame):
 
 
 # Mock receive functions
-def mock_rxfn_continue():
+def mock_rxfn_continue(address: Address):
     """Simulating a Flow Control frame with Continue (0x30), BlockSize = 3, STmin = 5ms."""
     return bytes([0x30, 3, 5])
 
 
-def mock_rxfn_wait():
+def mock_rxfn_wait(address: Address):
     """Simulating a Flow Control frame with Wait (0x31), BlockSize = 0, STmin = 10ms."""
     return bytes([0x31, 2, 10])
 
 
-def mock_rxfn_abort():
+def mock_rxfn_abort(address: Address):
     """Simulating a Flow Control frame with Abort (0x32), BlockSize = 0, STmin = 0."""
     return bytes([0x32, 0x00, 0x00])
 
@@ -32,6 +34,8 @@ def on_success():
 def on_error(error):
     print(f"❌ Transmission failed: {error}")
 
+
+address = Address(addressing_mode=0x00, txid=0x123, rxid=0x456)  # Replace 0x00 with the appropriate mode
 
 # Test Cases
 # print("\n=== Test Case 1: Single-frame Message ===")
@@ -49,7 +53,7 @@ data_multi_continue = bitarray()
 data_multi_continue.frombytes(bytes.fromhex(hex_data_multi_continue))
 
 sender_multi_continue = SendRequest(
-    txfn=mock_txfn, rxfn=mock_rxfn_continue, on_success=on_success, on_error=on_error, stmin=5, block_size=3
+    txfn=mock_txfn, rxfn=mock_rxfn_continue, on_success=on_success, on_error=on_error, stmin=5, block_size=3, address=address
 )
 sender_multi_continue.send(data_multi_continue)
 

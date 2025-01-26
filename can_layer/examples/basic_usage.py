@@ -14,7 +14,7 @@ from src.exceptions import CANError  # Add this import
 from src.can_communication import CANCommunication
 
 def message_callback(msg: CANMessage):
-    print(f"Received message: ID=0x{msg.arbitration_id:X}, Data={msg.data.hex()}")
+    print(f"Received message: ID=0x{msg.arbitration_id:X}, Data={msg._data.hex()}")
 
 def error_callback(error: Exception):
     print(f"Error occurred: {error}")

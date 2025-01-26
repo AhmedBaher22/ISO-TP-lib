@@ -1,7 +1,6 @@
 from RequestState import RequestState
-from frames.FrameType import FrameType
 
 
-class FinalState(RequestState):
+class ErrorState(RequestState):
     def handle(self, request, message):
         pass

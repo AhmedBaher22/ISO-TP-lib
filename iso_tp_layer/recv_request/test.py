@@ -1,14 +1,25 @@
-from bitarray import bitarray
+import time
 
-from Request import Request
-from frames.FrameType import FrameType
-from frames.FlowStatus import FlowStatus
+from bitarray import bitarray
+from RecvRequest import RecvRequest
 from Address import Address
-from frames.FrameMessage import FrameMessage
-from frames.SingleFrameMessage import SingleFrameMessage
-from frames.FirstFrameMessage import FirstFrameMessage
-from frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
-from recv_request.InitialState import InitialState
+from iso_tp_layer.frames.FrameMessage import FrameMessage
+from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
+from iso_tp_layer.frames.FirstFrameMessage import FirstFrameMessage
+from iso_tp_layer.frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
+
+
+# Success and error callbacks
+def on_success():
+    print("✅ Transmission successful!")
+
+
+def on_error(error):
+    print(f"❌ Transmission failed: {error}")
+
+
+def send_frame(frame: FrameMessage):
+    print(frame)
 
 
 def main():
@@ -17,7 +28,7 @@ def main():
     # address = Address("0x1234")
 
     # Initialize the Request object with the address
-    request1 = Request(address, 0, 0)
+    request1 = RecvRequest(address, 0, 0, 0, on_success, on_error, send_frame)
 
     # Test InitialState with a SingleFrame
     print("\n--- Testing InitialState with SingleFrame ---")
@@ -29,29 +40,41 @@ def main():
     print(request1.get_state())
 
 
-
     # Initialize the Request object with the address
-    request2 = Request(address, 0, 0)
+    request11 = RecvRequest(address, 0, 0, 0, on_success, on_error, send_frame)
 
     # Test InitialState with a SingleFrame
-    print("\n--- Testing InitialState with SingleFrame ---")
+    print("\n--- Testing InitialState with Wrong ---")
+    consecutive_frame = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=1)
+    request11.process(consecutive_frame)
+    print(request11.get_state())
+
+    # Test InitialState with First and Consecutive Frames
+    request2 = RecvRequest(address=address, block_size=0, timeout=50, stmin=3, on_success=on_success, on_error=on_error, send_frame=send_frame)
+    print("\n--- Testing InitialState with First and Consecutive Frames ---")
     first_frame = FirstFrameMessage(data=bitarray("1010"), dataLength=4)
     request2.process(first_frame)
     print(request2.get_state())
     consecutive_frame_1 = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=1)
     request2.process(consecutive_frame_1)
+    time.sleep(0.01)
+    request2.process(consecutive_frame_1)
     print(request2.get_state())
     consecutive_frame_2 = ConsecutiveFrameMessage(data=bitarray("1111"), sequenceNumber=2)
     request2.process(consecutive_frame_2)
     print(request2.get_state())
-    # Initialize the Request object with the address
-    request3 = Request(address, 0, 0)
 
-    # Test InitialState with a SingleFrame
-    print("\n--- Testing InitialState with SingleFrame ---")
-    consecutive_frame_3 = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=0)
-    request3.process(consecutive_frame_3)
-    print(request3.get_state())
+
+    # # Initialize the Request object with the address
+    # request3 = Request(address, 0, 0, 0)
+    #
+    # # Test InitialState with a SingleFrame
+    # print("\n--- Testing InitialState with SingleFrame ---")
+    # consecutive_frame_3 = ConsecutiveFrameMessage(data=bitarray("1010"), sequenceNumber=0)
+    # request3.process(consecutive_frame_3)
+    # print(request3.get_state())
+
+
     # # Test InitialState with a FirstFrame
     # print("\n--- Testing InitialState with FirstFrame ---")
     # recv_request.set_state(InitialState())

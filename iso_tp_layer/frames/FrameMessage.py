@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from frames.FrameType import FrameType
+from iso_tp_layer.frames.FrameType import FrameType
 
 
 @dataclass

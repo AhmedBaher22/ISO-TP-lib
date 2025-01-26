@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from frames.FrameMessage import FrameMessage
+from iso_tp_layer.frames.FrameMessage import FrameMessage
 from bitarray import bitarray
-from frames.FrameType import FrameType
+from iso_tp_layer.frames.FrameType import FrameType
 
 
 @dataclass
