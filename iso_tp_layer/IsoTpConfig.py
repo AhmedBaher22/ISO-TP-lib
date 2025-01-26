@@ -6,7 +6,9 @@ class IsoTpConfig:
     """
     A configuration class (struct-like) for ISO-TP settings.
     """
-    def __init__(self, max_block_size, timeout, stmin, on_recv_success: Callable, on_recv_error: Callable):
+    def __init__(self, max_block_size, timeout, stmin,
+                  on_recv_success: Callable, on_recv_error: Callable,
+                  recv_id: int):
         if stmin > timeout:
             raise ValueError("stmin must be less than or equal to timeout.")
         # self.address = address
@@ -15,4 +17,6 @@ class IsoTpConfig:
         self.stmin = stmin
         self.on_recv_success = on_recv_success
         self.on_recv_error = on_recv_error
+        self.send_fn: Callable = None
+        self.recv_id = recv_id
 

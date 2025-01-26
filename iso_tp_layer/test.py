@@ -1,8 +1,8 @@
 import time
 from bitarray import bitarray
-from iso_tp_layer.IsoTpConfig import IsoTpConfig
-from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
-from iso_tp_layer.IsoTp import IsoTp, message_to_bitarray
+from IsoTpConfig import IsoTpConfig
+from SingleFrameMessage import SingleFrameMessage
+from IsoTp import IsoTp, message_to_bitarray
 from Address import Address
 
 

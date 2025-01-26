@@ -1,0 +1,12 @@
+2025-01-26 22:58:08 - INFO - CAN bus initialized successfully
+2025-01-26 22:58:08 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 22:58:08 - INFO - CAN bus shut down successfully
+2025-01-26 23:00:34 - INFO - CAN bus initialized successfully
+2025-01-26 23:00:34 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:00:34 - INFO - CAN bus shut down successfully
+2025-01-26 23:01:09 - INFO - CAN bus initialized successfully
+2025-01-26 23:01:09 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:01:09 - INFO - CAN bus shut down successfully
+2025-01-26 23:02:21 - INFO - CAN bus initialized successfully
+2025-01-26 23:02:21 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:02:21 - INFO - CAN bus shut down successfully
