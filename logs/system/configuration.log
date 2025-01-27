@@ -53,3 +53,7 @@
 2025-01-27 14:19:24 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
 2025-01-27 14:21:07 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
 2025-01-27 14:35:53 - INFO - Filters set successfully: [{'can_id': 85, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:12:42 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:16:33 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:20:12 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:21:21 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]

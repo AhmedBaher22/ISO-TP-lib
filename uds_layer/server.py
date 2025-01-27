@@ -61,11 +61,11 @@ class Server:
         self._logs.append(log)
 
     def get_pending_operation_by_type(self, operation_type: OperationType) -> Operation:
-        print(operation_type)
+
         for operation in self._pending_operations:
-            print(operation.operation_type)
+
             if operation.operation_type == operation_type:
-                print("true")
+
                 return operation
         return None
 
@@ -148,13 +148,13 @@ class Server:
         return message
 
     def on_write_data_by_identifier_respond(self, operation_status: int, message: List[int], vin: Optional[str] = None):
-        print("before wesl hena hena ")
+
         operation = self.get_pending_operation_by_type(OperationType.WRITE_DATA_BY_IDENTIFIER)
-        print("wesl hena hena ")              
+             
         if operation:
-            print("wesl hena hena operation tmam")    
+  
             if operation_status == 0x6E:  # Positive response
-                print("has fha dsfkd ")
+
                 operation.status = OperationStatus.COMPLETED
 
                 success_msg = f"Write Data Success - VIN: {vin} has been successfully updated"

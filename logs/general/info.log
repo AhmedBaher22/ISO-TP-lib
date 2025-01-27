@@ -29648,3 +29648,68 @@
 2025-01-27 14:35:53 - INFO - Starting CAN message reception loop with no timeout
 2025-01-27 14:35:53 - INFO - CAN reception thread started successfully
 2025-01-27 14:35:53 - INFO - Message sent: ID=0x55, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:12:42 - INFO - CAN bus initialized successfully
+2025-01-27 16:12:42 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:12:42 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 16:12:42 - INFO - CAN reception thread started successfully
+2025-01-27 16:12:42 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:12:42 - INFO - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U')
+2025-01-27 16:12:42 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:12:43 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03"\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:12:43 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x11\x01\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:12:43 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03.\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:12:43 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04b\x01\x90U')
+2025-01-27 16:12:43 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:12:43 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03\x7f\x11\x12')
+2025-01-27 16:12:43 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:12:43 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03n\x01\x90')
+2025-01-27 16:12:43 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:16:33 - INFO - CAN bus initialized successfully
+2025-01-27 16:16:33 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:16:33 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 16:16:33 - INFO - CAN reception thread started successfully
+2025-01-27 16:16:33 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:16:33 - INFO - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U')
+2025-01-27 16:16:33 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:16:34 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03"\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:16:34 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x11\x01\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:16:34 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03.\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:16:34 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04b\x01\x90U')
+2025-01-27 16:16:34 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:16:34 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03\x7f\x11\x12')
+2025-01-27 16:16:34 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:16:34 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03n\x01\x90')
+2025-01-27 16:16:34 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:20:12 - INFO - CAN bus initialized successfully
+2025-01-27 16:20:12 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:20:12 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 16:20:12 - INFO - CAN reception thread started successfully
+2025-01-27 16:20:12 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:20:12 - INFO - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U')
+2025-01-27 16:20:12 - INFO - Message sent: ID=0x33, Data=bytearray(b'2\x00\x00'), Attempts remaining: 3
+2025-01-27 16:20:12 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:20:13 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03"\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:20:13 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x11\x01\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:20:13 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04b\x01\x90U')
+2025-01-27 16:20:13 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03.\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:20:13 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:20:13 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03\x7f\x11\x12')
+2025-01-27 16:20:13 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:20:13 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03n\x01\x90')
+2025-01-27 16:20:13 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:21:21 - INFO - CAN bus initialized successfully
+2025-01-27 16:21:21 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 16:21:21 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 16:21:21 - INFO - CAN reception thread started successfully
+2025-01-27 16:21:21 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:21:21 - INFO - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U')
+2025-01-27 16:21:21 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:21:22 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03"\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:21:22 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x11\x01\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:21:22 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x03.\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 16:21:22 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04b\x01\x90U')
+2025-01-27 16:21:22 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:21:22 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03\x7f\x11\x12')
+2025-01-27 16:21:22 - WARNING - No message received within timeout period (900s)
+2025-01-27 16:21:22 - INFO - Message received: ID=0x33, Data=bytearray(b'\x03n\x01\x90')
+2025-01-27 16:21:22 - WARNING - No message received within timeout period (900s)

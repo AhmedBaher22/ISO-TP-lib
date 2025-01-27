@@ -123,6 +123,7 @@ class UdsClient:
                     server.p2_star_timing = (data[4] << 8) | data[5]  # Combine fifth and sixth bytes
                 self._servers.append(server)
                 self._pending_servers.remove(server)
+                print("Gained control session ",server.session," with timings:: ", "P2 timing", server.p2_timing, "P2 star timing", server.p2_star_timing )
 
 
 
