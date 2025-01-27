@@ -9,6 +9,7 @@ sys.path.append(package_dir)
 from uds_layer.server import Server
 from uds_layer.operation import Operation
 from uds_layer.uds_enums import SessionType, OperationStatus, OperationType
+from uds_layer.UdsLogger import UdsLogger
 
 
 class Address:
@@ -24,6 +25,7 @@ class UdsClient:
         self._servers: List[Server] = []
         self._pending_servers: List[Server] = []
         self._isotp_send: Callable = None
+        self.logger = UdsLogger()
 
     def set_isotp_send(self, e: Callable):
         self._isotp_send = e
@@ -45,6 +47,7 @@ class UdsClient:
         server = Server(address._rxid)
 
         self._pending_servers.append(server)
+        self.logger.log_acknowledgment(f"Server {address._rxid} Added successfully")
 
     def process_message(self, address: Address, data: bytearray):
         service_id = data[0]
@@ -143,6 +146,7 @@ class UdsClient:
     def receive_message(self, data: bitarray, address: Address):
         data = data.tobytes()
         self.process_message(address, data)
+        self.logger.log_acknowledgment(f"Message {data} received successfully")
 
     def send_message(self, server_can_id: int, message: List[int]):
         address = Address(addressing_mode=0, txid=self._client_id, rxid=server_can_id)
@@ -154,6 +158,8 @@ class UdsClient:
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
+
+        self.logger.log_acknowledgment(f"Message {message} sent successfully")
 
     def on_success_send(self):
         pass
