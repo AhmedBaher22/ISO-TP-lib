@@ -9,6 +9,7 @@ sys.path.append(package_dir)
 from uds_layer.server import Server
 from uds_layer.operation import Operation
 from uds_layer.uds_enums import SessionType, OperationStatus, OperationType
+from uds_layer.UdsLogger import UdsLogger
 
 
 class Address:
@@ -24,6 +25,7 @@ class UdsClient:
         self._servers: List[Server] = []
         self._pending_servers: List[Server] = []
         self._isotp_send: Callable = None
+        self.logger = UdsLogger()
 
     def set_isotp_send(self, e: Callable):
         self._isotp_send = e
@@ -45,6 +47,7 @@ class UdsClient:
         server = Server(address._rxid)
 
         self._pending_servers.append(server)
+        self.logger.log_acknowledgment(f"Server {address._rxid} Added successfully")
 
     def process_message(self, address: Address, data: bytearray):
         service_id = data[0]
@@ -81,15 +84,18 @@ class UdsClient:
                     server.on_ecu_reset_respond(0x7F, [data[2]], None)
 
         elif service_id == 0x62:  # Positive response to Read Data By Identifier
+
             server = self._find_server_by_can_id(address._txid, self._servers)
             if server:
+
                 operation = server.get_pending_operation_by_type(OperationType.READ_DATA_BY_IDENTIFIER)
                 if operation:
-                    operation.status = OperationStatus.COMPLETED
-                    server.remove_pending_operation(operation)
-                    server.add_completed_operation(operation)
-                    response_data = data[1:]
-                    server.on_read_data_by_identifier_respond(0x62, response_data, self._extract_vin(response_data))
+
+                    # operation.status = OperationStatus.COMPLETED
+                    # server.remove_pending_operation(operation)
+                    # server.add_completed_operation(operation)
+                    response_data = data[3:]
+                    server.on_read_data_by_identifier_respond(0x62, response_data, data[1:3])
 
         elif service_id == 0x6E:  # Positive response to Write Data By Identifier
             server = self._find_server_by_can_id(address._txid, self._servers)
@@ -97,8 +103,8 @@ class UdsClient:
                 operation = server.get_pending_operation_by_type(OperationType.WRITE_DATA_BY_IDENTIFIER)
                 if operation:
                     # Extract VIN from the original write request (assuming it's stored in operation.message)
-                    vin = self._extract_vin(operation.message[3:])  # Skip service ID and identifier
-                    server.on_write_data_by_identifier_respond(0x6E, data[1:], vin)
+                    vin = operation.message[1:3]  # Skip service ID and identifier
+                    server.on_write_data_by_identifier_respond(0x6E, data[1:3], vin)
 
         elif service_id == 0x51:  # Positive response to ECU Reset
             server = self._find_server_by_can_id(address._txid, self._servers)
@@ -111,7 +117,7 @@ class UdsClient:
                     server.on_ecu_reset_respond(0x51, data[1:], reset_type)
 
         elif service_id == 0x50:  # Positive response to Session Control
-            server = self._find_server_by_can_id(int(address._txid), self._pending_servers)
+            server = self._find_server_by_can_id(address._txid, self._pending_servers)
             if server:
                 server.session = SessionType(data[1])
                 # Set timing parameters
@@ -121,11 +127,7 @@ class UdsClient:
                 self._servers.append(server)
                 self._pending_servers.remove(server)
 
-    def _extract_vin(self, data: List[int]) -> str:
-        try:
-            return ''.join(chr(x) for x in data)
-        except:
-            return "Invalid VIN data"
+
 
     def _find_server_by_can_id(self, can_id: [int], server_list: List[Server]) -> Optional[Server]:
         for server in server_list:
@@ -144,6 +146,7 @@ class UdsClient:
     def receive_message(self, data: bitarray, address: Address):
         data = data.tobytes()
         self.process_message(address, data)
+        self.logger.log_acknowledgment(f"Message {data} received successfully")
 
     def send_message(self, server_can_id: int, message: List[int]):
         address = Address(addressing_mode=0, txid=self._client_id, rxid=server_can_id)
@@ -155,6 +158,8 @@ class UdsClient:
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
+
+        self.logger.log_acknowledgment(f"Message {message} sent successfully")
 
     def on_success_send(self):
         pass

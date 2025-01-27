@@ -6,6 +6,7 @@ package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
 from uds_layer.uds_enums import SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
+from uds_layer.UdsLogger import UdsLogger
 
 
 class Server:
@@ -17,6 +18,7 @@ class Server:
         self._logs: List[str] = []
         self._p2_timing = 0
         self._p2_star_timing = 0
+        self.logger = UdsLogger()
 
     # Getters and setters
     @property
@@ -61,8 +63,11 @@ class Server:
         self._logs.append(log)
 
     def get_pending_operation_by_type(self, operation_type: OperationType) -> Operation:
+        print(operation_type)
         for operation in self._pending_operations:
+            print(operation.operation_type)
             if operation.operation_type == operation_type:
+                print("true")
                 return operation
         return None
 
@@ -83,7 +88,7 @@ class Server:
     def read_data_by_identifier(self, vin: List[int]) -> List[int]:
         if not self.check_access_required(OperationType.READ_DATA_BY_IDENTIFIER):
             error_msg = f"Error: Insufficient session level for READ_DATA_BY_IDENTIFIER. Current session: {self._session}"
-            print(error_msg)
+            self.logger.log_error(error_msg)
             self.add_log(error_msg)
             return [0x00]
 
@@ -94,6 +99,7 @@ class Server:
         self.add_pending_operation(operation)
         
         log_msg = f"Created READ_DATA_BY_IDENTIFIER operation for VIN. Message: {[message]}"
+        self.logger.log_info(log_msg)
         self.add_log(log_msg)
         
         return message
@@ -102,7 +108,7 @@ class Server:
         if operation_status == 0x62:  # Positive response
             data_str = ' '.join([hex(x) for x in message])
             response_msg = f"Read Data Success - Data: {data_str}, VIN: {vin}"
-            print(response_msg)
+            self.logger.log_acknowledgment(response_msg)
             self.add_log(response_msg)
         elif operation_status == 0x7F:  # Negative response
             nrc = message[0]
@@ -120,35 +126,43 @@ class Server:
                 
             }
             error_msg = f"Read Data Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-            print(error_msg)
+            self.logger.log_error(error_msg)
             self.add_log(error_msg)
 
-    def write_data_by_identifier(self, vin: str, data: List[int]) -> List[int]:
+    def write_data_by_identifier(self, vin: List[int], data: List[int]) -> List[int]:
         if not self.check_access_required(OperationType.WRITE_DATA_BY_IDENTIFIER):
             error_msg = f"Error: Insufficient session level for WRITE_DATA_BY_IDENTIFIER. Current session: {self._session}"
-            print(error_msg)
+            self.logger.log_error(error_msg)
             self.add_log(error_msg)
             return [0x00]
 
         # Prepare message: service ID (2E) + VIN identifier (F190) + data
-        message = [0x2E, 0xF1, 0x90] + data
+        message = [0x2E]
+        for e in vin:
+            message.append(e)
         
         # Create and add operation
         operation = Operation(OperationType.WRITE_DATA_BY_IDENTIFIER, message)
         self.add_pending_operation(operation)
         
         log_msg = f"Created WRITE_DATA_BY_IDENTIFIER operation for VIN. Message: {[hex(x) for x in message]}"
+        self.logger.log_info(log_msg)
         self.add_log(log_msg)
         
         return message
 
     def on_write_data_by_identifier_respond(self, operation_status: int, message: List[int], vin: Optional[str] = None):
+        print("before wesl hena hena ")
         operation = self.get_pending_operation_by_type(OperationType.WRITE_DATA_BY_IDENTIFIER)
-        
+        print("wesl hena hena ")              
         if operation:
+            print("wesl hena hena operation tmam")    
             if operation_status == 0x6E:  # Positive response
+                print("has fha dsfkd ")
+                operation.status = OperationStatus.COMPLETED
+
                 success_msg = f"Write Data Success - VIN: {vin} has been successfully updated"
-                print(success_msg)
+                self.logger.log_acknowledgment(success_msg)
                 self.add_log(success_msg)
                 operation.status = OperationStatus.COMPLETED
             
@@ -167,8 +181,10 @@ class Server:
                     0x37: "Required Time Delay Not Expired",
                     # Add more NRC codes as needed
                 }
+                operation.status = OperationStatus.REJECTED
+
                 error_msg = f"Write Data Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-                print(error_msg)
+                self.logger.log_error(error_msg)
                 self.add_log(error_msg)
                 operation.status = OperationStatus.REJECTED
 
@@ -180,7 +196,7 @@ class Server:
     def ecu_reset(self, reset_type: int) -> List[int]:
         if not self.check_access_required(OperationType.ECU_RESET):
             error_msg = f"Error: Insufficient session level for ECU_RESET. Current session: {self._session}"
-            print(error_msg)
+            self.logger.log_error(error_msg)
             self.add_log(error_msg)
             return [0x00]
 
@@ -202,6 +218,7 @@ class Server:
         reset_description = reset_types.get(reset_type, "Unknown Reset Type")
         
         log_msg = f"Created ECU_RESET operation. Reset Type: {reset_description} ({hex(reset_type)}). Message: {[hex(x) for x in message]}"
+        self.logger.log_info(log_msg)
         self.add_log(log_msg)
         
         return message
@@ -224,7 +241,7 @@ class Server:
                 if len(message) > 0:  # If there's additional power down time information
                     success_msg += f", Power Down Time: {message[0]} seconds"
                 
-                print(success_msg)
+                self.logger.log_acknowledgment(success_msg)
                 self.add_log(success_msg)
                 operation.status = OperationStatus.COMPLETED
             
@@ -245,7 +262,7 @@ class Server:
                     # Add more NRC codes as needed
                 }
                 error_msg = f"ECU Reset Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-                print(error_msg)
+                self.logger.log_error(error_msg)
                 self.add_log(error_msg)
                 operation.status = OperationStatus.REJECTED
 

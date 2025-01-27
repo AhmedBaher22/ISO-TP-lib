@@ -68,7 +68,7 @@ class SendRequest:
             first_byte = (0x0 << 4) | (len(self._data) & 0x0F)
             frame = bytes([first_byte]) + self._data.ljust(7, self._tx_padding.to_bytes(1, 'little'))
             hex_frame = frame.hex()
-            print(f"Single frame (hex): {hex_frame}")
+            # print(f"Single frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
             self._end_request()  # Successful completion
         except Exception as e:
@@ -88,7 +88,7 @@ class SendRequest:
             first_frame_data = self._data[:6]
             frame = bytes([first_byte, second_byte]) + first_frame_data
             hex_frame = frame.hex()
-            print(f"First frame (hex): {hex_frame}")
+            # print(f"First frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
 
             # Start listening for control frames in a separate thread
@@ -115,8 +115,8 @@ class SendRequest:
                     return
 
                 if 0 < self._block_size <= self._block_counter:
-                    print(f"block_counter: {self._block_counter}\nblock_size: {self._block_size}")
-                    print("Block size limit reached. Waiting for next control frame...")
+                    # print(f"block_counter: {self._block_counter}\nblock_size: {self._block_size}")
+                    # print("Block size limit reached. Waiting for next control frame...")
                     listener_thread = threading.Thread(
                         target=self.listen_for_control_frame,
                         args=(self._reset_block_counter,),
@@ -126,13 +126,13 @@ class SendRequest:
                     return
 
                 if self._stmin > 0:
-                    print(f"Sleeping for {self._stmin / 100.0}")
+                    # print(f"Sleeping for {self._stmin / 100.0}")
                     time.sleep(self._stmin / 100.0)
 
                 first_byte = (0x2 << 4) | (self._sequence_num & 0x0F)
                 frame = bytes([first_byte]) + self._remaining_data[self._index:self._index + 7].ljust(7, self._tx_padding.to_bytes(1, 'little'))
                 hex_frame = frame.hex()
-                print(f"Consecutive frame (hex): {hex_frame}")
+                # print(f"Consecutive frame (hex): {hex_frame}")
                 self._txfn(self._address, hex_frame)
 
                 self._index += 7
@@ -159,7 +159,7 @@ class SendRequest:
 
                 control_frame = self._rxfn(self._address)
                 if not control_frame:
-                    print("Still waiting for a valid control frame...")
+                    # print("Still waiting for a valid control frame...")
                     time.sleep(0.1)
                     continue
 
@@ -172,10 +172,10 @@ class SendRequest:
                 self._block_size = block_size
 
                 if flow_status == FlowStatus.Continue:
-                    print("Flow status: Continue to send.")
+                    # print("Flow status: Continue to send.")
                     is_control_frame_received = True
                 elif flow_status == FlowStatus.Wait:
-                    print("Flow status: Wait.")
+                    # print("Flow status: Wait.")
                     while not is_control_frame_received:
                         time.sleep(stmin / 100.0)
                         is_control_frame_received = True
@@ -240,7 +240,7 @@ class SendRequest:
             # Transmit the control frame
             self._txfn(self._address, control_frame)
             # logger.info(f"Sent control frame: {control_frame.hex().upper()}")
-            print(f"Sent control frame: {control_frame.hex().upper()}")
+            # print(f"Sent control frame: {control_frame.hex().upper()}")
             self._end_request()
 
         except Exception as e:

@@ -57,16 +57,32 @@ def main():
 
     except CANError as e:
         print(f"CAN operation failed: {e.message}")
-        # Initialize communication with an ECU
+
+
+    #opening session control 
+    # Initialize communication with an ECU
     print("\n=== Initializing Communication with ECU ===")
     ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
     client.add_server(ecu_address, SessionType.EXTENDED)
-    servers: List[Server] = client.get_pending_servers()
     servers: List[Server] = client.get_servers()
+    sleep(1)
+
+    #sending read data by identifier request
+    message=servers[0].read_data_by_identifier(vin=[0x01,0x90])
+    client.send_message(servers[0].can_id,message)
+
+    #sending ecu reset request
+    message=servers[0].ecu_reset(reset_type=0x01)
+    client.send_message(servers[0].can_id,message)
+    
+    #sending write data by intentifier request
+    message=servers[0].write_data_by_identifier(vin=[0x01,0x90],data=[0x55,0x26])
+    client.send_message(servers[0].can_id,message)
+
+
     while True:
         sleep(1)
-    # message=servers[0].read_data_by_identifier([0x01,0x90])
-    # client.send_message(servers[0].can_id,message)
+
 
     # # Wait for session establishment
     # time.sleep(1)
@@ -97,14 +113,7 @@ def main():
     # # Print final status
     # print("\n=== Final Status ===")
     # print(f"Number of servers: {len(client._servers)}")
-    # for server in client._servers:
-    #     print(f"\nServer ID: {hex(server.can_id)}")
-    #     print(f"Session Type: {server.session}")
-    #     print(f"P2 Timing: {server.p2_timing}ms")
-    #     print(f"P2* Timing: {server.p2_star_timing}ms")
-    #     print("Logs:")
-    #     for log in server._logs:
-    #         print(f"  - {log}")
+
 
     # # Clean up
     # print("\n=== Cleaning Up ===")
