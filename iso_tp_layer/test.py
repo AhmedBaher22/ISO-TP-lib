@@ -1,9 +1,15 @@
 import time
 from bitarray import bitarray
-from IsoTpConfig import IsoTpConfig
-from SingleFrameMessage import SingleFrameMessage
-from IsoTp import IsoTp, message_to_bitarray
-from Address import Address
+import sys
+import os
+# Add the package root directory to sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+package_dir = os.path.abspath(os.path.join(current_dir, ".."))
+sys.path.append(package_dir)
+from iso_tp_layer.IsoTpConfig import IsoTpConfig
+from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
+from iso_tp_layer.IsoTp import IsoTp, message_to_bitarray
+from iso_tp_layer.Address import Address
 
 
 # Callback functions

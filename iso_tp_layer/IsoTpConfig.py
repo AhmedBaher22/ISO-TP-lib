@@ -1,5 +1,11 @@
 from typing import Callable
-from Address import Address
+import sys
+import os
+# Add the package root directory to sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+package_dir = os.path.abspath(os.path.join(current_dir, ".."))
+sys.path.append(package_dir)
+from iso_tp_layer.Address import Address
 
 
 class IsoTpConfig:
