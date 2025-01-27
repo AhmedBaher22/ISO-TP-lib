@@ -166,11 +166,14 @@ class IsoTp:
 
             # Check if there is an existing request with the same address
             for request in self._recv_requests:
+                print(request)
                 if request.get_address() == address:
                     if request.get_state() in {"ErrorState", "FinalState"}:
+                        print("if remove")
                         self._recv_requests.remove(request)
                         break
                     else:
+                        print("if notttt removed")
                         # Process the message using the existing request
                         request.process(new_message)
                         return  # Exit after processing
