@@ -1,0 +1,343 @@
+2025-01-26 22:58:08 - INFO - CAN bus initialized successfully
+2025-01-26 22:58:08 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 22:58:08 - INFO - CAN bus shut down successfully
+2025-01-26 23:00:34 - INFO - CAN bus initialized successfully
+2025-01-26 23:00:34 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:00:34 - INFO - CAN bus shut down successfully
+2025-01-26 23:01:09 - INFO - CAN bus initialized successfully
+2025-01-26 23:01:09 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:01:09 - INFO - CAN bus shut down successfully
+2025-01-26 23:02:21 - INFO - CAN bus initialized successfully
+2025-01-26 23:02:21 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:02:21 - INFO - CAN bus shut down successfully
+2025-01-26 23:31:01 - INFO - CAN bus initialized successfully
+2025-01-26 23:31:01 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:31:01 - INFO - CAN bus shut down successfully
+2025-01-26 23:31:50 - INFO - CAN bus initialized successfully
+2025-01-26 23:31:50 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:31:50 - INFO - CAN bus shut down successfully
+2025-01-26 23:35:10 - INFO - CAN bus initialized successfully
+2025-01-26 23:35:10 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:35:10 - INFO - CAN bus shut down successfully
+2025-01-26 23:36:39 - INFO - CAN bus initialized successfully
+2025-01-26 23:36:39 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:36:39 - INFO - CAN bus shut down successfully
+2025-01-26 23:37:32 - INFO - CAN bus initialized successfully
+2025-01-26 23:37:32 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:37:32 - INFO - CAN bus shut down successfully
+2025-01-26 23:39:03 - INFO - CAN bus initialized successfully
+2025-01-26 23:39:03 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:39:03 - INFO - CAN bus shut down successfully
+2025-01-26 23:50:37 - INFO - CAN bus initialized successfully
+2025-01-26 23:50:37 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:50:37 - INFO - CAN bus shut down successfully
+2025-01-26 23:54:49 - INFO - CAN bus initialized successfully
+2025-01-26 23:54:49 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:54:49 - INFO - CAN bus shut down successfully
+2025-01-26 23:55:32 - INFO - CAN bus initialized successfully
+2025-01-26 23:55:32 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:55:32 - INFO - CAN bus shut down successfully
+2025-01-26 23:56:56 - INFO - CAN bus initialized successfully
+2025-01-26 23:56:56 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 23:56:56 - INFO - CAN bus shut down successfully
+2025-01-27 01:33:35 - INFO - CAN bus initialized successfully
+2025-01-27 01:33:35 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:33:35 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:33:35 - INFO - CAN reception thread started successfully
+2025-01-27 01:33:35 - INFO - CAN bus shut down successfully
+2025-01-27 01:34:16 - INFO - CAN bus initialized successfully
+2025-01-27 01:34:16 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:34:16 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:34:16 - INFO - CAN reception thread started successfully
+2025-01-27 01:34:16 - INFO - CAN bus shut down successfully
+2025-01-27 01:35:23 - INFO - CAN bus initialized successfully
+2025-01-27 01:35:23 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:35:23 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:35:23 - INFO - CAN reception thread started successfully
+2025-01-27 01:35:23 - INFO - CAN bus shut down successfully
+2025-01-27 01:35:37 - INFO - CAN bus initialized successfully
+2025-01-27 01:35:37 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:35:37 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:35:37 - INFO - CAN reception thread started successfully
+2025-01-27 01:35:37 - INFO - CAN bus shut down successfully
+2025-01-27 01:37:22 - INFO - CAN bus initialized successfully
+2025-01-27 01:37:22 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:37:22 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:37:22 - INFO - CAN reception thread started successfully
+2025-01-27 01:37:22 - INFO - CAN bus shut down successfully
+2025-01-27 01:37:37 - INFO - CAN bus initialized successfully
+2025-01-27 01:37:37 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:37:37 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:37:37 - INFO - CAN reception thread started successfully
+2025-01-27 01:37:37 - INFO - CAN bus shut down successfully
+2025-01-27 01:40:11 - INFO - CAN bus initialized successfully
+2025-01-27 01:40:11 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:40:11 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:40:11 - INFO - CAN reception thread started successfully
+2025-01-27 01:40:11 - INFO - CAN bus shut down successfully
+2025-01-27 01:40:54 - INFO - CAN bus initialized successfully
+2025-01-27 01:40:54 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:40:54 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:40:54 - INFO - CAN reception thread started successfully
+2025-01-27 01:40:54 - INFO - CAN bus shut down successfully
+2025-01-27 01:41:08 - INFO - CAN bus initialized successfully
+2025-01-27 01:41:08 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:41:08 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:41:08 - INFO - CAN reception thread started successfully
+2025-01-27 01:41:08 - INFO - CAN bus shut down successfully
+2025-01-27 01:41:34 - INFO - CAN bus initialized successfully
+2025-01-27 01:41:34 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:41:34 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:41:34 - INFO - CAN reception thread started successfully
+2025-01-27 01:41:34 - INFO - CAN bus shut down successfully
+2025-01-27 01:43:03 - INFO - CAN bus initialized successfully
+2025-01-27 01:43:03 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:43:03 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:43:03 - INFO - CAN reception thread started successfully
+2025-01-27 01:43:03 - INFO - CAN bus shut down successfully
+2025-01-27 01:44:19 - INFO - CAN bus initialized successfully
+2025-01-27 01:44:19 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:44:19 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:44:19 - INFO - CAN reception thread started successfully
+2025-01-27 01:44:19 - INFO - CAN bus shut down successfully
+2025-01-27 01:45:06 - INFO - CAN bus initialized successfully
+2025-01-27 01:45:06 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:45:06 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:45:06 - INFO - CAN reception thread started successfully
+2025-01-27 01:45:06 - INFO - CAN bus shut down successfully
+2025-01-27 01:45:57 - INFO - CAN bus initialized successfully
+2025-01-27 01:45:57 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:45:57 - INFO - CAN bus shut down successfully
+2025-01-27 01:47:24 - INFO - CAN bus initialized successfully
+2025-01-27 01:47:24 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:47:24 - INFO - CAN bus shut down successfully
+2025-01-27 01:48:50 - INFO - CAN bus initialized successfully
+2025-01-27 01:48:50 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:48:50 - INFO - CAN bus shut down successfully
+2025-01-27 01:51:27 - INFO - CAN bus initialized successfully
+2025-01-27 01:51:27 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:51:27 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:51:27 - INFO - CAN reception thread started successfully
+2025-01-27 01:51:27 - INFO - CAN bus shut down successfully
+2025-01-27 01:54:14 - INFO - CAN bus initialized successfully
+2025-01-27 01:54:14 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:54:14 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 01:54:14 - INFO - CAN reception thread started successfully
+2025-01-27 01:54:14 - INFO - CAN bus shut down successfully
+2025-01-27 01:54:39 - INFO - CAN bus initialized successfully
+2025-01-27 01:54:39 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:54:39 - INFO - CAN bus shut down successfully
+2025-01-27 01:56:18 - INFO - CAN bus initialized successfully
+2025-01-27 01:56:18 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 01:56:18 - INFO - CAN bus shut down successfully
+2025-01-27 02:00:55 - INFO - CAN bus initialized successfully
+2025-01-27 02:00:55 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:00:55 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:00:55 - INFO - CAN reception thread started successfully
+2025-01-27 02:00:55 - INFO - CAN bus shut down successfully
+2025-01-27 02:02:36 - INFO - CAN bus initialized successfully
+2025-01-27 02:02:36 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:02:36 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:02:36 - INFO - CAN reception thread started successfully
+2025-01-27 02:02:36 - INFO - CAN bus shut down successfully
+2025-01-27 02:06:38 - INFO - CAN bus initialized successfully
+2025-01-27 02:06:41 - INFO - CAN bus initialized successfully
+2025-01-27 02:07:43 - INFO - CAN bus initialized successfully
+2025-01-27 02:07:43 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:07:43 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:07:43 - INFO - CAN reception thread started successfully
+2025-01-27 02:07:43 - INFO - Message sent: ID=0x123, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:08:24 - INFO - CAN bus initialized successfully
+2025-01-27 02:08:24 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:08:24 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:08:24 - INFO - CAN reception thread started successfully
+2025-01-27 02:08:24 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:09:34 - INFO - CAN bus initialized successfully
+2025-01-27 02:09:34 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:09:34 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:09:34 - INFO - CAN reception thread started successfully
+2025-01-27 02:09:34 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:11:47 - INFO - CAN bus initialized successfully
+2025-01-27 02:11:47 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:11:47 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:11:47 - INFO - CAN reception thread started successfully
+2025-01-27 02:11:47 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:12:14 - INFO - CAN bus initialized successfully
+2025-01-27 02:12:14 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:12:14 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:12:14 - INFO - CAN reception thread started successfully
+2025-01-27 02:12:14 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:14:21 - INFO - CAN bus initialized successfully
+2025-01-27 02:14:21 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:14:21 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:14:21 - INFO - CAN reception thread started successfully
+2025-01-27 02:14:21 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:15:23 - INFO - CAN bus initialized successfully
+2025-01-27 02:15:23 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:15:23 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:15:23 - INFO - CAN reception thread started successfully
+2025-01-27 02:15:23 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:17:03 - INFO - CAN bus initialized successfully
+2025-01-27 02:17:03 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:17:03 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:17:03 - INFO - CAN reception thread started successfully
+2025-01-27 02:17:03 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:18:53 - INFO - CAN bus initialized successfully
+2025-01-27 02:18:53 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:18:53 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:18:53 - INFO - CAN reception thread started successfully
+2025-01-27 02:18:53 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:22:08 - INFO - CAN bus initialized successfully
+2025-01-27 02:22:08 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:22:08 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:22:08 - INFO - CAN reception thread started successfully
+2025-01-27 02:22:08 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:22:08 - INFO - Message received: ID=0x33, Data=bytearray(b'P\x03\x002\x01\xf4')
+2025-01-27 02:22:08 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:25:21 - INFO - CAN bus initialized successfully
+2025-01-27 02:25:21 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:25:21 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:25:21 - INFO - CAN reception thread started successfully
+2025-01-27 02:25:21 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:25:21 - INFO - Message received: ID=0x33, Data=bytearray(b'P\x03\x002\x01\xf4')
+2025-01-27 02:25:21 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:26:42 - INFO - CAN bus initialized successfully
+2025-01-27 02:26:42 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:26:42 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:26:42 - INFO - CAN reception thread started successfully
+2025-01-27 02:26:42 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:26:42 - INFO - Message received: ID=0x33, Data=bytearray(b'P\x03\x002\x01\xf4')
+2025-01-27 02:26:42 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:28:07 - INFO - CAN bus initialized successfully
+2025-01-27 02:28:07 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:28:07 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:28:07 - INFO - CAN reception thread started successfully
+2025-01-27 02:28:07 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:28:07 - INFO - Message received: ID=0x33, Data=bytearray(b'P\x03\x002\x01\xf4')
+2025-01-27 02:28:07 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:29:55 - INFO - CAN bus initialized successfully
+2025-01-27 02:29:55 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:29:55 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:29:55 - INFO - CAN reception thread started successfully
+2025-01-27 02:29:55 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:29:55 - INFO - Message received: ID=0x33, Data=bytearray(b'P\x03\x002\x01\xf4')
+2025-01-27 02:29:55 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:34:33 - INFO - CAN bus initialized successfully
+2025-01-27 02:34:33 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:34:33 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:34:33 - INFO - CAN reception thread started successfully
+2025-01-27 02:34:33 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:34:33 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:34:33 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:40:39 - INFO - CAN bus initialized successfully
+2025-01-27 02:40:39 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:40:39 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:40:39 - INFO - CAN reception thread started successfully
+2025-01-27 02:40:39 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:40:39 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:40:39 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:41:53 - INFO - CAN bus initialized successfully
+2025-01-27 02:41:53 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:41:53 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:41:53 - INFO - CAN reception thread started successfully
+2025-01-27 02:41:53 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:41:53 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:41:53 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:44:18 - INFO - CAN bus initialized successfully
+2025-01-27 02:44:18 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:44:18 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:44:18 - INFO - CAN reception thread started successfully
+2025-01-27 02:44:18 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:44:18 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:44:18 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:46:07 - INFO - CAN bus initialized successfully
+2025-01-27 02:46:07 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:46:07 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:46:07 - INFO - CAN reception thread started successfully
+2025-01-27 02:46:07 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:46:07 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:46:07 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:47:58 - INFO - CAN bus initialized successfully
+2025-01-27 02:47:58 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:47:58 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:47:58 - INFO - CAN reception thread started successfully
+2025-01-27 02:47:58 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:47:58 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:47:58 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:49:02 - INFO - CAN bus initialized successfully
+2025-01-27 02:49:02 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:49:02 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:49:02 - INFO - CAN reception thread started successfully
+2025-01-27 02:49:02 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:49:02 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:49:02 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:50:44 - INFO - CAN bus initialized successfully
+2025-01-27 02:50:44 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:50:44 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:50:44 - INFO - CAN reception thread started successfully
+2025-01-27 02:50:44 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:50:44 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:50:44 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:53:15 - INFO - CAN bus initialized successfully
+2025-01-27 02:53:15 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:53:15 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:53:15 - INFO - CAN reception thread started successfully
+2025-01-27 02:53:15 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:53:15 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:53:15 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:55:08 - INFO - CAN bus initialized successfully
+2025-01-27 02:55:08 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:55:08 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:55:08 - INFO - CAN reception thread started successfully
+2025-01-27 02:55:08 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:55:08 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:55:08 - WARNING - No message received within timeout period (900s)
+2025-01-27 02:58:29 - INFO - CAN bus initialized successfully
+2025-01-27 02:58:29 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 02:58:29 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 02:58:29 - INFO - CAN reception thread started successfully
+2025-01-27 02:58:29 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 02:58:29 - INFO - Message received: ID=0x51, Data=bytearray(b'\x04P\x03')
+2025-01-27 02:58:29 - WARNING - No message received within timeout period (900s)
+2025-01-27 03:00:31 - INFO - CAN bus initialized successfully
+2025-01-27 03:00:31 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 03:00:31 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 03:00:31 - INFO - CAN reception thread started successfully
+2025-01-27 03:00:31 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 03:00:31 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 03:00:31 - WARNING - No message received within timeout period (900s)
+2025-01-27 03:02:48 - INFO - CAN bus initialized successfully
+2025-01-27 03:02:48 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 03:02:48 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 03:02:48 - INFO - CAN reception thread started successfully
+2025-01-27 03:02:48 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 03:02:48 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 03:02:48 - WARNING - No message received within timeout period (900s)
+2025-01-27 03:08:01 - INFO - CAN bus initialized successfully
+2025-01-27 03:08:01 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 03:08:01 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 03:08:01 - INFO - CAN reception thread started successfully
+2025-01-27 03:08:01 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 03:08:01 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 03:08:01 - WARNING - No message received within timeout period (900s)
+2025-01-27 03:10:46 - INFO - CAN bus initialized successfully
+2025-01-27 03:10:46 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 03:10:46 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 03:10:46 - INFO - CAN reception thread started successfully
+2025-01-27 03:10:46 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 03:10:46 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 03:10:46 - WARNING - No message received within timeout period (900s)
+2025-01-27 03:18:43 - INFO - CAN bus initialized successfully
+2025-01-27 03:18:43 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 03:18:43 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 03:18:43 - INFO - CAN reception thread started successfully
+2025-01-27 03:18:43 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 03:18:43 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 03:18:43 - WARNING - No message received within timeout period (900s)
+2025-01-27 03:21:45 - INFO - CAN bus initialized successfully
+2025-01-27 03:21:45 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-27 03:21:45 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 03:21:45 - INFO - CAN reception thread started successfully
+2025-01-27 03:21:45 - INFO - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 03:21:45 - INFO - Message received: ID=0x33, Data=bytearray(b'\x04P\x03')
+2025-01-27 03:21:45 - WARNING - No message received within timeout period (900s)
