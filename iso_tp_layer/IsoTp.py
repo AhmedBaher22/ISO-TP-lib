@@ -1,20 +1,25 @@
 from typing import Callable, List, Union
-
-# import can.message
 from bitarray import bitarray
-from Address import Address
-from IsoTpConfig import IsoTpConfig
-from ConsecutiveFrameMessage import ConsecutiveFrameMessage
-from ErrorFrameMessage import ErrorFrameMessage
-from FirstFrameMessage import FirstFrameMessage
-from FlowControlFrameMessage import FlowControlFrameMessage
-from FlowStatus import FlowStatus
-from FrameMessage import FrameMessage
-from FrameType import FrameType
-from SingleFrameMessage import SingleFrameMessage
-from RecvRequest import RecvRequest
-from SendRequest import SendRequest
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+package_dir = os.path.abspath(os.path.join(current_dir, ".."))
+sys.path.append(package_dir)
+from iso_tp_layer.Address import Address
+from iso_tp_layer.IsoTpConfig import IsoTpConfig
+from iso_tp_layer.frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
+from iso_tp_layer.frames.ErrorFrameMessage import ErrorFrameMessage
+from iso_tp_layer.frames.FirstFrameMessage import FirstFrameMessage
+from iso_tp_layer.frames.FlowControlFrameMessage import FlowControlFrameMessage
+from iso_tp_layer.frames.FlowStatus import FlowStatus
+from iso_tp_layer.frames.FrameMessage import FrameMessage
+from iso_tp_layer.frames.FrameType import FrameType
+from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
+from iso_tp_layer.recv_request.RecvRequest import RecvRequest
+from iso_tp_layer.send_request.SendRequest import SendRequest
 import can
+
 
 def _parse_message(data: bitarray) -> Union[FrameMessage, None]:
     if not data or len(data) < 8:
@@ -87,7 +92,8 @@ def message_to_bitarray(message: FrameMessage) -> bitarray:
 
     elif isinstance(message, FlowControlFrameMessage):
         pci_byte = (FrameType.FlowControlFrame.value << 4) | message.flowStatus.value
-        bits.frombytes(bytes([pci_byte, message.blockSize, message.separationTime]))  # PCI + Block Size + Separation Time
+        bits.frombytes(
+            bytes([pci_byte, message.blockSize, message.separationTime]))  # PCI + Block Size + Separation Time
 
     elif isinstance(message, ErrorFrameMessage):
         pci_byte = 0x7F  # Error frame identifier
@@ -102,12 +108,12 @@ def message_to_bitarray(message: FrameMessage) -> bitarray:
 def bytearray_to_bitarray(byte_data: bytearray) -> bitarray:
     # Initialize an empty bitarray
     bits = bitarray()
-    
+
     # Loop through each byte and append its bits
     for byte in byte_data:
         # Convert the byte to bits and append to the bitarray
         bits.frombytes(byte.to_bytes(1, 'big'))
-    
+
     return bits
 
 
@@ -121,23 +127,19 @@ class IsoTp:
         self._config = iso_tp_config
         self._recv_requests: List[RecvRequest] = []
         self._send_requests: List[SendRequest] = []
-        self._control_frames: List[tuple[Address, FlowControlFrameMessage]] = []  # List to store control frames and addresses
+        self._control_frames: List[
+            tuple[Address, FlowControlFrameMessage]] = []  # List to store control frames and addresses
 
-    
     def set_on_recv_success(self, fn: Callable):
         self._config.on_recv_success = fn
-
 
     def set_on_recv_error(self, fn: Callable):
         self._config.on_recv_error = fn
 
-
     def set_send_fn(self, fn: Callable):
         self._config.send_fn = fn
 
-    
     def send(self, data: bitarray, address: Address, on_success: Callable, on_error: Callable):
-        print(data)
         data = bytearray_to_bitarray(data)
         try:
             send_request = SendRequest(
@@ -163,12 +165,11 @@ class IsoTp:
     def recv(self, message: bitarray, address: Address):
         try:
             new_message = _parse_message(data=message)
-            print(new_message)
 
             # Check if the message is a control frame
             if isinstance(new_message, FlowControlFrameMessage):
                 # Add control frame and its address to the control frame list
-                self._control_append((address, new_message))
+                self._control_frames.append((address, new_message))
                 return  # Exit after storing the control frame
             elif isinstance(new_message, ErrorFrameMessage):
                 for request in self._send_requests:
@@ -224,12 +225,9 @@ class IsoTp:
         self._config.send_fn(arbitration_id=address._txid, data=message_in_bytes)
         # can send here ( i have the address and the bits to send )
 
-
     def _send_to_can(self, address: Address, message):
-        print("_send_to_can")
         message = bytearray.fromhex(message)  # Convert frame to bytearray
         self._config.send_fn(arbitration_id=address._txid, data=message)
-
 
     def recv_can_message(self, message: can.Message):
         """
@@ -241,26 +239,19 @@ class IsoTp:
         try:
 
             # Extract arbitration ID
-            arbitration_id = message.arbitration_id
-            print("arbitration_id")
-            print(arbitration_id)            # Convert data to bitarray
+            arbitration_id = message.arbitration_id  # Convert data to bitarray
             data = message.data  # Data as bytes
             data_bits = bitarray()
             data_bits.frombytes(data)  # Convert bytes to bitarray
 
             address = Address(txid=arbitration_id, rxid=self._config.recv_id)
 
-            print(data_bits)
-            print(address)
-            self.recv(message=data_bits,address=address)
-            print("After")
+            self.recv(message=data_bits, address=address)
             # Add further processing logic here as needed
             # Example: call another function with the extracted information
             # self.handle_message(arbitration_id, data)
         except Exception as e:
             print(f"Error processing CAN message: {e}")
-
-
 
     def set_recv_id(self, recv_id):
         self._config.recv_id = recv_id
