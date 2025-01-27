@@ -8,7 +8,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 package_dir = os.path.abspath(os.path.join(package_dir, ".."))
 sys.path.append(package_dir)
-from iso_tp_layer.frames.ErrorFrameMessage import ErrorFrameMessage
 from iso_tp_layer.frames.FlowControlFrameMessage import FlowControlFrameMessage
 from iso_tp_layer.frames.FlowStatus import FlowStatus
 from iso_tp_layer.Exceptions import TimeoutException
@@ -53,7 +52,7 @@ class RecvRequest:
         self._send_frame(self._address, flow_control_frame)
 
     def send_error_frame(self):
-        error_frame = ErrorFrameMessage(serviceId=0, errorCode=0)
+        error_frame = FlowControlFrameMessage(flowStatus=FlowStatus.Abort,blockSize=0,separationTime=0)
         self._send_frame(self._address, error_frame)
 
     def set_max_block_size(self, max_block_size):

@@ -10,7 +10,6 @@ from iso_tp_layer.frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
 from iso_tp_layer.frames.FlowStatus import FlowStatus
 from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
 from iso_tp_layer.frames.FlowControlFrameMessage import FlowControlFrameMessage
-from iso_tp_layer.frames.ErrorFrameMessage import ErrorFrameMessage
 
 
 # FirstFrameMessage test
@@ -33,10 +32,6 @@ flow_control_frame = FlowControlFrameMessage(flowStatus=FlowStatus.Continue, blo
 print(f"FlowControlFrameMessage: {flow_control_frame}")
 print(f"FlowControlFrameMessage: {flow_control_frame.frameType}")
 
-# ErrorFrameMessage test
-error_frame = ErrorFrameMessage(serviceId=15, errorCode=3)
-print(f"ErrorFrameMessage: {error_frame}")
-print(f"ErrorFrameMessage: {error_frame.frameType}")
 
 # FirstFrameMessage test
 first_frame = FirstFrameMessage(dataLength=5, data=bitarray('101010'))
@@ -58,7 +53,3 @@ flow_control_frame = FlowControlFrameMessage(flowStatus=FlowStatus.Wait, blockSi
 print(f"FlowControlFrameMessage: {flow_control_frame}")
 print(f"FlowControlFrameMessage: {flow_control_frame.frameType}")
 
-# ErrorFrameMessage test
-error_frame = ErrorFrameMessage(serviceId=15, errorCode=3)
-print(f"ErrorFrameMessage: {error_frame}")
-print(f"ErrorFrameMessage: {error_frame.frameType}")

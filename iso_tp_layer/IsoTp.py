@@ -9,7 +9,6 @@ sys.path.append(package_dir)
 from iso_tp_layer.Address import Address
 from iso_tp_layer.IsoTpConfig import IsoTpConfig
 from iso_tp_layer.frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
-from iso_tp_layer.frames.ErrorFrameMessage import ErrorFrameMessage
 from iso_tp_layer.frames.FirstFrameMessage import FirstFrameMessage
 from iso_tp_layer.frames.FlowControlFrameMessage import FlowControlFrameMessage
 from iso_tp_layer.frames.FlowStatus import FlowStatus
@@ -59,14 +58,6 @@ def _parse_message(data: bitarray) -> Union[FrameMessage, None]:
         separation_time = int(data[16:24].tobytes()[0])
         return FlowControlFrameMessage(flowStatus=flow_status, blockSize=block_size, separationTime=separation_time)
 
-    elif frame_type == 0x7F:
-        # Error Frame
-        if len(data) < 24:
-            raise ValueError("Invalid Error Frame: Insufficient data.")
-        service_id = int(data[8:16].tobytes()[0])
-        error_code = int(data[16:24].tobytes()[0])
-        return ErrorFrameMessage(serviceId=service_id, errorCode=error_code)
-
     else:
         raise ValueError(f"Unknown Frame Type: {frame_type}")
 
@@ -94,10 +85,6 @@ def message_to_bitarray(message: FrameMessage) -> bitarray:
         pci_byte = (FrameType.FlowControlFrame.value << 4) | message.flowStatus.value
         bits.frombytes(
             bytes([pci_byte, message.blockSize, message.separationTime]))  # PCI + Block Size + Separation Time
-
-    elif isinstance(message, ErrorFrameMessage):
-        pci_byte = 0x7F  # Error frame identifier
-        bits.frombytes(bytes([pci_byte, message.serviceId, message.errorCode]))  # PCI + Service ID + Error Code
 
     else:
         raise ValueError("Unsupported message type for conversion to bitarray.")
@@ -170,12 +157,12 @@ class IsoTp:
             if isinstance(new_message, FlowControlFrameMessage):
                 # Add control frame and its address to the control frame list
                 self._control_frames.append((address, new_message))
-                return  # Exit after storing the control frame
-            elif isinstance(new_message, ErrorFrameMessage):
-                for request in self._send_requests:
-                    if request.get_address() == address:
-                        request.set_received_error_frame(True)
-                        return  # Exit
+                if new_message.flowStatus == FlowStatus.Abort:
+                    for request in self._send_requests:
+                        if request.get_address() == address:
+                            request.set_received_error_frame(True)
+                            return  # Exit
+                return
 
             # Check if there is an existing request with the same address
             for request in self._recv_requests:
