@@ -19,7 +19,7 @@ class CANError(Exception):
     """Base exception class for CAN-related errors."""
     def __init__(self, 
                  message: str, 
-                 error_type: CANErrorType = CANErrorType.GENERAL,
+                 error_type: CANErrorType,
                  original_exception: Optional[Exception] = None):
         self.message = message
         self.error_type = error_type

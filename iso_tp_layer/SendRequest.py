@@ -63,7 +63,7 @@ class SendRequest:
             frame = bytes([first_byte]) + self._data.ljust(7, self._tx_padding.to_bytes(1, 'little'))
             hex_frame = frame.hex()
             print(f"Single frame (hex): {hex_frame}")
-            # self._txfn(self._address, hex_frame)
+            self._txfn(self._address, hex_frame)
             self._end_request()  # Successful completion
         except Exception as e:
             print(f"Error in _send_single: {e}")

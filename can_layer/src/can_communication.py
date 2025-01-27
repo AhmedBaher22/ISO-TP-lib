@@ -1,5 +1,5 @@
 import can
-from typing import List, Dict, Optional
+from typing import Callable, List, Dict, Optional
 import time
 from enums import CANInterface
 from logger import CANLogger
@@ -18,6 +18,7 @@ from exceptions import (
 class CANConfiguration:
     """Configuration class for CAN communication parameters."""
     def __init__(self, 
+                 recv_callback: Callable,
                  interface: CANInterface = CANInterface.VECTOR,
                  channel: int = 0,
                  app_name: str = "CANApp",
@@ -41,6 +42,7 @@ class CANConfiguration:
         self.fd_flag = fd_flag
         self.extended_flag = extended_flag
         self.bitrate = bitrate
+        self.recv_callback = recv_callback
 
     def validate(self):
         """Validate configuration parameters."""
@@ -118,7 +120,7 @@ class CANCommunication:
                     arbitration_id: int, 
                     data: List[int], 
                     timeout: float = 1.0,
-                    require_ack: bool = True,
+                    require_ack: bool = False,
                     retries: int = 3,
                     retry_delay: float = 0.5) -> bool:
         """
@@ -212,9 +214,12 @@ class CANCommunication:
             if message:
                 self.logger.log_receive(
                     f"Message received: ID=0x{message.arbitration_id:X}, "
-                    f"Data={message._data}"
+                    f"Data={message.data}"
                 )
-                return message
+                print("/n/n")
+                print("esammmmmm",message)
+
+                self.config.recv_callback(message)
             
             self.logger.log_warning(
                 f"No message received within timeout period ({timeout}s)"

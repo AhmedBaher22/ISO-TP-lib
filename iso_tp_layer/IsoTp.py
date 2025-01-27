@@ -163,6 +163,7 @@ class IsoTp:
     def recv(self, message: bitarray, address: Address):
         try:
             new_message = _parse_message(data=message)
+            print(new_message)
 
             # Check if the message is a control frame
             if isinstance(new_message, FlowControlFrameMessage):
@@ -204,7 +205,7 @@ class IsoTp:
             new_request.process(new_message)
 
         except Exception as e:
-            self._config.on_recv_error()
+            self._config.on_recv_error(e)
 
     def _get_control_frame_by_address(self, address: Address) -> Union[FlowControlFrameMessage, None]:
         """
@@ -225,7 +226,8 @@ class IsoTp:
 
 
     def _send_to_can(self, address: Address, message):
-        message = bytearray(message)  # Convert frame to bytearray
+        print("_send_to_can")
+        message = bytearray.fromhex(message)  # Convert frame to bytearray
         self._config.send_fn(arbitration_id=address._txid, data=message)
 
 
@@ -237,17 +239,21 @@ class IsoTp:
             message (can.Message): The CAN message object to process.
         """
         try:
+
             # Extract arbitration ID
             arbitration_id = message.arbitration_id
-            # Convert data to bitarray
+            print("arbitration_id")
+            print(arbitration_id)            # Convert data to bitarray
             data = message.data  # Data as bytes
             data_bits = bitarray()
             data_bits.frombytes(data)  # Convert bytes to bitarray
 
             address = Address(txid=arbitration_id, rxid=self._config.recv_id)
 
+            print(data_bits)
+            print(address)
             self.recv(message=data_bits,address=address)
-
+            print("After")
             # Add further processing logic here as needed
             # Example: call another function with the extracted information
             # self.handle_message(arbitration_id, data)

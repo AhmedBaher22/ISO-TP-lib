@@ -20,6 +20,11 @@ class UdsClient:
         self._isotp_send: Callable = None
     def set_isotp_send(self,e:Callable):
         self._isotp_send=e
+
+    def get_servers(self):
+        return self._servers
+    def get_pending_servers(self):
+        return self._pending_servers
     def add_server(self, address: Address, session_type: SessionType):
         # Prepare Diagnostic Session Control message (0x10)
         message = bytearray([0x10, session_type.value])
@@ -29,9 +34,14 @@ class UdsClient:
         
         # Create new server and add to pending
         server = Server(address._rxid)
+
+
+
         self._pending_servers.append(server)
 
-    def process_message(self, address: Address, data: List[int]):
+        
+
+    def process_message(self, address: Address, data: bytearray):
         service_id = data[0]
         
         if service_id == 0x7F:  # Negative response
@@ -86,6 +96,7 @@ class UdsClient:
                     server.on_write_data_by_identifier_respond(0x6E, data[1:], vin)
                     
         elif service_id == 0x51:  # Positive response to ECU Reset
+            print(address._txid)
             server = self._find_server_by_can_id(address._txid, self._servers)
             if server:
                 operation = server.get_pending_operation_by_type(OperationType.ECU_RESET)
@@ -96,8 +107,11 @@ class UdsClient:
                     server.on_ecu_reset_respond(0x51, data[1:], reset_type)
                     
         elif service_id == 0x50:  # Positive response to Session Control
-            server = self._find_server_by_can_id(address._txid, self._pending_servers)
+            print
+            print(address._txid)
+            server = self._find_server_by_can_id(int(address._txid), self._pending_servers)
             if server:
+                print("daa5ll")
                 server.session = SessionType(data[1])
                 # Set timing parameters
                 if len(data) >= 6:  # Ensure we have enough bytes for timing parameters
@@ -112,7 +126,7 @@ class UdsClient:
         except:
             return "Invalid VIN data"
 
-    def _find_server_by_can_id(self, can_id: int, server_list: List[Server]) -> Optional[Server]:
+    def _find_server_by_can_id(self, can_id: [int], server_list: List[Server]) -> Optional[Server]:
         for server in server_list:
             if server.can_id == can_id:
                 return server
@@ -125,7 +139,13 @@ class UdsClient:
         # Convert the bitarray to bytes and then to bytearray
         return bytearray(bits.tobytes())
     def receive_message(self, data: bitarray, address: Address):
-        data=self.bitarray_to_bytearray(data)
+        print(address._txid)
+        data=data.tobytes()
+        print(data)
+        if data[0] == 0x50:
+            print("sa7")
+        if data[1] == 0x03:
+            print("sa7 al saa7")            
         self.process_message(address, data)
 
     def send_message(self, server_can_id: int, message: List[int]):

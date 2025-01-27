@@ -4,7 +4,7 @@ from uds_enums import SessionType, OperationType, OperationStatus
 from operation import Operation
 
 class Server:
-    def __init__(self, can_id: int):
+    def __init__(self, can_id: [int]):
         self._can_id = can_id
         self._session = SessionType.NONE
         self._pending_operations: List[Operation] = []
@@ -15,7 +15,7 @@ class Server:
 
     # Getters and setters
     @property
-    def can_id(self) -> int:
+    def can_id(self) -> [int]:
         return self._can_id
 
     @property
@@ -75,18 +75,20 @@ class Server:
         required_sessions = session_requirements.get(operation_type, [])
         return self._session in required_sessions
 
-    def read_data_by_identifier(self, vin: str) -> List[int]:
+    def read_data_by_identifier(self, vin: List[int]) -> List[int]:
         if not self.check_access_required(OperationType.READ_DATA_BY_IDENTIFIER):
             error_msg = f"Error: Insufficient session level for READ_DATA_BY_IDENTIFIER. Current session: {self._session}"
             print(error_msg)
             self.add_log(error_msg)
             return [0x00]
 
-        message = [0x22, 0xF1, 0x90]  # Request for VIN (F190)
+        message = [0x22] # Request for VIN (F190)
+        for e in vin:
+            message.append(e)
         operation = Operation(OperationType.READ_DATA_BY_IDENTIFIER, message)
         self.add_pending_operation(operation)
         
-        log_msg = f"Created READ_DATA_BY_IDENTIFIER operation for VIN. Message: {[hex(x) for x in message]}"
+        log_msg = f"Created READ_DATA_BY_IDENTIFIER operation for VIN. Message: {[message]}"
         self.add_log(log_msg)
         
         return message
@@ -254,3 +256,5 @@ class Server:
 
     def request_transfer_exit(self):
         pass
+    def get_pending_operations(self):
+        return self._pending_operations

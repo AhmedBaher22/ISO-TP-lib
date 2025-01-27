@@ -1,1 +1,2 @@
 2025-01-23 23:55:05 - INFO - Message received: ID=0x33, Data=bytearray(b'\x01')
+2025-01-26 19:49:04 - INFO - Message received: ID=0x33, Data=bytearray(b'\x00\x19\x00\x01\x03\x01\x04\x01')

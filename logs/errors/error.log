@@ -37,3 +37,13 @@ Original Exception: None
 Traceback:
 NoneType: None
 
+2025-01-26 19:47:48 - ERROR - Error Type: RECEPTION
+Message: Error receiving message
+Original Exception: 'Message' object has no attribute '_data'
+Traceback:
+Traceback (most recent call last):
+  File "d:\ASU\graduationProject\ISO-TP\can_layer\src\can_communication.py", line 217, in receive_message
+    f"Data={message._data}"
+            ^^^^^^^^^^^^^
+AttributeError: 'Message' object has no attribute '_data'. Did you mean: 'data'?
+

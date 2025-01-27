@@ -25,20 +25,7 @@ def main():
             filters = [{"can_id": 0x33, "can_mask": 0x7FF, "extended": False}]
             can_comm.set_filters(filters)
 
-            # Send a message
-            success = can_comm.send_message(
-                arbitration_id=0x33,
-                data=[0, 25, 0, 1, 3, 1, 4, 1],
-                timeout=5.0,
-                require_ack=False,
-                retries=3,
-                retry_delay=1.0
-            )
-
-            if success:
-                print("Message sent successfully")
-            else:
-                print("Failed to send message")
+            can_comm.receive_message(600)
 
             # Get bus statistics
             stats = can_comm.get_bus_statistics()

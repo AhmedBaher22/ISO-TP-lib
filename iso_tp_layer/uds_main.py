@@ -1,3 +1,5 @@
+from time import sleep
+from typing import List
 from IsoTpConfig import IsoTpConfig
 from IsoTp import IsoTp
 from uds_client import UdsClient
@@ -6,10 +8,10 @@ from can_communication import CANCommunication, CANConfiguration
 from enums import CANInterface
 from CanExceptions import CANError
 from uds_enums import SessionType
-
+import server
 def main():
     # Create UDS Client instance
-    client = UdsClient(client_id=0x123)
+    client = UdsClient(client_id=0x33)
 
     # Create an IsoTpConfig instance
     config = IsoTpConfig(
@@ -40,6 +42,7 @@ def main():
             # Set filters
             filters = [{"can_id": 0x33, "can_mask": 0x7FF, "extended": False}]
             can_comm.set_filters(filters)
+            can_comm.start_receiving()
             isotp_layer.set_send_fn(can_comm.send_message)
             
 
@@ -49,8 +52,18 @@ def main():
         print(f"CAN operation failed: {e.message}")    
     # Initialize communication with an ECU
     print("\n=== Initializing Communication with ECU ===")
-    ecu_address = Address(addressing_mode=0, txid=0x7E8, rxid=0x7E0)
+    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
     client.add_server(ecu_address, SessionType.EXTENDED)
+    servers:List[server.Server]=client.get_pending_servers()
+    print("henaaa")
+    print(servers[0].can_id)
+    servers:List[server.Server]=client.get_servers()
+    print(len(servers))
+    while True:
+        print(len(servers))
+        sleep(1)
+    # message=servers[0].read_data_by_identifier([0x01,0x90])
+    # client.send_message(servers[0].can_id,message)
 
     # # Wait for session establishment
     # time.sleep(1)

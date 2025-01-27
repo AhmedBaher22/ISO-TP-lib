@@ -1,4 +1,5 @@
 import can
+import threading
 from typing import Callable, List, Dict, Optional
 import time
 from enums import CANInterface
@@ -67,6 +68,32 @@ class CANCommunication:
         self.bus = None
         self._initialize_bus()
 
+    def start_receiving(self):
+        """
+        Start a thread that continuously receives CAN messages with no timeout.
+        """
+        if not self.bus:
+            raise CANError("CAN bus not initialized")
+
+        def _receive_loop():
+            self.logger.log_info("Starting CAN message reception loop with no timeout")
+            while True:
+                try:
+                    print("starttt333")
+                    self.receive_message(timeout=900)  # Wait indefinitely for messages
+                except Exception as e:
+                    error = CANReceptionError(
+                        message="Error during continuous message reception",
+                        original_exception=e
+                    )
+                    self.logger.log_error(error)
+
+        # Start the thread
+        print("starttt")
+        self._receiving_thread = threading.Thread(target=_receive_loop, daemon=True)
+        print("starttt2222")
+        self._receiving_thread.start()
+        self.logger.log_info("CAN reception thread started successfully")
     def _initialize_bus(self):
         """Initialize the CAN bus with the provided configuration."""
         try:
@@ -150,6 +177,7 @@ class CANCommunication:
         attempts_remaining = retries
         while attempts_remaining > 0:
             try:
+                print("essammmmmmm",message.arbitration_id)
                 # Send the message
                 self.bus.send(message)
                 self.logger.log_send(
@@ -175,7 +203,7 @@ class CANCommunication:
                             time.sleep(retry_delay)
                         continue
                 else:
-                    return True
+                    return
 
             except Exception as e:
                 attempts_remaining -= 1
@@ -209,8 +237,9 @@ class CANCommunication:
             raise CANError("CAN bus not initialized")
 
         try:
+            print("receiveee")
             message = self.bus.recv(timeout=timeout)
-            
+            print("message aaaaa")
             if message:
                 self.logger.log_receive(
                     f"Message received: ID=0x{message.arbitration_id:X}, "
@@ -218,6 +247,7 @@ class CANCommunication:
                 )
                 print("/n/n")
                 print("esammmmmm",message)
+                
 
                 self.config.recv_callback(message)
             
@@ -256,7 +286,8 @@ class CANCommunication:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit."""
-        self.close()
+        # self.close()
+        print("ahmed")
 
     @property
     def is_connected(self) -> bool:

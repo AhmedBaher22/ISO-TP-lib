@@ -39,3 +39,21 @@
 2025-01-24 00:00:20 - INFO - Message sent: ID=0x33, Data=[0, 25, 0, 1, 3, 1, 4, 1], Attempts remaining: 3
 2025-01-24 00:00:20 - INFO - Bus statistics retrieved: {'messages_sent': 0, 'messages_received': 0, 'errors': 0, 'state': <BusState.ACTIVE: 1>}
 2025-01-24 00:00:20 - INFO - CAN bus shut down successfully
+2025-01-26 19:41:21 - INFO - CAN bus initialized successfully
+2025-01-26 19:41:21 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 19:41:21 - INFO - Message sent: ID=0x33, Data=[0, 25, 0, 1, 3, 1, 4, 1], Attempts remaining: 3
+2025-01-26 19:41:21 - INFO - Bus statistics retrieved: {'messages_sent': 0, 'messages_received': 0, 'errors': 0, 'state': <BusState.ACTIVE: 1>}
+2025-01-26 19:41:21 - INFO - CAN bus shut down successfully
+2025-01-26 19:42:45 - INFO - CAN bus initialized successfully
+2025-01-26 19:42:45 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 19:42:45 - INFO - Message sent: ID=0x33, Data=[0, 25, 0, 1, 3, 1, 4, 1], Attempts remaining: 3
+2025-01-26 19:42:45 - INFO - Bus statistics retrieved: {'messages_sent': 0, 'messages_received': 0, 'errors': 0, 'state': <BusState.ACTIVE: 1>}
+2025-01-26 19:42:45 - INFO - CAN bus shut down successfully
+2025-01-26 19:47:17 - INFO - CAN bus initialized successfully
+2025-01-26 19:47:17 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 19:47:48 - INFO - CAN bus shut down successfully
+2025-01-26 19:48:59 - INFO - CAN bus initialized successfully
+2025-01-26 19:48:59 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-01-26 19:49:04 - INFO - Message received: ID=0x33, Data=bytearray(b'\x00\x19\x00\x01\x03\x01\x04\x01')
+2025-01-26 19:49:04 - INFO - Bus statistics retrieved: {'messages_sent': 0, 'messages_received': 0, 'errors': 0, 'state': <BusState.ACTIVE: 1>}
+2025-01-26 19:49:04 - INFO - CAN bus shut down successfully
