@@ -172,7 +172,7 @@ class IsoTp:
             # Check if the message is a control frame
             if isinstance(new_message, FlowControlFrameMessage):
                 # Add control frame and its address to the control frame list
-                self._control_append((address, new_message))
+                self._control_frames.append((address, new_message))
                 return  # Exit after storing the control frame
             elif isinstance(new_message, ErrorFrameMessage):
                 for request in self._send_requests:
@@ -209,7 +209,7 @@ class IsoTp:
             new_request.process(new_message)
 
         except Exception as e:
-            self._config.on_recv_error()
+            self._config.on_recv_error(e)
 
     def _get_control_frame_by_address(self, address: Address) -> Union[FlowControlFrameMessage, None]:
         """
