@@ -16,6 +16,7 @@ class InitialState(RequestState):
     def handle(self, request, message):
         try:
             if message.frameType == FrameType.SingleFrame:
+                print("reached single frame")
                 request.set_data_length(message.dataLength)
                 request.append_bits(message.data)
                 request.set_state(FinalState())

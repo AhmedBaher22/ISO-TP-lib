@@ -61,8 +61,11 @@ class Server:
         self._logs.append(log)
 
     def get_pending_operation_by_type(self, operation_type: OperationType) -> Operation:
+        print(operation_type)
         for operation in self._pending_operations:
+            print(operation.operation_type)
             if operation.operation_type == operation_type:
+                print("true")
                 return operation
         return None
 
@@ -123,7 +126,7 @@ class Server:
             print(error_msg)
             self.add_log(error_msg)
 
-    def write_data_by_identifier(self, vin: str, data: List[int]) -> List[int]:
+    def write_data_by_identifier(self, vin: List[int], data: List[int]) -> List[int]:
         if not self.check_access_required(OperationType.WRITE_DATA_BY_IDENTIFIER):
             error_msg = f"Error: Insufficient session level for WRITE_DATA_BY_IDENTIFIER. Current session: {self._session}"
             print(error_msg)
@@ -131,7 +134,9 @@ class Server:
             return [0x00]
 
         # Prepare message: service ID (2E) + VIN identifier (F190) + data
-        message = [0x2E, 0xF1, 0x90] + data
+        message = [0x2E]
+        for e in vin:
+            message.append(e)
         
         # Create and add operation
         operation = Operation(OperationType.WRITE_DATA_BY_IDENTIFIER, message)
@@ -143,10 +148,15 @@ class Server:
         return message
 
     def on_write_data_by_identifier_respond(self, operation_status: int, message: List[int], vin: Optional[str] = None):
+        print("before wesl hena hena ")
         operation = self.get_pending_operation_by_type(OperationType.WRITE_DATA_BY_IDENTIFIER)
-        
+        print("wesl hena hena ")              
         if operation:
+            print("wesl hena hena operation tmam")    
             if operation_status == 0x6E:  # Positive response
+                print("has fha dsfkd ")
+                operation.status = OperationStatus.COMPLETED
+
                 success_msg = f"Write Data Success - VIN: {vin} has been successfully updated"
                 print(success_msg)
                 self.add_log(success_msg)
@@ -167,6 +177,8 @@ class Server:
                     0x37: "Required Time Delay Not Expired",
                     # Add more NRC codes as needed
                 }
+                operation.status = OperationStatus.REJECTED
+
                 error_msg = f"Write Data Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
                 print(error_msg)
                 self.add_log(error_msg)

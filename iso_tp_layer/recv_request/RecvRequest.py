@@ -139,6 +139,7 @@ class RecvRequest:
         Delegate processing to the current state.
         The state will modify the recv_request as needed.
         """
+        print(frameMessage)
         current_time = time.time()
         elapsed_time_ms = (current_time - self._last_received_time) * 1000  # Convert seconds to milliseconds
 
