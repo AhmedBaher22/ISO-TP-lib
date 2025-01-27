@@ -19,7 +19,7 @@ class InitialState(RequestState):
                 request.set_data_length(message.dataLength)
                 request.append_bits(message.data)
                 request.set_state(FinalState())
-                request.on_success(request.get_message(),request.get_address())
+                request.on_success(request.get_message(), request.get_address())
             elif message.frameType == FrameType.FirstFrame:
                 request.set_data_length(message.dataLength)
                 request.append_bits(message.data)

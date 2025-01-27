@@ -2,7 +2,6 @@ from typing import Callable, List, Union
 from bitarray import bitarray
 import sys
 import os
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
@@ -17,6 +16,8 @@ from iso_tp_layer.frames.FrameType import FrameType
 from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
 from iso_tp_layer.recv_request.RecvRequest import RecvRequest
 from iso_tp_layer.send_request.SendRequest import SendRequest
+from iso_tp_layer.IsoTpLogger import IsoTpLogger
+from iso_tp_layer.Exceptions import IsoTpException
 import can
 
 
@@ -116,6 +117,9 @@ class IsoTp:
         self._send_requests: List[SendRequest] = []
         self._control_frames: List[
             tuple[Address, FlowControlFrameMessage]] = []  # List to store control frames and addresses
+        self.logger = IsoTpLogger()
+        self.logger.log_initialization("IsoTp instance initialized with provided configuration.")
+
 
     def set_on_recv_success(self, fn: Callable):
         self._config.on_recv_success = fn
@@ -129,6 +133,7 @@ class IsoTp:
     def send(self, data: bitarray, address: Address, on_success: Callable, on_error: Callable):
         data = bytearray_to_bitarray(data)
         try:
+            self.logger.log_info(f"Sending message to {address} with data: {data}")
             send_request = SendRequest(
                 address=address,
                 txfn=self._send_to_can,  # Can send function ( takes hex frame as a parameter)
@@ -146,18 +151,25 @@ class IsoTp:
                 if request.is_finished() or request.has_received_error_frame():
                     self._send_requests.remove(request)
 
+            self.logger.log_info(f"Successfully sent message to {address}")
+
         except Exception as e:
+            self.logger.log_error(IsoTpException(f"Error while sending message to {address}: {e}"))
             on_error(e)
 
     def recv(self, message: bitarray, address: Address):
         try:
+            self.logger.log_info(f"Receiving message from {address}")
+
             new_message = _parse_message(data=message)
 
             # Check if the message is a control frame
             if isinstance(new_message, FlowControlFrameMessage):
+                self.logger.log_debug(f"Received Flow Control Frame from {address}: {new_message}")
                 # Add control frame and its address to the control frame list
                 self._control_frames.append((address, new_message))
                 if new_message.flowStatus == FlowStatus.Abort:
+                    self.logger.log_warning(f"Flow control frame indicates abort from {address}")
                     for request in self._send_requests:
                         if request.get_address() == address:
                             request.set_received_error_frame(True)
@@ -168,9 +180,11 @@ class IsoTp:
             for request in self._recv_requests:
                 if request.get_address() == address:
                     if request.get_state() in {"ErrorState", "FinalState"}:
+                        self.logger.log_debug(f"Removing completed request from {address}")
                         self._recv_requests.remove(request)
                         break
                     else:
+                        self.logger.log_debug(f"Processing message with existing request for {address}")
                         # Process the message using the existing request
                         request.process(new_message)
                         return  # Exit after processing
@@ -188,11 +202,13 @@ class IsoTp:
 
             # Add the new request to the list
             self._recv_requests.append(new_request)
+            self.logger.log_info(f"Created new request for {address}")
 
             # Process the message using the new request
             new_request.process(new_message)
 
         except Exception as e:
+            self.logger.log_error(IsoTpException(f"Error while sending message to {address}: {e}"))
             self._config.on_recv_error(e)
 
     def _get_control_frame_by_address(self, address: Address) -> Union[FlowControlFrameMessage, None]:
@@ -201,14 +217,21 @@ class IsoTp:
         :param address: The address to search for.
         :return: The corresponding FlowControlFrameMessage if found, else None.
         """
+        self.logger.log_debug(f"Searching for control frame for address {address}")
+
         for addr, control_frame in self._control_frames:
             if addr == address:
+                self.logger.log_debug(f"Found control frame for {address}")
                 return control_frame
+        self.logger.log_warning(f"No control frame found for address {address}")
         return None
 
     def _send_frame(self, address: Address, frame: FrameMessage):
         message_in_bits = message_to_bitarray(frame)
         message_in_bytes = bitarray_to_bytearray(message_in_bits)
+        self.logger.log_info(f"Sending frame to {address}: {frame}")
+        self.logger.log_debug(f"Frame in bits: {message_in_bits}")
+        self.logger.log_debug(f"Frame in bytes: {message_in_bytes}")
         self._config.send_fn(arbitration_id=address._txid, data=message_in_bytes)
         # can send here ( i have the address and the bits to send )
 

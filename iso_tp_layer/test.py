@@ -27,7 +27,8 @@ config = IsoTpConfig(
     timeout=1000,
     stmin=10,
     on_recv_success=on_success,
-    on_recv_error=on_error
+    on_recv_error=on_error,
+    recv_id=1
 )
 # Create an IsoTp instance
 iso_tp = IsoTp(config)

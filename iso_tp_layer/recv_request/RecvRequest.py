@@ -97,14 +97,14 @@ class RecvRequest:
         Change the state of the recv_request.
         """
         self._state = state
-        print(f"State has been changed to {state.__class__.__name__}")
+        # print(f"State has been changed to {state.__class__.__name__}")
 
     def get_state(self):
         return self._state.__class__.__name__
 
     def set_address(self, address: Address):
         self._address = address
-        print(f"Address has been changed to {address}")
+        # print(f"Address has been changed to {address}")
 
 
     def append_bits(self, bits: str):
@@ -112,8 +112,8 @@ class RecvRequest:
         Append bits to the message.
         """
         self._message.extend(bits)
-        print(f"Bits appended: {bits}")
-        print(f"Current message: {self._message.to01()}")
+        # print(f"Bits appended: {bits}")
+        # print(f"Current message: {self._message.to01()}")
 
 
     def update_last_received_time(self):
