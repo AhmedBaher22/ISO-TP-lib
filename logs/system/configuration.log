@@ -53,3 +53,4 @@
 2025-01-27 14:19:24 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
 2025-01-27 14:21:07 - INFO - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
 2025-01-27 14:35:53 - INFO - Filters set successfully: [{'can_id': 85, 'can_mask': 2047, 'extended': False}]
+2025-01-27 15:16:18 - INFO - Filters set successfully: [{'can_id': 85, 'can_mask': 2047, 'extended': False}]

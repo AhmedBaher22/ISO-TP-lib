@@ -29648,3 +29648,8 @@
 2025-01-27 14:35:53 - INFO - Starting CAN message reception loop with no timeout
 2025-01-27 14:35:53 - INFO - CAN reception thread started successfully
 2025-01-27 14:35:53 - INFO - Message sent: ID=0x55, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
+2025-01-27 15:16:18 - INFO - CAN bus initialized successfully
+2025-01-27 15:16:18 - INFO - Filters set successfully: [{'can_id': 85, 'can_mask': 2047, 'extended': False}]
+2025-01-27 15:16:18 - INFO - Starting CAN message reception loop with no timeout
+2025-01-27 15:16:18 - INFO - CAN reception thread started successfully
+2025-01-27 15:16:18 - INFO - Message sent: ID=0x55, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3
