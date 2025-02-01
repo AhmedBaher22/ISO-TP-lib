@@ -2,6 +2,8 @@ from typing import Callable, List, Union
 from bitarray import bitarray
 import sys
 import os
+import threading
+import can
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
@@ -18,7 +20,6 @@ from iso_tp_layer.recv_request.RecvRequest import RecvRequest
 from iso_tp_layer.send_request.SendRequest import SendRequest
 from iso_tp_layer.IsoTpLogger import IsoTpLogger
 from iso_tp_layer.Exceptions import IsoTpException
-import can
 
 
 def _parse_message(data: bitarray) -> Union[FrameMessage, None]:
@@ -118,6 +119,7 @@ class IsoTp:
         self._control_frames: List[
             tuple[Address, FlowControlFrameMessage]] = []  # List to store control frames and addresses
         self.logger = IsoTpLogger()
+        self.lock = threading.Lock()
         self.logger.log_initialization("IsoTp instance initialized with provided configuration.")
 
 
@@ -163,48 +165,49 @@ class IsoTp:
 
             new_message = _parse_message(data=message)
 
-            # Check if the message is a control frame
-            if isinstance(new_message, FlowControlFrameMessage):
-                self.logger.log_debug(f"Received Flow Control Frame from {address}: {new_message}")
-                # Add control frame and its address to the control frame list
-                self._control_frames.append((address, new_message))
-                if new_message.flowStatus == FlowStatus.Abort:
-                    self.logger.log_warning(f"Flow control frame indicates abort from {address}")
-                    for request in self._send_requests:
-                        if request.get_address() == address:
-                            request.set_received_error_frame(True)
-                            return  # Exit
-                return
+            with self.lock:  # Ensure thread safety
+                # Check if the message is a control frame
+                if isinstance(new_message, FlowControlFrameMessage):
+                    self.logger.log_debug(f"Received Flow Control Frame from {address}: {new_message}")
+                    self._control_frames.append((address, new_message))  # Safe addition
 
-            # Check if there is an existing request with the same address
-            for request in self._recv_requests:
-                if request.get_address() == address:
-                    if request.get_state() in {"ErrorState", "FinalState"}:
-                        self.logger.log_debug(f"Removing completed request from {address}")
-                        self._recv_requests.remove(request)
-                        break
-                    else:
-                        self.logger.log_debug(f"Processing message with existing request for {address}")
-                        # Process the message using the existing request
-                        request.process(new_message)
-                        return  # Exit after processing
+                    if new_message.flowStatus == FlowStatus.Abort:
+                        self.logger.log_warning(f"Flow control frame indicates abort from {address}")
+                        for request in self._send_requests:
+                            if request.get_address() == address:
+                                request.set_received_error_frame(True)
+                                return  # Exit
+                    return
 
-            # If no existing request is found, create a new one
-            new_request = RecvRequest(
-                address=address,
-                block_size=self._config.max_block_size,
-                timeout=self._config.timeout,
-                stmin=self._config.stmin,
-                on_success=self._config.on_recv_success,
-                on_error=self._config.on_recv_error,
-                send_frame=self._send_frame
-            )
+                # Check if there is an existing request with the same address
+                for request in self._recv_requests:
+                    if request.get_address() == address:
+                        if request.get_state() in {"ErrorState", "FinalState"}:
+                            self.logger.log_debug(f"Removing completed request from {address}")
+                            self._recv_requests.remove(request)  # Safe removal
+                            break
+                        else:
+                            self.logger.log_debug(f"Processing message with existing request for {address}")
+                            # Process the message using the existing request
+                            request.process(new_message)
+                            return  # Exit after processing
 
-            # Add the new request to the list
-            self._recv_requests.append(new_request)
-            self.logger.log_info(f"Created new request for {address}")
+                # If no existing request is found, create a new one
+                new_request = RecvRequest(
+                    address=address,
+                    block_size=self._config.max_block_size,
+                    timeout=self._config.timeout,
+                    stmin=self._config.stmin,
+                    on_success=self._config.on_recv_success,
+                    on_error=self._config.on_recv_error,
+                    send_frame=self._send_frame
+                )
 
-            # Process the message using the new request
+                # Add the new request to the list
+                self._recv_requests.append(new_request)  # Safe addition
+                self.logger.log_info(f"Created new request for {address}")
+
+            # Process the message using the new request (outside the lock to avoid blocking other threads)
             new_request.process(new_message)
 
         except Exception as e:
@@ -233,35 +236,46 @@ class IsoTp:
         self.logger.log_debug(f"Frame in bits: {message_in_bits}")
         self.logger.log_debug(f"Frame in bytes: {message_in_bytes}")
         self._config.send_fn(arbitration_id=address._txid, data=message_in_bytes)
-        # can send here ( i have the address and the bits to send )
+
 
     def _send_to_can(self, address: Address, message):
         message = bytearray.fromhex(message)  # Convert frame to bytearray
         self._config.send_fn(arbitration_id=address._txid, data=message)
 
+
     def recv_can_message(self, message: can.Message):
         """
-        Process a received CAN message by extracting the data and arbitration ID.
-        
+        Process a received CAN message in a separate thread.
+
         Args:
             message (can.Message): The CAN message object to process.
         """
-        try:
 
-            # Extract arbitration ID
-            arbitration_id = message.arbitration_id  # Convert data to bitarray
-            data = message.data  # Data as bytes
-            data_bits = bitarray()
-            data_bits.frombytes(data)  # Convert bytes to bitarray
+        def process_message():
+            """Function to process the message in a new thread."""
+            try:
+                # Extract arbitration ID
+                arbitration_id = message.arbitration_id
 
-            address = Address(txid=arbitration_id, rxid=self._config.recv_id)
+                # Convert data to bitarray
+                data = message.data  # Data as bytes
+                data_bits = bitarray()
+                data_bits.frombytes(data)  # Convert bytes to bitarray
 
-            self.recv(message=data_bits, address=address)
-            # Add further processing logic here as needed
-            # Example: call another function with the extracted information
-            # self.handle_message(arbitration_id, data)
-        except Exception as e:
-            print(f"Error processing CAN message: {e}")
+                # Create Address object
+                address = Address(txid=arbitration_id, rxid=self._config.recv_id)
+
+                # Process the message
+                self.recv(message=data_bits, address=address)
+
+            except Exception as e:
+                print(f"Error processing CAN message: {e}")
+        # Create a new thread and start it
+        thread = threading.Thread(target=process_message, daemon=True, name="WorkerThread")
+        thread.start()
+        # print(threading.current_thread())
+        # for thread in threading.enumerate():
+        #     print(f"Thread Name: {thread.name}, ID: {thread.ident}, Is Daemon: {thread.daemon}")
 
     def set_recv_id(self, recv_id):
         self._config.recv_id = recv_id

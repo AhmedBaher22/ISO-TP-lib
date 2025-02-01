@@ -123,23 +123,23 @@ class RecvRequest:
         return self._last_received_time
 
 
-    def check_stmin(self):
-        # True means you can proceed
-        # False means you have to wait
-        if self._stmin == 0:
-            return True
+    # def check_stmin(self):
+    #     # True means you can proceed
+    #     # False means you have to wait
+    #     if self._stmin == 0:
+    #         return True
+    #
+    #     current_time = time.time()
+    #     elapsed_time_ms = (current_time - self._last_received_time) * 1000  # Convert seconds to milliseconds
+    #
+    #     return self._stmin <= elapsed_time_ms
 
-        current_time = time.time()
-        elapsed_time_ms = (current_time - self._last_received_time) * 1000  # Convert seconds to milliseconds
-
-        return self._stmin <= elapsed_time_ms
 
     def process(self, frameMessage: FrameMessage):
         """
         Delegate processing to the current state.
         The state will modify the recv_request as needed.
         """
-        print(frameMessage)
         current_time = time.time()
         elapsed_time_ms = (current_time - self._last_received_time) * 1000  # Convert seconds to milliseconds
 

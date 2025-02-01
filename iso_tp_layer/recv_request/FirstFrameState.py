@@ -16,12 +16,11 @@ class FirstFrameState(RequestState):
     def handle(self, request, message):
         try:
             if message.frameType == FrameType.ConsecutiveFrame:
-                if not request.check_stmin():
-                    return
                 if message.sequenceNumber == request.get_expected_sequence_number():
                     request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)
                     request.append_bits(message.data)
                     request.set_state(ConsecutiveFrameState())
+                    request.update_last_received_time()
                 else:
                     # f"Consecutive message out of sequence! Expected sequence number {expected_seq} and received {received_seq}"
                     raise ConsecutiveFrameOutOfSequenceException(request.get_expected_sequence_number(),
