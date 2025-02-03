@@ -124,17 +124,23 @@ class IsoTp:
 
     def set_on_recv_success(self, fn: Callable):
         self._config.on_recv_success = fn
+        self.logger.log_message(log_type=LogType.CONFIGURATION,
+                                message=f"Success callback function from UDS has been set")
 
     def set_on_recv_error(self, fn: Callable):
         self._config.on_recv_error = fn
+        self.logger.log_message(log_type=LogType.CONFIGURATION,
+                                message=f"Error callback function from UDS has been set")
 
     def set_send_fn(self, fn: Callable):
         self._config.send_fn = fn
+        self.logger.log_message(log_type=LogType.CONFIGURATION,
+                                message=f"Send callable function from CAN has been set")
 
     def send(self, data: bitarray, address: Address, on_success: Callable, on_error: Callable):
         data = bytearray_to_bitarray(data)
         try:
-            self.logger.log_message(log_type=LogType.INFO, message=f"Sending message to {address} with data: {data}")
+            self.logger.log_message(log_type=LogType.SEND, message=f"Sending message to {address} with data: {data}")
             send_request = SendRequest(
                 address=address,
                 txfn=self._send_to_can,  # Can send function ( takes hex frame as a parameter)
@@ -152,7 +158,8 @@ class IsoTp:
                 if request.is_finished() or request.has_received_error_frame():
                     self._send_requests.remove(request)
 
-            self.logger.log_message(log_type=LogType.INFO, message=f"Successfully sent message to {address}")
+
+            self.logger.log_message(log_type=LogType.SEND, message=f"Successfully sent message to {address}")
 
         except Exception as e:
             self.logger.log_message(log_type=LogType.ERROR, message=f"Error while sending message to {address}: {e}")
@@ -160,7 +167,7 @@ class IsoTp:
 
     def recv(self, message: bitarray, address: Address):
         try:
-            self.logger.log_message(log_type=LogType.INFO, message=f"Receiving message from {address}")
+            self.logger.log_message(log_type=LogType.RECEIVE, message=f"Receiving message from {address}")
 
             new_message = _parse_message(data=message)
 
@@ -204,13 +211,13 @@ class IsoTp:
 
                 # Add the new request to the list
                 self._recv_requests.append(new_request)  # Safe addition
-                self.logger.log_message(log_type=LogType.INFO, message=f"Created new request for {address}")
+                self.logger.log_message(log_type=LogType.RECEIVE, message=f"Created new receive request for {address}")
 
             # Process the message using the new request (outside the lock to avoid blocking other threads)
             new_request.process(new_message)
 
         except Exception as e:
-            self.logger.log_message(log_type=LogType.ERROR, message=f"Error while sending message to {address}: {e}")
+            self.logger.log_message(log_type=LogType.ERROR, message=f"Error while Receiving message from {address}: {e}")
             self._config.on_recv_error(e)
 
     def _get_control_frame_by_address(self, address: Address) -> Union[FlowControlFrameMessage, None]:
@@ -231,14 +238,13 @@ class IsoTp:
     def _send_frame(self, address: Address, frame: FrameMessage):
         message_in_bits = message_to_bitarray(frame)
         message_in_bytes = bitarray_to_bytearray(message_in_bits)
-        self.logger.log_message(log_type=LogType.INFO, message=f"Sending frame to {address}: {frame}")
-        self.logger.log_message(log_type=LogType.DEBUG, message=f"Frame in bits: {message_in_bits}")
-        self.logger.log_message(log_type=LogType.DEBUG, message=f"Frame in bytes: {message_in_bytes}")
+        self.logger.log_message(log_type=LogType.SEND, message=f"Sending frame to {address}: {message_in_bytes}")
         self._config.send_fn(arbitration_id=address._txid, data=message_in_bytes)
 
 
     def _send_to_can(self, address: Address, message):
         message = bytearray.fromhex(message)  # Convert frame to bytearray
+        self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message=f"ISO-TP calls CAN's send function")
         self._config.send_fn(arbitration_id=address._txid, data=message)
 
 

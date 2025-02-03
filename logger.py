@@ -18,47 +18,31 @@ class LogType(Enum):
 class Logger:
     def __init__(self, log_directory="iso-tp"):
         """
-        Initialize the logger with specific log categories.
-
-        Adds a new high-level log file that captures critical logs for user visibility.
+        Initialize the logger with two log files:
+        - success.log: Contains all logs except errors.
+        - error.log: Contains only error logs.
+        - high_level.log (optional): Contains high-priority logs.
         """
-        self.log_directory = "..\\logs\\" + log_directory
-        self.high_level_log = "..\\logs\\communication"
+        self.log_directory = os.path.join("..", "logs", log_directory)
+        self.success_log = os.path.join(self.log_directory, "success.log")
+        self.error_log = os.path.join(self.log_directory, "error.log")
+        self.high_level_log = os.path.join("..", "logs", "communication.log")
+
         self._create_log_structure()
         self._setup_loggers()
 
     def _create_log_structure(self):
         """Create the log directory structure"""
-        directories = [
-            "general",
-            "transactions",
-            "errors",
-            "system"
-        ]
-
-        for directory in directories:
-            os.makedirs(f"{self.log_directory}/{directory}", exist_ok=True)
+        os.makedirs(self.log_directory, exist_ok=True)
 
     def _setup_loggers(self):
-        """Setup different loggers for different types of logs"""
-        self.loggers = {
-            LogType.INFO: self._create_logger('info', logging.INFO, f"{self.log_directory}/general/info.log"),
-            LogType.WARNING: self._create_logger('warning', logging.WARNING, f"{self.log_directory}/general/warning.log"),
-            LogType.DEBUG: self._create_logger('debug', logging.DEBUG, f"{self.log_directory}/general/debug.log"),
-            LogType.SEND: self._create_logger('send', logging.INFO, f"{self.log_directory}/transactions/send.log"),
-            LogType.RECEIVE: self._create_logger('receive', logging.INFO, f"{self.log_directory}/transactions/receive.log"),
-            LogType.ACKNOWLEDGMENT: self._create_logger('acknowledgment', logging.INFO, f"{self.log_directory}/transactions/acknowledgment.log"),
-            LogType.ERROR: self._create_logger('error', logging.ERROR, f"{self.log_directory}/errors/error.log"),
-            LogType.INITIALIZATION: self._create_logger('initialization', logging.INFO, f"{self.log_directory}/system/initialization.log"),
-            LogType.CONFIGURATION: self._create_logger('configuration', logging.INFO, f"{self.log_directory}/system/configuration.log"),
-        }
-
-        # Create high-level logger
-        self.high_level_logger = self._create_logger('communication', logging.INFO, self.high_level_log)
-
+        """Setup loggers for success, error, and high-level logs"""
+        self.success_logger = self._create_logger("success", logging.INFO, self.success_log)
+        self.error_logger = self._create_logger("error", logging.ERROR, self.error_log)
+        self.high_level_logger = self._create_logger("communication", logging.INFO, self.high_level_log)
 
     def _create_logger(self, name: str, level: int, filename: str) -> logging.Logger:
-        """Create a logger with specified configuration"""
+        """Create and configure a logger"""
         logger = logging.getLogger(name)
         logger.setLevel(level)
         logger.handlers = []  # Remove existing handlers
@@ -77,14 +61,18 @@ class Logger:
 
         return logger
 
-    def log_message(self, log_type: LogType, message: str, high_level: bool = False):
-        """Log a message to the appropriate log file and optionally to the high-level log."""
-        if log_type in self.loggers:
-            self.loggers[log_type].log(self._get_log_level(log_type), message)
+    def log_message(self, log_type: LogType, message: str, important: bool = False):
+        """Log a message based on log type, and optionally add to high-level log."""
+        log_level = self._get_log_level(log_type)
+        formatted_message = f"{log_type.value.upper()} - {message}."  # Include LogType after timestamp
 
-            if high_level:
-                self.high_level_logger.log(logging.INFO, f"{log_type.value.upper()}: {message}")
+        if log_type == LogType.ERROR:
+            self.error_logger.log(log_level, formatted_message)
+        else:
+            self.success_logger.log(log_level, formatted_message)
 
+        if important:
+            self.high_level_logger.log(logging.INFO, formatted_message)
 
     def _get_log_level(self, log_type: LogType) -> int:
         """Map LogType to logging level."""
