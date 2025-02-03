@@ -2,7 +2,8 @@ from bitarray import bitarray
 from typing import Callable, List, Optional
 import sys
 import os
-
+from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
+from uds_layer.transfer_request import TransferRequest
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
@@ -60,6 +61,11 @@ class UdsClient:
                     self._servers.append(server)
                     self._pending_servers.remove(server)
 
+            elif requested_service == 0x34:  # Negative response to Request Download
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_request_download_respond(data)
+
             elif requested_service == 0x22:  # Read Data By Identifier
                 server = self._find_server_by_can_id(address._txid, self._servers)
                 if server:
@@ -79,7 +85,10 @@ class UdsClient:
                 server = self._find_server_by_can_id(address._txid, self._servers)
                 if server:
                     server.on_ecu_reset_respond(0x7F, [data[2]], None)
-
+        elif service_id == 0x74:  # Positive response to Request Download
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_request_download_respond(data)
         elif service_id == 0x62:  # Positive response to Read Data By Identifier
 
             server = self._find_server_by_can_id(address._txid, self._servers)
@@ -167,3 +176,31 @@ class UdsClient:
 
     def get_client_id(self):
         return self._client_id
+    
+    def transfer_NEW_data_to_ecu(self, recv_DA: int, data: bytearray, 
+                                encryption_method: EncryptionMethod,
+                                compression_method: CompressionMethod,
+                                memory_address: bytearray,
+                                checksum_required: bool) -> None:
+        # Create TransferRequest object
+        transfer_request = TransferRequest(
+            recv_DA=recv_DA,
+            data=data,
+            encryption_method=encryption_method,
+            compression_method=compression_method,
+            memory_address=memory_address,
+            checksum_required=checksum_required
+        )
+
+        # Find server with matching CAN ID
+        server = next((s for s in self._servers if s.can_id == recv_DA), None)
+        if server:
+            # Get request download message
+            message = server.request_download(transfer_request)
+            if message != [0x00]:  # Check if request was successful
+                # Create address object for ISO-TP
+                address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)
+                # Send message using ISO-TP
+                self._isotp_send(message, address)
+        else:
+            print(f"Error: No server found with CAN ID: {hex(recv_DA)}")

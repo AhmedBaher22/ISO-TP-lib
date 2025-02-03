@@ -6,7 +6,8 @@ package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
 from uds_layer.uds_enums import SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
-
+from uds_layer.transfer_request import TransferRequest
+from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
 
 class Server:
     def __init__(self, can_id: [int]):
@@ -17,6 +18,7 @@ class Server:
         self._logs: List[str] = []
         self._p2_timing = 0
         self._p2_star_timing = 0
+        self.transfer_requests: List[TransferRequest] = []
 
     # Getters and setters
     @property
@@ -268,8 +270,88 @@ class Server:
     def transfer_data(self):
         pass
 
-    def request_download(self):
-        pass
+    def request_download(self, transfer_request: TransferRequest) -> List[int]:
+        if not self.check_access_required(OperationType.REQUEST_DOWNLOAD):
+            error_msg = f"Error: Insufficient session level for REQUEST_DOWNLOAD. Current session: {self._session}"
+            print(error_msg)
+            self.add_log(error_msg)
+            return [0x00]
+
+        # Calculate DataFormatIdentifier
+        data_format_identifier = (transfer_request.compression_method.value << 4) | transfer_request.encryption_method.value
+
+        # Calculate AddressAndLengthFormatIdentifier
+        address_length = len(transfer_request.memory_address)
+        size_length = len(str(transfer_request.data_size))
+        address_length_format_identifier = (address_length << 4) | size_length
+
+        # Prepare message
+        message = [0x34, data_format_identifier, address_length_format_identifier]
+        
+        # Add memory address
+        message.extend(transfer_request.memory_address)
+        
+        # Add memory size
+        size_bytes = transfer_request.data_size.to_bytes(size_length, byteorder='big')
+        message.extend(size_bytes)
+
+        # Update transfer request and add to list
+        transfer_request.status = TransferStatus.CREATED
+        self.transfer_requests.append(transfer_request)
+
+        log_msg = f"Created REQUEST_DOWNLOAD operation. Message: {[hex(x) for x in message]}"
+        self.add_log(log_msg)
+        
+        return message
+
+    def on_request_download_respond(self, message: List[int]):
+        # Find transfer request with CREATED status
+        transfer_request = next((req for req in self.transfer_requests 
+                               if req.status == TransferStatus.CREATED), None)
+        
+        if not transfer_request:
+            error_msg = "No pending transfer request found"
+            print(error_msg)
+            self.add_log(error_msg)
+            return
+
+        if message[0] == 0x74:  # Positive response
+            length_format_identifier = message[1]
+            block_length_bytes = message[2:2+length_format_identifier]
+            
+            # Calculate MaxNumberOfBlockLength
+            transfer_request.max_number_of_block_length = int.from_bytes(block_length_bytes, 'big')
+            
+            # Calculate steps number
+            transfer_request.calculate_steps_number()
+            
+            # Update status and counter
+            transfer_request.status = TransferStatus.SENDING_BLOCKS_IN_PROGRESS
+            transfer_request.current_number_of_steps = 0
+            
+            # Start transfer data
+            self.transfer_data(transfer_request)
+            
+        elif message[0] == 0x7F and message[1] == 0x34:  # Negative response
+            transfer_request.NRC = message[2]
+            transfer_request.status = TransferStatus.REJECTED
+            
+            nrc_descriptions = {
+                0x10: "General Reject",
+                0x11: "Service Not Supported",
+                0x12: "Sub-Function Not Supported",
+                0x13: "Invalid Format",
+                0x22: "Conditions Not Correct",
+                0x31: "Request Out Of Range",
+                0x33: "Security Access Denied",
+                0x70: "Upload/Download Not Accepted",
+                # Add more NRC codes as needed
+            }
+            
+            error_msg = f"Download Request Failed - NRC: {hex(transfer_request.NRC)} - {nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}"
+            print(error_msg)
+            self.add_log(error_msg)
+
 
     def request_transfer_exit(self):
         pass
