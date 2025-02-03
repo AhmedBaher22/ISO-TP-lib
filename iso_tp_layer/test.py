@@ -57,7 +57,7 @@ address = Address(txid=0x123, rxid=0x456)
 def can_messages():
     """Function to simulate sending CAN messages to the IsoTp layer."""
 
-    # 1. **Test Single Frame Message**
+    # # 1. **Test Single Frame Message**
     # print("\n--- Test: Single Frame ---")
     # message_data = bitarray('1010101011100001')  # Example data (16 bits)
     # single_frame = SingleFrameMessage(dataLength=len(message_data) // 8, data=message_data)
@@ -65,8 +65,8 @@ def can_messages():
     # # Create a CAN message
     # can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(single_frame).tobytes(), is_extended_id=False)
     # iso_tp.recv_can_message(can_msg)
-
-    # 2. **Test First Frame Message**
+    #
+    # # 2. **Test First Frame Message**
     print("\n--- Test: First Frame ---")
     first_frame_data = bitarray('101010101110000110101010111000011010101011100001')  # 48 bits -> 6 bytes
     first_frame = FirstFrameMessage(dataLength=8, data=first_frame_data)
@@ -74,7 +74,7 @@ def can_messages():
     can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(first_frame).tobytes(), is_extended_id=False)
     iso_tp.recv_can_message(can_msg)
 
-    # 3. **Test Consecutive Frames (Correct Order)**
+    # # 3. **Test Consecutive Frames (Correct Order)**
     print("\n--- Test: Consecutive Frames in Order ---")
     consecutive_frame_1 = ConsecutiveFrameMessage(sequenceNumber=1, data=bitarray('11110000'))  # 8 bits -> 1 byte
     consecutive_frame_2 = ConsecutiveFrameMessage(sequenceNumber=2, data=bitarray('00001111'))  # 8 bits -> 1 byte
@@ -98,7 +98,7 @@ def can_messages():
     # can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(first_frame).tobytes(), is_extended_id=False)
     # iso_tp.recv_can_message(can_msg)
     #
-    # out_of_order_frame = ConsecutiveFrameMessage(sequenceNumber=2, data=bitarray('11001100'))  # Should be 3, not 2
+    # out_of_order_frame = ConsecutiveFrameMessage(sequenceNumber=3, data=bitarray('11001100'))  # Should be 1, not 3
     # can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(out_of_order_frame).tobytes(),
     #                       is_extended_id=False)
     # iso_tp.recv_can_message(can_msg)

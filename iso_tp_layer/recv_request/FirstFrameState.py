@@ -22,7 +22,6 @@ class FirstFrameState(RequestState):
                     request.set_state(ConsecutiveFrameState())
                     request.update_last_received_time()
                 else:
-                    # f"Consecutive message out of sequence! Expected sequence number {expected_seq} and received {received_seq}"
                     raise ConsecutiveFrameOutOfSequenceException(request.get_expected_sequence_number(),
                                                                  message.sequenceNumber)
 
@@ -33,5 +32,5 @@ class FirstFrameState(RequestState):
 
         except Exception as e:
             request.set_state(ErrorState())
-            request.send_error_frame()
+            request.send_error_frame(e)
             request.on_error(e)

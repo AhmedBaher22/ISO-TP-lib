@@ -60,5 +60,5 @@ class ConsecutiveFrameState(RequestState):
 
         except Exception as e:
             request.set_state(ErrorState())
-            request.send_error_frame()
+            request.send_error_frame(e)
             request.on_error(e)

@@ -1,3 +1,4 @@
+import uuid
 from math import ceil
 from typing import Callable
 from bitarray import bitarray
@@ -21,12 +22,10 @@ class RecvRequest:
     """
     Represents a recv_request containing a bitarray message and a state.
     """
-    _id_counter = 0
 
     def __init__(self, address: Address, block_size, timeout, stmin, on_success: Callable, on_error: Callable,
                  send_frame: Callable):
-        self._id = RecvRequest._id_counter  # Assign a unique ID
-        RecvRequest._id_counter += 1  # Increment the counter for the next instance
+        self._id = str(uuid.uuid4())[:8]   # Assign a unique ID
         self._address = address
         self._max_block_size = block_size
         self._timeout = timeout  # in milliseconds
@@ -70,12 +69,16 @@ class RecvRequest:
             message=f"[RecvRequest-{self._id}] Sent Flow Control Frame: {flow_control_frame}"
         )
 
-    def send_error_frame(self):
+    def send_error_frame(self, e: Exception = Exception()):
         error_frame = FlowControlFrameMessage(flowStatus=FlowStatus.Abort, blockSize=0, separationTime=0)
         self._send_frame(self._address, error_frame)
         self.logger.log_message(
             log_type=LogType.WARNING,
             message=f"[RecvRequest-{self._id}] Sent Error Frame (Abort)"
+        )
+        self.logger.log_message(
+            log_type=LogType.ERROR,
+            message=f"[RecvRequest-{self._id}] {e}"
         )
 
     def set_max_block_size(self, max_block_size):
@@ -161,7 +164,8 @@ class RecvRequest:
         self._message.extend(bits)
         self.logger.log_message(
             log_type=LogType.RECEIVE,
-            message=f"[RecvRequest-{self._id}] Appended bits: {bits} | Current message length: {len(self._message)} bits"
+            message=f"[RecvRequest-{self._id}] Appended bits: {bitarray(bits).tobytes().hex().upper()} | "
+                    f"Current message (HEX): {self._message.tobytes().hex().upper()} | Length: {len(self._message)//8} bytes"
         )
 
     def update_last_received_time(self):
@@ -179,18 +183,24 @@ class RecvRequest:
         Delegate processing to the current state.
         The state will modify the recv_request as needed.
         """
-        current_time = time.time()
-        elapsed_time_ms = (current_time - self._last_received_time) * 1000  # Convert seconds to milliseconds
+        try:
+            current_time = time.time()
+            elapsed_time_ms = (current_time - self._last_received_time) * 1000  # Convert seconds to milliseconds
 
-        if 0 < self._timeout <= elapsed_time_ms:
+            if 0 < self._timeout <= elapsed_time_ms:
+                self.logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=f"[RecvRequest-{self._id}] Timeout occurred after {elapsed_time_ms:.2f} ms"
+                )
+                self.on_error(TimeoutException())
+
+            self.logger.log_message(
+                log_type=LogType.RECEIVE,
+                message=f"[RecvRequest-{self._id}] Processing frame: {frameMessage}"
+            )
+            self._state.handle(self, frameMessage)
+        except Exception as e:
             self.logger.log_message(
                 log_type=LogType.ERROR,
-                message=f"[RecvRequest-{self._id}] Timeout occurred after {elapsed_time_ms:.2f} ms"
+                message=f"{e}"
             )
-            self.on_error(TimeoutException())
-
-        self.logger.log_message(
-            log_type=LogType.RECEIVE,
-            message=f"[RecvRequest-{self._id}] Processing frame: {frameMessage}"
-        )
-        self._state.handle(self, frameMessage)

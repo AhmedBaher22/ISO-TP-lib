@@ -1,3 +1,4 @@
+import uuid
 from typing import Callable
 import threading
 import time
@@ -18,13 +19,11 @@ from logger import Logger, LogType
 
 
 class SendRequest:
-    _id_counter = 0
 
     def __init__(self, txfn: Callable, rxfn: Callable, on_success: Callable,
                  on_error: Callable, address: Address, timeout=0,
                  stmin=0, block_size=0, tx_padding=0xFF):
-        self._id = SendRequest._id_counter  # Assign a unique ID
-        SendRequest._id_counter += 1  # Increment the counter for the next instance
+        self._id = str(uuid.uuid4())[:8]  # Assign a unique ID
         self._tx_padding = tx_padding  # Default padding value
         self._txfn = txfn
         self._rxfn = rxfn

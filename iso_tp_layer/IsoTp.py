@@ -189,15 +189,16 @@ class IsoTp:
                 for request in self._recv_requests:
                     if request.get_address()._txid == address._txid:
                         if request.get_state() in {"ErrorState", "FinalState"}:
-                            self.logger.log_message(log_type=LogType.DEBUG, message=f"Removing completed request from {address}")
+                            self.logger.log_message(log_type=LogType.INFO, message=f"Removing completed request from {address}")
                             self._recv_requests.remove(request)  # Safe removal
                             break
                         else:
-                            self.logger.log_message(log_type=LogType.DEBUG, message=f"Processing message with existing request for {address}")
+                            self.logger.log_message(log_type=LogType.INFO, message=f"Processing message with existing request for {address}")
                             # Process the message using the existing request
                             request.process(new_message)
                             return  # Exit after processing
 
+                self.logger.log_message(log_type=LogType.RECEIVE, message=f"Created new receive request for {address}")
                 # If no existing request is found, create a new one
                 new_request = RecvRequest(
                     address=address,
@@ -210,7 +211,6 @@ class IsoTp:
                 )
 
                 # Add the new request to the list
-                self.logger.log_message(log_type=LogType.RECEIVE, message=f"Created new receive request for {address}")
                 self._recv_requests.append(new_request)  # Safe addition
 
             # Process the message using the new request (outside the lock to avoid blocking other threads)
@@ -238,7 +238,7 @@ class IsoTp:
     def _send_frame(self, address: Address, frame: FrameMessage):
         message_in_bits = message_to_bitarray(frame)
         message_in_bytes = bitarray_to_bytearray(message_in_bits)
-        self.logger.log_message(log_type=LogType.SEND, message=f"Sending frame to {address}: {message_in_bytes}")
+        self.logger.log_message(log_type=LogType.SEND, message=f"Sending frame {frame} to {address}")
         self._config.send_fn(arbitration_id=address._txid, data=message_in_bytes)
 
 
@@ -274,7 +274,9 @@ class IsoTp:
                 self.recv(message=data_bits, address=address)
 
             except Exception as e:
-                print(f"Error processing CAN message: {e}")
+                self.logger.log_message(log_type=LogType.RECEIVE,
+                                        message=f"Error processing CAN message: {e}.")
+
         # Create a new thread and start it
         thread = threading.Thread(target=process_message, daemon=True, name="WorkerThread")
         thread.start()

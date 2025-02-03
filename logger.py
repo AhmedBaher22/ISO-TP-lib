@@ -23,10 +23,11 @@ class Logger:
         - error.log: Contains only error logs.
         - high_level.log (optional): Contains high-priority logs.
         """
-        self.log_directory = os.path.join("..", "logs", log_directory)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.log_directory = os.path.join(current_dir, "logs", log_directory)
         self.success_log = os.path.join(self.log_directory, "success.log")
         self.error_log = os.path.join(self.log_directory, "error.log")
-        self.high_level_log = os.path.join("..", "logs", "communication.log")
+        self.high_level_log = os.path.join(current_dir, "logs", "communication.log")
 
         self._create_log_structure()
         self._setup_loggers()
