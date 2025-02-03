@@ -1,0 +1,52 @@
+2025-02-03 18:54:44 - INFO - INFO - SendRequest initialized: ID=1b7589e8, Address=Address(addressing_mode=0, txid=291, rxid=1110), Timeout=0, STmin=5, BlockSize=3.
+2025-02-03 18:54:44 - INFO - INFO - SendRequest 1b7589e8: Sending data of length 42 bytes..
+2025-02-03 18:54:44 - INFO - SEND - SendRequest 1b7589e8: Sending first frame - 102ad397478e8d4a.
+2025-02-03 18:54:44 - INFO - INFO - SendRequest 1b7589e8: Received flow control frame - Status=FlowStatus.Continue, BlockSize=3, STmin=5.
+2025-02-03 18:54:44 - INFO - SEND - Starting consecutive frame transmission. Remaining data size: 36 bytes..
+2025-02-03 18:54:44 - INFO - INFO - Sleeping for 0.05 seconds before sending the next frame..
+2025-02-03 18:54:44 - INFO - SEND - Sending consecutive frame: 20d397478e8d4ad3 (Sequence Num: 0).
+2025-02-03 18:54:44 - INFO - INFO - Sleeping for 0.05 seconds before sending the next frame..
+2025-02-03 18:54:44 - INFO - SEND - Sending consecutive frame: 2197d397478e8d4a (Sequence Num: 1).
+2025-02-03 18:54:44 - INFO - INFO - Sleeping for 0.05 seconds before sending the next frame..
+2025-02-03 18:54:44 - INFO - SEND - Sending consecutive frame: 22d397478e8d4ad3 (Sequence Num: 2).
+2025-02-03 18:54:44 - INFO - INFO - Block size limit reached. Block counter: 3, Block size: 3. Waiting for next control frame..
+2025-02-03 18:54:44 - INFO - INFO - SendRequest 1b7589e8: Received flow control frame - Status=FlowStatus.Continue, BlockSize=3, STmin=5.
+2025-02-03 18:54:44 - INFO - SEND - Starting consecutive frame transmission. Remaining data size: 36 bytes..
+2025-02-03 18:54:44 - INFO - INFO - Sleeping for 0.05 seconds before sending the next frame..
+2025-02-03 18:54:44 - INFO - SEND - Sending consecutive frame: 2397d397478e8d4a (Sequence Num: 3).
+2025-02-03 18:54:44 - INFO - INFO - Sleeping for 0.05 seconds before sending the next frame..
+2025-02-03 18:54:44 - INFO - SEND - Sending consecutive frame: 24d397478e8d4ad3 (Sequence Num: 4).
+2025-02-03 18:54:44 - INFO - INFO - Sleeping for 0.05 seconds before sending the next frame..
+2025-02-03 18:54:44 - INFO - SEND - Sending consecutive frame: 2597ffffffffffff (Sequence Num: 5).
+2025-02-03 18:54:44 - INFO - INFO - All consecutive frames sent successfully. Ending request..
+2025-02-03 18:54:44 - INFO - INFO - SendRequest 1b7589e8: Request completed successfully..
+2025-02-03 19:25:17 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
+2025-02-03 19:25:17 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-03 19:25:17 - INFO - RECEIVE - Receiving message: 1008AAE1AAE1AAE1 from Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:25:17 - INFO - RECEIVE - Started new thread (ID: 14940). Main thread continues listening to CAN bus..
+2025-02-03 19:25:17 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:25:17 - INFO - RECEIVE - [RecvRequest-e28818fb] Initialized with address Address(addressing_mode=0, txid=291, rxid=1), block_size=3, timeout=0ms.
+2025-02-03 19:25:17 - INFO - RECEIVE - [RecvRequest-e28818fb] Processing frame: FirstFrameMessage(dataLength=8, data=AAE1AAE1AAE1).
+2025-02-03 19:25:17 - INFO - RECEIVE - [RecvRequest-e28818fb] Data length updated to 8 bytes.
+2025-02-03 19:25:17 - INFO - RECEIVE - [RecvRequest-e28818fb] Appended bits: AAE1AAE1AAE1 | Current message (HEX): AAE1AAE1AAE1 | Length: 6 bytes.
+2025-02-03 19:25:17 - INFO - SEND - Sending frame FlowControlFrameMessage(flowStatus=<FlowStatus.Continue: 0>, blockSize=3, separationTime=0) to Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:25:17 - INFO - RECEIVE - [RecvRequest-e28818fb] Sent Flow Control Frame: FlowControlFrameMessage(flowStatus=<FlowStatus.Continue: 0>, blockSize=3, separationTime=0).
+2025-02-03 19:25:17 - INFO - RECEIVE - [RecvRequest-e28818fb] Last received time updated.
+2025-02-03 19:25:17 - INFO - RECEIVE - [RecvRequest-e28818fb] State changed to FirstFrameState.
+2025-02-03 19:25:18 - INFO - RECEIVE - Receiving message: 21F0 from Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:25:18 - INFO - RECEIVE - Started new thread (ID: 13748). Main thread continues listening to CAN bus..
+2025-02-03 19:25:18 - INFO - INFO - Processing message with existing request for Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:25:18 - INFO - RECEIVE - Receiving message: 220F from Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:25:18 - INFO - RECEIVE - Started new thread (ID: 18232). Main thread continues listening to CAN bus..
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Processing frame: ConsecutiveFrameMessage(seq=1, data=F0).
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Expected sequence number set to 2.
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Appended bits: F0 | Current message (HEX): AAE1AAE1AAE1F0 | Length: 7 bytes.
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] State changed to ConsecutiveFrameState.
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Last received time updated.
+2025-02-03 19:25:18 - INFO - INFO - Processing message with existing request for Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Processing frame: ConsecutiveFrameMessage(seq=2, data=0F).
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Current block size set to 1.
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Last received time updated.
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Expected sequence number set to 3.
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Appended bits: 0F | Current message (HEX): AAE1AAE1AAE1F00F | Length: 8 bytes.
+2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] State changed to FinalState.

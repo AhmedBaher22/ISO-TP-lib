@@ -189,11 +189,11 @@ class IsoTp:
                 for request in self._recv_requests:
                     if request.get_address()._txid == address._txid:
                         if request.get_state() in {"ErrorState", "FinalState"}:
-                            self.logger.log_message(log_type=LogType.INFO, message=f"Removing completed request from {address}")
+                            self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message=f"Removing completed request from {address}")
                             self._recv_requests.remove(request)  # Safe removal
                             break
                         else:
-                            self.logger.log_message(log_type=LogType.INFO, message=f"Processing message with existing request for {address}")
+                            self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message=f"Processing message with existing request for {address}")
                             # Process the message using the existing request
                             request.process(new_message)
                             return  # Exit after processing

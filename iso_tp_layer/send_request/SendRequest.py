@@ -42,7 +42,7 @@ class SendRequest:
         self._received_error_frame = False  # New attribute for error frame tracking
         self.logger = Logger("iso-tp")
         self.logger.log_message(
-            log_type=LogType.INFO,
+            log_type=LogType.SEND,
             message=f"SendRequest initialized: ID={self._id}, Address={self._address}, Timeout={self._timeout}, STmin={self._stmin}, BlockSize={self._block_size}"
         )
 
@@ -64,7 +64,7 @@ class SendRequest:
             self._data = data.tobytes()  # Set the class attribute
             byte_length = len(self._data)
             self.logger.log_message(
-                log_type=LogType.INFO,
+                log_type=LogType.SEND,
                 message=f"SendRequest {self._id}: Sending data of length {byte_length} bytes."
             )
 
@@ -145,7 +145,7 @@ class SendRequest:
                     return
 
                 if 0 < self._block_size <= self._block_counter:
-                    self.logger.log_message(log_type=LogType.INFO,
+                    self.logger.log_message(log_type=LogType.SEND,
                                             message=f"Block size limit reached. Block counter: {self._block_counter}, Block size: {self._block_size}. Waiting for next control frame.")
                     listener_thread = threading.Thread(
                         target=self.listen_for_control_frame,
@@ -156,7 +156,7 @@ class SendRequest:
                     return
 
                 if self._stmin > 0:
-                    self.logger.log_message(log_type=LogType.INFO,
+                    self.logger.log_message(log_type=LogType.SEND,
                                             message=f"Sleeping for {self._stmin / 100.0} seconds before sending the next frame.")
                     time.sleep(self._stmin / 100.0)
 
@@ -175,7 +175,7 @@ class SendRequest:
                 self._sequence_num = (self._sequence_num + 1) % 16
                 self._block_counter += 1
 
-            self.logger.log_message(log_type=LogType.INFO,
+            self.logger.log_message(log_type=LogType.SEND,
                                     message="All consecutive frames sent successfully. Ending request.")
             self._end_request()
         except Exception as e:
@@ -211,7 +211,7 @@ class SendRequest:
                 self._stmin = stmin
                 self._block_size = block_size
                 self.logger.log_message(
-                    log_type=LogType.INFO,
+                    log_type=LogType.SEND,
                     message=f"SendRequest {self._id}: Received flow control frame - Status={flow_status}, BlockSize={block_size}, STmin={stmin}"
                 )
                 if flow_status == FlowStatus.Continue:
@@ -243,7 +243,7 @@ class SendRequest:
 
     def _end_request(self):
         self._isFinished = True
-        self.logger.log_message(log_type=LogType.INFO,
+        self.logger.log_message(log_type=LogType.SEND,
                                 message=f"SendRequest {self._id}: Request completed successfully.")
 
         self._on_success()
