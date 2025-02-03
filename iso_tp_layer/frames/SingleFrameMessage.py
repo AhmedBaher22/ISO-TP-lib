@@ -18,3 +18,8 @@ class SingleFrameMessage(DataFrame):
     def __init__(self, dataLength: int, data: bitarray):
         super().__init__(FrameType.SingleFrame, data)
         self.dataLength = np.uint8(dataLength)
+
+    def __str__(self):
+        """Return a human-readable string representation of the object."""
+        return f"ConsecutiveFrameMessage(dataLength={self.dataLength}, data={self.data.tobytes().hex().upper()})"
+

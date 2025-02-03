@@ -117,7 +117,7 @@ class IsoTp:
         self._send_requests: List[SendRequest] = []
         self._control_frames: List[
             tuple[Address, FlowControlFrameMessage]] = []  # List to store control frames and addresses
-        self.logger = Logger()
+        self.logger = Logger("iso-tp")
         self.lock = threading.Lock()
         self.logger.log_message(log_type=LogType.INITIALIZATION, message="IsoTp instance initialized with provided configuration.")
 
@@ -167,7 +167,7 @@ class IsoTp:
 
     def recv(self, message: bitarray, address: Address):
         try:
-            self.logger.log_message(log_type=LogType.RECEIVE, message=f"Receiving message from {address}")
+            self.logger.log_message(log_type=LogType.RECEIVE, message=f"Receiving message: {message.tobytes().hex().upper()} from {address}")
 
             new_message = _parse_message(data=message)
 
@@ -187,7 +187,7 @@ class IsoTp:
 
                 # Check if there is an existing request with the same address
                 for request in self._recv_requests:
-                    if request.get_address() == address:
+                    if request.get_address()._txid == address._txid:
                         if request.get_state() in {"ErrorState", "FinalState"}:
                             self.logger.log_message(log_type=LogType.DEBUG, message=f"Removing completed request from {address}")
                             self._recv_requests.remove(request)  # Safe removal
@@ -210,8 +210,8 @@ class IsoTp:
                 )
 
                 # Add the new request to the list
-                self._recv_requests.append(new_request)  # Safe addition
                 self.logger.log_message(log_type=LogType.RECEIVE, message=f"Created new receive request for {address}")
+                self._recv_requests.append(new_request)  # Safe addition
 
             # Process the message using the new request (outside the lock to avoid blocking other threads)
             new_request.process(new_message)
@@ -278,9 +278,11 @@ class IsoTp:
         # Create a new thread and start it
         thread = threading.Thread(target=process_message, daemon=True, name="WorkerThread")
         thread.start()
-        # print(threading.current_thread())
-        # for thread in threading.enumerate():
-        #     print(f"Thread Name: {thread.name}, ID: {thread.ident}, Is Daemon: {thread.daemon}")
+        self.logger.log_message(log_type=LogType.RECEIVE,
+                                message=f"Started new thread (ID: {thread.ident}). Main thread continues listening to CAN bus.")
 
     def set_recv_id(self, recv_id):
         self._config.recv_id = recv_id
+        self.logger.log_message(log_type=LogType.CONFIGURATION,
+                                message=f"Recv id has been set: {recv_id}")
+

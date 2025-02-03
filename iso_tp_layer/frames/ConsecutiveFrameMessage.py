@@ -18,3 +18,7 @@ class ConsecutiveFrameMessage(DataFrame):
     def __init__(self, sequenceNumber: int, data: bitarray):
         super().__init__(FrameType.ConsecutiveFrame, data)
         self.sequenceNumber = np.uint8(sequenceNumber)
+
+    def __str__(self):
+        """Return a human-readable string representation of the object."""
+        return f"ConsecutiveFrameMessage(seq={self.sequenceNumber}, data={self.data.tobytes().hex().upper()})"
