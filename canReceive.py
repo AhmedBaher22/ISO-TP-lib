@@ -52,7 +52,7 @@ time_out_in_seconds=10
 
 try:
     # Initialize the CAN bus with the Vector interface
-    with can.Bus(interface="vector", channel=channel_number, app_name="UDSwithIsoTp", fd=fd_flag) as bus:
+    with can.Bus(interface="vector", channel=channel_number, app_name="UDS", fd=fd_flag) as bus:
         
         logger.info("CAN bus initialized successfully for receiving messages.")
         s=True

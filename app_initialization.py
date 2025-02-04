@@ -55,7 +55,7 @@ def init_uds_client(
             can_config = CANConfiguration(
                 interface=CANInterface.VECTOR,
                 channel=0,
-                app_name="udsWithIsoTp",
+                app_name="UDS",
                 fd_flag=False,
                 extended_flag=False,
                 recv_callback=isotp_layer.recv_can_message

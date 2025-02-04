@@ -17,7 +17,7 @@ from uds_layer.server import Server
 from app_initialization import init_uds_client
 
 def main():
-    client = init_uds_client(client_id=0x55)
+    client = init_uds_client()
 
     #opening session control 
     # Initialize communication with an ECU
