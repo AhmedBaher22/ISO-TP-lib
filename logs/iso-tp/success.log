@@ -50,3 +50,35 @@
 2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Expected sequence number set to 3.
 2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] Appended bits: 0F | Current message (HEX): AAE1AAE1AAE1F00F | Length: 8 bytes.
 2025-02-03 19:25:18 - INFO - RECEIVE - [RecvRequest-e28818fb] State changed to FinalState.
+2025-02-03 19:28:55 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
+2025-02-03 19:28:55 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-03 19:28:55 - INFO - RECEIVE - Receiving message: 1008AAE1AAE1AAE1 from Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:28:55 - INFO - RECEIVE - Started new thread (ID: 10004). Main thread continues listening to CAN bus..
+2025-02-03 19:28:55 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:28:55 - INFO - RECEIVE - [RecvRequest-10c173bc] Initialized with address Address(addressing_mode=0, txid=291, rxid=1), block_size=3, timeout=0ms.
+2025-02-03 19:28:55 - INFO - RECEIVE - [RecvRequest-10c173bc] Processing frame: FirstFrameMessage(dataLength=8, data=AAE1AAE1AAE1).
+2025-02-03 19:28:55 - INFO - RECEIVE - [RecvRequest-10c173bc] Data length updated to 8 bytes.
+2025-02-03 19:28:55 - INFO - RECEIVE - [RecvRequest-10c173bc] Appended bits: AAE1AAE1AAE1 | Current message (HEX): AAE1AAE1AAE1 | Length: 6 bytes.
+2025-02-03 19:28:55 - INFO - SEND - Sending frame FlowControlFrameMessage(flowStatus=<FlowStatus.Continue: 0>, blockSize=3, separationTime=0) to Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:28:55 - INFO - RECEIVE - [RecvRequest-10c173bc] Sent Flow Control Frame: FlowControlFrameMessage(flowStatus=<FlowStatus.Continue: 0>, blockSize=3, separationTime=0).
+2025-02-03 19:28:55 - INFO - RECEIVE - [RecvRequest-10c173bc] Last received time updated.
+2025-02-03 19:28:55 - INFO - RECEIVE - [RecvRequest-10c173bc] State changed to FirstFrameState.
+2025-02-03 19:28:56 - INFO - RECEIVE - Receiving message: 21F0 from Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:28:56 - INFO - RECEIVE - Started new thread (ID: 4808). Main thread continues listening to CAN bus..
+2025-02-03 19:28:56 - INFO - ACKNOWLEDGMENT - Processing message with existing request for Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Processing frame: ConsecutiveFrameMessage(seq=1, data=F0).
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Expected sequence number set to 2.
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Appended bits: F0 | Current message (HEX): AAE1AAE1AAE1F0 | Length: 7 bytes.
+2025-02-03 19:28:56 - INFO - RECEIVE - Receiving message: 220F from Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] State changed to ConsecutiveFrameState.
+2025-02-03 19:28:56 - INFO - RECEIVE - Started new thread (ID: 23328). Main thread continues listening to CAN bus..
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Last received time updated.
+2025-02-03 19:28:56 - INFO - ACKNOWLEDGMENT - Processing message with existing request for Address(addressing_mode=0, txid=291, rxid=1).
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Processing frame: ConsecutiveFrameMessage(seq=2, data=0F).
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Current block size set to 1.
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Last received time updated.
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Expected sequence number set to 3.
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] Appended bits: 0F | Current message (HEX): AAE1AAE1AAE1F00F | Length: 8 bytes.
+2025-02-03 19:28:56 - INFO - RECEIVE - [RecvRequest-10c173bc] State changed to FinalState.
+2025-02-03 22:01:45 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
+2025-02-03 22:05:55 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..

@@ -23,7 +23,7 @@ from can_layer.CanExceptions import (
 package_dir = os.path.abspath(os.path.join(package_dir, ".."))
 sys.path.append(package_dir)
 # from logger import Logger, LogType
-from CAN_TP_LIB.logger import Logger, LogType
+from logger import Logger, LogType
 
 
 class CANConfiguration:
