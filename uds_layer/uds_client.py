@@ -65,7 +65,10 @@ class UdsClient:
                     server.session = SessionType.NONE
                     self._servers.append(server)
                     self._pending_servers.remove(server)
-
+            elif requested_service == 0x28:  # Communication Control
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_communication_control_respond(data)
             elif requested_service == 0x34:  # Negative response to Request Download
                 server = self._find_server_by_can_id(address._txid, self._servers)
                 if server:
@@ -109,7 +112,12 @@ class UdsClient:
             server = self._find_server_by_can_id(address._txid, self._servers)
             if server:
                 server.on_transfer_data_respond(data)
-                
+
+        elif service_id == 0x68:  # Positive response to Communication Control
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_communication_control_respond(data)    
+                            
         elif service_id == 0x77:  # Positive response to Request Transfer Exit
             server = self._find_server_by_can_id(address._txid, self._servers)
             if server:

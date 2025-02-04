@@ -4,7 +4,7 @@ import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
-from uds_layer.uds_enums import SessionType, OperationType, OperationStatus
+from uds_layer.uds_enums import CommunicationControlSubFunction, CommunicationControlType, SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
 from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
@@ -469,6 +469,76 @@ class Server:
             error_msg = f"Transfer Exit Failed - NRC: {hex(transfer_request.NRC)}"
             print(error_msg)
             self.add_log(error_msg)
+
+    def communication_control(self, sub_function: CommunicationControlSubFunction, 
+                            control_type: CommunicationControlType) -> List[int]:
+        if not self.check_access_required(OperationType.COMMUNICATION_CONTROL):
+            error_msg = f"Error: Insufficient session level for COMMUNICATION_CONTROL. Current session: {self._session}"
+            print(error_msg)
+            self.add_log(error_msg)
+            return [0x00]
+
+        # Prepare message
+        message = [0x28, sub_function.value, control_type.value, 0x00]  # Reserved byte is 0x00
+
+        # Create and add operation
+        operation = Operation(OperationType.COMMUNICATION_CONTROL, message)
+        self.add_pending_operation(operation)
+
+        log_msg = (f"Created COMMUNICATION_CONTROL operation. "
+                  f"SubFunction: {sub_function.name}, ControlType: {control_type.name}")
+        self.add_log(log_msg)
+
+        return message
+
+    def on_communication_control_respond(self, message: List[int]):
+        if message[0] == 0x68:  # Positive response
+            # Find matching operation based on SubFunction and ControlType
+            operation = next((op for op in self._pending_operations 
+                            if op.operation_type == OperationType.COMMUNICATION_CONTROL 
+                            and op.message[1] == message[1]  # SubFunction matches
+                            and op.message[2] == message[2]  # ControlType matches
+                            ), None)
+
+            if operation:
+                operation.status = OperationStatus.COMPLETED
+                self.remove_pending_operation(operation)
+                self.add_completed_operation(operation)
+
+                sub_function = CommunicationControlSubFunction(message[1])
+                control_type = CommunicationControlType(message[2])
+                
+                success_msg = (f"Communication Control Success - "
+                             f"SubFunction: {sub_function.name}, "
+                             f"ControlType: {control_type.name}")
+                print(success_msg)
+                self.add_log(success_msg)
+
+        elif message[0] == 0x7F and message[1] == 0x28:  # Negative response
+            operation = next((op for op in self._pending_operations 
+                            if op.operation_type == OperationType.COMMUNICATION_CONTROL), None)
+            
+            if operation:
+                operation.status = OperationStatus.REJECTED
+                self.remove_pending_operation(operation)
+                self.add_completed_operation(operation)
+
+                nrc = message[2]
+                nrc_descriptions = {
+                    0x10: "General Reject",
+                    0x11: "Service Not Supported",
+                    0x12: "Sub-Function Not Supported",
+                    0x13: "Invalid Format",
+                    0x22: "Conditions Not Correct",
+                    0x31: "Request Out Of Range",
+                    0x33: "Security Access Denied",
+                    0x70: "Upload/Download Not Accepted",
+                    # Add more NRC codes as needed
+                }
+                
+                error_msg = f"Communication Control Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
+                print(error_msg)
+                self.add_log(error_msg)
 
     def get_pending_operations(self):
         return self._pending_operations

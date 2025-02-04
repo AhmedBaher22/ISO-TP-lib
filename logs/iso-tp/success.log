@@ -83,3 +83,177 @@
 2025-02-03 22:01:45 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
 2025-02-03 22:05:55 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
 2025-02-04 03:24:41 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
+2025-02-04 03:38:51 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
+2025-02-04 03:38:51 - INFO - SEND - SendRequest initialized: ID=06be3f26, Address=<uds_layer.uds_client.Address object at 0x000002373B77D1F0>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:38:51 - INFO - SEND - SendRequest 06be3f26: Sending data of length 2 bytes..
+2025-02-04 03:38:51 - INFO - SEND - SendRequest 06be3f26: Sending single frame - 021002ffffffffff.
+2025-02-04 03:38:51 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:38:51 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:38:51 - INFO - SEND - SendRequest 06be3f26: Request completed successfully..
+2025-02-04 03:38:51 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000002373B77D1F0>.
+2025-02-04 03:38:51 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U').
+2025-02-04 03:38:51 - INFO - RECEIVE - Receiving message: 06500200550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:51 - INFO - RECEIVE - Started new thread (ID: 10108). Main thread continues listening to CAN bus..
+2025-02-04 03:38:51 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:51 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:38:51 - INFO - RECEIVE - [RecvRequest-989b0357] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>), block_size=8, timeout=1000ms.
+2025-02-04 03:38:51 - INFO - RECEIVE - [RecvRequest-989b0357] Processing frame: SingleFrameMessage(dataLength=6, data=500200550155).
+2025-02-04 03:38:51 - INFO - RECEIVE - [RecvRequest-989b0357] Data length updated to 6 bytes.
+2025-02-04 03:38:51 - INFO - RECEIVE - [RecvRequest-989b0357] Appended bits: 500200550155 | Current message (HEX): 500200550155 | Length: 6 bytes.
+2025-02-04 03:38:51 - INFO - RECEIVE - [RecvRequest-989b0357] State changed to FinalState.
+2025-02-04 03:38:52 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000002371CA79610> with data: bitarray('001000100000000110010000').
+2025-02-04 03:38:52 - INFO - SEND - SendRequest initialized: ID=d23d6a66, Address=<uds_layer.uds_client.Address object at 0x000002371CA79610>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:38:52 - INFO - SEND - SendRequest d23d6a66: Sending data of length 3 bytes..
+2025-02-04 03:38:52 - INFO - SEND - SendRequest d23d6a66: Sending single frame - 03220190ffffffff.
+2025-02-04 03:38:52 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:38:52 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x03"\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:38:52 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x04b\x01\x90U').
+2025-02-04 03:38:52 - INFO - SEND - SendRequest d23d6a66: Request completed successfully..
+2025-02-04 03:38:52 - INFO - RECEIVE - Receiving message: 0462019055 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - INFO - RECEIVE - Started new thread (ID: 31136). Main thread continues listening to CAN bus..
+2025-02-04 03:38:52 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000002371CA79610>.
+2025-02-04 03:38:52 - INFO - ACKNOWLEDGMENT - Removing completed request from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:38:52 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000002373B77D850> with data: bitarray('0001000100000001').
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-ae2155cf] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>), block_size=8, timeout=1000ms.
+2025-02-04 03:38:52 - INFO - SEND - SendRequest initialized: ID=8f3e68f5, Address=<uds_layer.uds_client.Address object at 0x000002373B77D850>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:38:52 - INFO - SEND - SendRequest 8f3e68f5: Sending data of length 2 bytes..
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-ae2155cf] Processing frame: SingleFrameMessage(dataLength=4, data=62019055).
+2025-02-04 03:38:52 - INFO - SEND - SendRequest 8f3e68f5: Sending single frame - 021101ffffffffff.
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-ae2155cf] Data length updated to 4 bytes.
+2025-02-04 03:38:52 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-ae2155cf] Appended bits: 62019055 | Current message (HEX): 62019055 | Length: 4 bytes.
+2025-02-04 03:38:52 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x02\x11\x01\xff\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-ae2155cf] State changed to FinalState.
+2025-02-04 03:38:52 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x03\x7f\x11\x12').
+2025-02-04 03:38:52 - INFO - SEND - SendRequest 8f3e68f5: Request completed successfully..
+2025-02-04 03:38:52 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000002373B77D850>.
+2025-02-04 03:38:52 - INFO - RECEIVE - Receiving message: 037F1112 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - INFO - RECEIVE - Started new thread (ID: 13632). Main thread continues listening to CAN bus..
+2025-02-04 03:38:52 - INFO - ACKNOWLEDGMENT - Removing completed request from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:38:52 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000002373B77DD00> with data: bitarray('001011100000000110010000').
+2025-02-04 03:38:52 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - INFO - SEND - SendRequest initialized: ID=8cddbe37, Address=<uds_layer.uds_client.Address object at 0x000002373B77DD00>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:38:52 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x03.\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:38:52 - INFO - SEND - SendRequest 8cddbe37: Request completed successfully..
+2025-02-04 03:38:52 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x03n\x01\x90').
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-c35f18da] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>), block_size=8, timeout=1000ms.
+2025-02-04 03:38:52 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000002373B77DD00>.
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-c35f18da] Processing frame: SingleFrameMessage(dataLength=3, data=7F1112).
+2025-02-04 03:38:52 - INFO - RECEIVE - Receiving message: 036E0190 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - INFO - RECEIVE - Started new thread (ID: 26472). Main thread continues listening to CAN bus..
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-c35f18da] Data length updated to 3 bytes.
+2025-02-04 03:38:52 - INFO - ACKNOWLEDGMENT - Processing message with existing request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002371A4DF260>>).
+2025-02-04 03:38:52 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-c35f18da] Appended bits: 7F1112 | Current message (HEX): 7F1112 | Length: 3 bytes.
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-c35f18da] Processing frame: SingleFrameMessage(dataLength=3, data=6E0190).
+2025-02-04 03:38:52 - INFO - RECEIVE - [RecvRequest-c35f18da] State changed to FinalState.
+2025-02-04 03:40:20 - INFO - INITIALIZATION - IsoTp instance initialized with provided configuration..
+2025-02-04 03:40:20 - INFO - SEND - SendRequest initialized: ID=9cad9b67, Address=<uds_layer.uds_client.Address object at 0x000001CD68440920>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:40:20 - INFO - SEND - SendRequest 9cad9b67: Sending data of length 2 bytes..
+2025-02-04 03:40:20 - INFO - SEND - SendRequest 9cad9b67: Sending single frame - 021002ffffffffff.
+2025-02-04 03:40:20 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:40:20 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x02\x10\x02\xff\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:40:20 - INFO - SEND - SendRequest 9cad9b67: Request completed successfully..
+2025-02-04 03:40:20 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000001CD68440920>.
+2025-02-04 03:40:20 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U').
+2025-02-04 03:40:20 - INFO - RECEIVE - Receiving message: 06500200550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:20 - INFO - RECEIVE - Started new thread (ID: 14248). Main thread continues listening to CAN bus..
+2025-02-04 03:40:20 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:20 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:40:20 - INFO - RECEIVE - [RecvRequest-3eb02f10] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>), block_size=8, timeout=1000ms.
+2025-02-04 03:40:20 - INFO - RECEIVE - [RecvRequest-3eb02f10] Processing frame: SingleFrameMessage(dataLength=6, data=500200550155).
+2025-02-04 03:40:20 - INFO - RECEIVE - [RecvRequest-3eb02f10] Data length updated to 6 bytes.
+2025-02-04 03:40:20 - INFO - RECEIVE - [RecvRequest-3eb02f10] Appended bits: 500200550155 | Current message (HEX): 500200550155 | Length: 6 bytes.
+2025-02-04 03:40:20 - INFO - RECEIVE - [RecvRequest-3eb02f10] State changed to FinalState.
+2025-02-04 03:40:21 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001CD479DF4D0> with data: bitarray('001000100000000110010000').
+2025-02-04 03:40:21 - INFO - SEND - SendRequest initialized: ID=0a355905, Address=<uds_layer.uds_client.Address object at 0x000001CD479DF4D0>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 0a355905: Sending data of length 3 bytes..
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 0a355905: Sending single frame - 03220190ffffffff.
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:40:21 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x03"\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 0a355905: Request completed successfully..
+2025-02-04 03:40:21 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000001CD479DF4D0>.
+2025-02-04 03:40:21 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001CD683EAA50> with data: bitarray('0001000100000001').
+2025-02-04 03:40:21 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x04b\x01\x90U').
+2025-02-04 03:40:21 - INFO - SEND - SendRequest initialized: ID=00a77c7c, Address=<uds_layer.uds_client.Address object at 0x000001CD683EAA50>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>), block_size=8, timeout=1000ms.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest initialized: ID=00a77c7c, Address=<uds_layer.uds_client.Address object at 0x000001CD683EAA50>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 00a77c7c: Sending data of length 2 bytes..
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>), block_size=8, timeout=1000ms.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Processing frame: SingleFrameMessage(dataLength=4, data=62019055).
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 00a77c7c: Sending data of length 2 bytes..
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 00a77c7c: Sending single frame - 021101ffffffffff.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Processing frame: SingleFrameMessage(dataLength=4, data=62019055).
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Data length updated to 4 bytes.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 00a77c7c: Sending single frame - 021101ffffffffff.
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Data length updated to 4 bytes.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Appended bits: 62019055 | Current message (HEX): 62019055 | Length: 4 bytes.
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] Appended bits: 62019055 | Current message (HEX): 62019055 | Length: 4 bytes.
+2025-02-04 03:40:21 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x02\x11\x01\xff\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:40:21 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x02\x11\x01\xff\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] State changed to FinalState.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-1955a5a6] State changed to FinalState.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 00a77c7c: Request completed successfully..
+2025-02-04 03:40:21 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x03\x7f\x11\x12').
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 00a77c7c: Request completed successfully..
+2025-02-04 03:40:21 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x03\x7f\x11\x12').
+2025-02-04 03:40:21 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000001CD683EAA50>.
+2025-02-04 03:40:21 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000001CD683EAA50>.
+2025-02-04 03:40:21 - INFO - RECEIVE - Receiving message: 037F1112 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - RECEIVE - Receiving message: 037F1112 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - RECEIVE - Started new thread (ID: 23168). Main thread continues listening to CAN bus..
+2025-02-04 03:40:21 - INFO - RECEIVE - Started new thread (ID: 23168). Main thread continues listening to CAN bus..
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - Removing completed request from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - Removing completed request from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001CD683096A0> with data: bitarray('001011100000000110010000').
+2025-02-04 03:40:21 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001CD683096A0> with data: bitarray('001011100000000110010000').
+2025-02-04 03:40:21 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:40:21 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:40:21 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - SEND - SendRequest initialized: ID=525a95a4, Address=<uds_layer.uds_client.Address object at 0x000001CD683096A0>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>), block_size=8, timeout=1000ms.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest initialized: ID=525a95a4, Address=<uds_layer.uds_client.Address object at 0x000001CD683096A0>, Timeout=1000, STmin=10, BlockSize=8.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 525a95a4: Sending data of length 3 bytes..
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>), block_size=8, timeout=1000ms.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Processing frame: SingleFrameMessage(dataLength=3, data=7F1112).
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 525a95a4: Sending data of length 3 bytes..
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 525a95a4: Sending single frame - 032e0190ffffffff.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Processing frame: SingleFrameMessage(dataLength=3, data=7F1112).
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Data length updated to 3 bytes.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 525a95a4: Sending single frame - 032e0190ffffffff.
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Data length updated to 3 bytes.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Appended bits: 7F1112 | Current message (HEX): 7F1112 | Length: 3 bytes.
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - ISO-TP calls CAN's send function.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] Appended bits: 7F1112 | Current message (HEX): 7F1112 | Length: 3 bytes.
+2025-02-04 03:40:21 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x03.\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:40:21 - INFO - SEND - Message sent: ID=0x33, Data=bytearray(b'\x03.\x01\x90\xff\xff\xff\xff'), Attempts remaining: 3.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] State changed to FinalState.
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 525a95a4: Request completed successfully..
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-a8925f70] State changed to FinalState.
+2025-02-04 03:40:21 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x03n\x01\x90').
+2025-02-04 03:40:21 - INFO - SEND - SendRequest 525a95a4: Request completed successfully..
+2025-02-04 03:40:21 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000001CD683096A0>.
+2025-02-04 03:40:21 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x03n\x01\x90').
+2025-02-04 03:40:21 - INFO - SEND - Successfully sent message to <uds_layer.uds_client.Address object at 0x000001CD683096A0>.
+2025-02-04 03:40:21 - INFO - RECEIVE - Receiving message: 036E0190 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - RECEIVE - Receiving message: 036E0190 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - Removing completed request from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - ACKNOWLEDGMENT - Removing completed request from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - INFO - RECEIVE - Started new thread (ID: 31704). Main thread continues listening to CAN bus..
+2025-02-04 03:40:21 - INFO - RECEIVE - Started new thread (ID: 31704). Main thread continues listening to CAN bus..
+2025-02-04 03:40:21 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - WARNING - WARNING - No message received within timeout period (900s).
+e=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>).
+2025-02-04 03:40:21 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-c6cbb182] Initialized with address Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001CD46FBF320>>), block_size=8, timeout=1000ms.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-c6cbb182] Processing frame: SingleFrameMessage(dataLength=3, data=6E0190).
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-c6cbb182] Data length updated to 3 bytes.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-c6cbb182] Appended bits: 6E0190 | Current message (HEX): 6E0190 | Length: 3 bytes.
+2025-02-04 03:40:21 - INFO - RECEIVE - [RecvRequest-c6cbb182] State changed to FinalState.
