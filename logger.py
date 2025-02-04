@@ -16,7 +16,7 @@ class LogType(Enum):
 
 
 class Logger:
-    def __init__(self, log_directory="iso-tp"):
+    def __init__(self, log_directory):
         """
         Initialize the logger with two log files:
         - success.log: Contains all logs except errors.

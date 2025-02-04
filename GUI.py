@@ -3,12 +3,8 @@
 from global_data import global_uploaded_bytes
 from uds_layer.uds_enums import CommunicationControlSubFunction, CommunicationControlType
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtCore import QTimer, QFileSystemWatcher, Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton, QMessageBox, QTableWidget
+from PyQt5.QtCore import QTimer, QFileSystemWatcher, Qt, QTimer
 from uds_layer.uds_client import UdsClient
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QTableWidget
-from PyQt5.QtCore import QTimer
 import os
 import sys
 import time
@@ -18,8 +14,6 @@ from PyQt5.QtWidgets import (
     QLineEdit, QComboBox, QPushButton, QTextEdit, QFileDialog,
     QMessageBox, QTableWidget, QTableWidgetItem, QHeaderView, QProgressBar, QCheckBox
 )
-from PyQt5.QtCore import Qt, QTimer, QFileSystemWatcher
-from PyQt5.QtGui import QTextCursor
 from typing import Optional
 
 
@@ -116,7 +110,7 @@ class ServersManagementPage(QWidget):
             if servers:
                 server = servers[-1]
                 self.servers[rxid] = server
-                self._update_server_table()
+                self._update_server_table(session)
                 QMessageBox.information(self, "Connected", f"Connected to Server {
                                         hex(rxid)} in {session.name} session.")
             else:
@@ -138,20 +132,17 @@ class ServersManagementPage(QWidget):
         server_id = list(self.servers.keys())[row]
         del self.servers[server_id]  # Remove the server from the dictionary
 
-        self._update_server_table()
+        self._update_server_table(session="null")
         QMessageBox.information(
             self, "Removed", f"Disconnected from Server {hex(server_id)}.")
 
-    def _update_server_table(self):
+    def _update_server_table(self, session):
         """ Update the table with the list of connected servers """
         self.server_table.setRowCount(len(self.servers))
         for i, (rxid, server) in enumerate(self.servers.items()):
             item = QTableWidgetItem(
-                f"Server {hex(rxid)} ({server.session.name})")
+                f"Server {hex(rxid)} ({session})")
             self.server_table.setItem(i, 0, item)
-
-
-# Ensure the global variable is imported from your global_data module
 
 
 class ReadByIdentifierPage(QWidget):
@@ -613,13 +604,13 @@ class FlashPage(QWidget):
     def __init__(self, client, server_table, parent=None):
         """
         FlashPage now receives a reference to the server table so that the selected
-        server's ID is used for the flash operation.
+        server's ID is used for the flash operation. We'll call client.transfer_NEW_data_to_ecu(...)
+        instead of creating a local TransferRequest.
         """
         super().__init__(parent)
         self.client = client
         self.server_table = server_table
         self.firmware_data: Optional[bytearray] = None
-        self.transfer_request: Optional[TransferRequest] = None
         self._init_ui()
 
     def _init_ui(self):
@@ -640,7 +631,8 @@ class FlashPage(QWidget):
 
         # Memory address input
         self.address_input = QLineEdit()
-        self.address_input.setPlaceholderText("Enter Memory Address (hex)")
+        self.address_input.setPlaceholderText(
+            "Enter Memory Address (hex), e.g. 0x1000")
         layout.addWidget(QLabel("Memory Address:"))
         layout.addWidget(self.address_input)
 
@@ -662,19 +654,12 @@ class FlashPage(QWidget):
         self.checksum_checkbox = QCheckBox("Checksum Required")
         layout.addWidget(self.checksum_checkbox)
 
-        # Max Block Length input (user-specified instead of hard-coded)
-        self.block_length_input = QLineEdit()
-        self.block_length_input.setPlaceholderText(
-            "Enter Max Block Length (decimal)")
-        layout.addWidget(QLabel("Max Block Length:"))
-        layout.addWidget(self.block_length_input)
-
         # Flash button
         self.flash_btn = QPushButton("Start Flash")
         self.flash_btn.clicked.connect(self.start_flash)
         layout.addWidget(self.flash_btn)
 
-        # Progress bar
+        # (Optional) Progress bar if you want to keep a local user feedback:
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
@@ -708,6 +693,7 @@ class FlashPage(QWidget):
                 self.firmware_data = None
 
     def start_flash(self):
+        """Called when user clicks the 'Start Flash' button."""
         if not self.firmware_data:
             QMessageBox.critical(
                 self, "Error", "No firmware file selected or parsing failed.")
@@ -719,20 +705,21 @@ class FlashPage(QWidget):
             QMessageBox.warning(
                 self, "Warning", "Please select a server from the server table.")
             return
+
         try:
             server_text = self.server_table.item(selected_row, 0).text()
             # Assume server text format: "Server 0x33 (SESSION_NAME)"
-            server_id = int(server_text.split()[1], 16)
+            recv_DA = int(server_text.split()[1], 16)
         except Exception:
             QMessageBox.critical(
-                self, "Error", "Failed to parse server ID from table.")
+                self, "Error", "Failed to parse server ID from the table.")
             return
 
-        # Get Memory Address input
+        # Parse memory address
         address_str = self.address_input.text().strip()
         if not address_str.startswith("0x"):
             QMessageBox.critical(
-                self, "Error", "Memory Address must be in hexadecimal format.")
+                self, "Error", "Memory Address must be in hexadecimal format (e.g., 0x1000).")
             return
         try:
             memory_address = bytearray.fromhex(address_str[2:])
@@ -744,48 +731,38 @@ class FlashPage(QWidget):
         compression_method = self.compression_combo.currentData()
         checksum_required = self.checksum_checkbox.isChecked()
 
-        # Retrieve max block length from user input.
+        # -----------------------------------------------
+        # Instead of building TransferRequest locally,
+        # we call the client's "transfer_NEW_data_to_ecu"
+        # method with the parsed parameters.
+        # -----------------------------------------------
+        # (We assume your `client` object has a method
+        #  `transfer_NEW_data_to_ecu(recv_DA, data, encryption_method, ...)`
+        #   as given in your snippet.)
+        # If that method is synchronous, we call it directly:
         try:
-            block_length_str = self.block_length_input.text().strip()
-            if not block_length_str:
-                raise ValueError("Max Block Length is required.")
-            max_block_length = int(block_length_str)
-        except Exception as e:
-            QMessageBox.critical(
-                self, "Error", f"Invalid Max Block Length: {e}")
-            return
+            # You can optionally set the progress bar to 0/indeterminate here
+            self.progress_bar.setValue(0)
 
-        # Use the selected server's CAN ID as the receiver DA.
-        recv_DA = server_id
+            self.client.transfer_NEW_data_to_ecu(
+                recv_DA=recv_DA,
+                data=self.firmware_data,
+                encryption_method=encryption_method,
+                compression_method=compression_method,
+                memory_address=memory_address,
+                checksum_required=checksum_required
+            )
 
-        # Create the transfer request with user-specified parameters.
-        self.transfer_request = TransferRequest(
-            recv_DA=recv_DA,
-            data=self.firmware_data,
-            encryption_method=encryption_method,
-            compression_method=compression_method,
-            memory_address=memory_address,
-            checksum_required=checksum_required
-        )
-        self.transfer_request.max_number_of_block_length = max_block_length
-        self.transfer_request.calculate_steps_number()
-
-        self.current_step = 0
-        self.total_steps = self.transfer_request.steps_number
-        self.progress_bar.setValue(0)
-        self.flash_timer = QTimer(self)
-        self.flash_timer.timeout.connect(self._update_flash_progress)
-        self.flash_timer.start(200)  # Update every 200 milliseconds
-
-    def _update_flash_progress(self):
-        self.current_step += 1
-        progress_percent = int((self.current_step / self.total_steps) * 100)
-        self.progress_bar.setValue(progress_percent)
-        if self.current_step >= self.total_steps:
-            self.flash_timer.stop()
-            self.transfer_request.status = TransferStatus.COMPLETED
+            # If it succeeds, you can finalize the UI
+            # (If your method is asynchronous, you might do some other approach.)
+            self.progress_bar.setValue(100)
             QMessageBox.information(
                 self, "Flash Completed", "Firmware flash operation completed successfully.")
+
+        except Exception as e:
+            # If an exception is raised, show an error
+            QMessageBox.critical(self, "Flash Error",
+                                 f"An error occurred: {e}")
 
 
 # ==============================
@@ -889,7 +866,7 @@ class PerServerLogPage(LiveLogPage):
 
 
 class GlobalLogPage(LiveLogPage):
-    def __init__(self, log_file="logs/uds/success.log", parent=None, update_interval=1000):
+    def __init__(self, log_file="logs/iso-tp/success.log", parent=None, update_interval=1000):
         title = "Global Log for All Servers"
         placeholder_text = "Global logs will appear here..."
         super().__init__(title, log_file, placeholder_text, parent, update_interval)
