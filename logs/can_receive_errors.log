@@ -1,3 +1,4 @@
 2025-01-27 02:08:24 - ERROR - Error: Unexpected exception occurred: 'Message' object has no attribute '_data'
 2025-01-27 11:34:13 - ERROR - Error: VectorInitializationError: xlGetChannelIndex failed (XL_ERR_HW_NOT_PRESENT) [Error Code 129], Details: Vector CAN hardware not detected or configured incorrectly. Check connections and drivers.
 2025-01-27 16:11:45 - ERROR - Error: VectorInitializationError: xlGetChannelIndex failed (XL_ERR_HW_NOT_PRESENT) [Error Code 129], Details: Vector CAN hardware not detected or configured incorrectly. Check connections and drivers.
+2025-02-04 15:58:40 - ERROR - Error: Unexpected exception occurred: can't concat int to bytearray

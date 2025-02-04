@@ -1,0 +1,74 @@
+2025-02-04 14:26:14 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 14:26:14 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U').
+2025-02-04 14:26:14 - INFO - RECEIVE - Receiving message: 06500200550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001F3EFE1F0B0>>).
+2025-02-04 14:26:14 - INFO - RECEIVE - Started new thread (ID: 21844). Main thread continues listening to CAN bus..
+2025-02-04 14:26:14 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001F3EFE1F0B0>>).
+2025-02-04 14:26:14 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 14:26:41 - INFO - RECEIVE - Receiving message: 06500200550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002A6580DF080>>).
+2025-02-04 14:26:41 - INFO - RECEIVE - Started new thread (ID: 11992). Main thread continues listening to CAN bus..
+2025-02-04 14:26:41 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002A6580DF080>>).
+2025-02-04 14:26:41 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 14:26:41 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 14:43:41 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001AF04FEF080>>).
+2025-02-04 14:43:41 - INFO - RECEIVE - Started new thread (ID: 26396). Main thread continues listening to CAN bus..
+2025-02-04 14:43:41 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001AF04FEF080>>).
+2025-02-04 14:43:41 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 14:43:41 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 15:44:19 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x06P\x02\x00U\x01U').
+2025-02-04 15:44:19 - INFO - RECEIVE - Receiving message: 06500200550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000016C2E45F080>>).
+2025-02-04 15:44:19 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000016C2E45F080>>).
+2025-02-04 15:44:19 - INFO - RECEIVE - Started new thread (ID: 28232). Main thread continues listening to CAN bus..
+2025-02-04 15:44:19 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 15:44:19 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 15:45:13 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001199779F080>>).
+2025-02-04 15:45:13 - INFO - RECEIVE - Started new thread (ID: 28084). Main thread continues listening to CAN bus..
+2025-02-04 15:45:13 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001199779F080>>).
+2025-02-04 15:45:13 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 15:45:13 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 15:47:54 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000021894ECF080>>).
+2025-02-04 15:47:54 - INFO - RECEIVE - Started new thread (ID: 23968). Main thread continues listening to CAN bus..
+2025-02-04 15:47:54 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000021894ECF080>>).
+2025-02-04 15:47:54 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 15:47:54 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 15:52:05 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001C530B1F080>>).
+2025-02-04 15:52:05 - INFO - RECEIVE - Started new thread (ID: 20080). Main thread continues listening to CAN bus..
+2025-02-04 15:52:05 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001C530B1F080>>).
+2025-02-04 15:52:05 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 15:52:05 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 15:54:39 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x06P\x03\x00U\x01U').
+2025-02-04 15:54:39 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001DD210AF080>>).
+2025-02-04 15:54:39 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001DD210AF080>>).
+2025-02-04 15:54:39 - INFO - RECEIVE - Started new thread (ID: 25632). Main thread continues listening to CAN bus..
+2025-02-04 15:54:39 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 15:54:39 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 15:55:47 - INFO - RECEIVE - Message received: ID=0x33, Data=bytearray(b'\x06P\x03\x00U\x01U').
+2025-02-04 15:55:47 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 15:55:47 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001650D66F080>>).
+2025-02-04 15:55:47 - INFO - RECEIVE - Started new thread (ID: 29304). Main thread continues listening to CAN bus..
+2025-02-04 15:55:47 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001650D66F080>>).
+2025-02-04 15:55:47 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 15:58:39 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000021165C3F080>>).
+2025-02-04 15:58:39 - INFO - RECEIVE - Started new thread (ID: 21912). Main thread continues listening to CAN bus..
+2025-02-04 15:58:39 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000021165C3F080>>).
+2025-02-04 15:58:39 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 15:58:39 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 16:02:16 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002F46394F080>>).
+2025-02-04 16:02:16 - INFO - RECEIVE - Started new thread (ID: 15528). Main thread continues listening to CAN bus..
+2025-02-04 16:02:16 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000002F46394F080>>).
+2025-02-04 16:02:16 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 16:02:16 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 16:10:53 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x00000216EE3DF080>>).
+2025-02-04 16:10:53 - INFO - RECEIVE - Started new thread (ID: 12448). Main thread continues listening to CAN bus..
+2025-02-04 16:10:53 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x00000216EE3DF080>>).
+2025-02-04 16:10:53 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 16:10:53 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 16:13:06 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001C70495F080>>).
+2025-02-04 16:13:06 - INFO - RECEIVE - Started new thread (ID: 22936). Main thread continues listening to CAN bus..
+2025-02-04 16:13:06 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x000001C70495F080>>).
+2025-02-04 16:13:06 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 16:13:06 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.
+2025-02-04 16:15:43 - INFO - RECEIVE - Receiving message: 06500300550155 from Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000023B498CB590>>).
+2025-02-04 16:15:43 - INFO - RECEIVE - Started new thread (ID: 15216). Main thread continues listening to CAN bus..
+2025-02-04 16:15:43 - INFO - RECEIVE - Created new receive request for Address(addressing_mode=0, txid=51, rxid=<bound method UdsClient.get_client_id of <uds_layer.uds_client.UdsClient object at 0x0000023B498CB590>>).
+2025-02-04 16:15:43 - WARNING - WARNING - No message received within timeout period (900s).
+2025-02-04 16:15:43 - INFO - ACKNOWLEDGMENT - Server 51 Added successfully.

@@ -10,3 +10,116 @@
 2025-02-04 03:40:20 - INFO - INITIALIZATION - CAN reception thread started successfully.
 2025-02-04 03:40:20 - INFO - CONFIGURATION - Send callable function from CAN has been set.
 2025-02-04 03:40:20 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001CD68440920> with data: bitarray('0001000000000010').
+2025-02-04 04:50:12 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 04:50:12 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 04:50:12 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 04:50:12 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 04:50:12 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 04:50:12 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001F16654CB90> with data: bitarray('0001000000000010').
+2025-02-04 04:50:26 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 04:50:26 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 04:50:26 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 04:50:26 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 04:50:26 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 04:50:26 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x0000016B5B0BDBB0> with data: bitarray('0001000000000010').
+2025-02-04 14:08:34 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 14:08:34 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 14:08:34 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 14:08:34 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 14:08:34 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 14:08:34 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001FD71E8BCB0> with data: bitarray('0001000000000010').
+2025-02-04 14:26:14 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 14:26:14 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 14:26:14 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 14:26:14 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 14:26:14 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 14:26:14 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001F3FF1AEAE0> with data: bitarray('0001000000000010').
+2025-02-04 14:26:41 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 14:26:41 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 14:26:41 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 14:26:41 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 14:26:41 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 14:26:41 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000002A6794F3980> with data: bitarray('0001000000000010').
+2025-02-04 14:28:52 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 14:28:52 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 14:28:52 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 14:28:52 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 14:28:52 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 14:28:52 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x00000141A12EF6E0> with data: bitarray('0001000000000011').
+2025-02-04 14:43:41 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 14:43:41 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 14:43:41 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 14:43:41 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 14:43:41 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 14:43:41 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001AF2641CE60> with data: bitarray('0001000000000011').
+2025-02-04 15:44:19 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 15:44:19 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 15:44:19 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 15:44:19 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 15:44:19 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 15:44:19 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x0000016C4EE4CFE0> with data: bitarray('0001000000000011').
+2025-02-04 15:45:13 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 15:45:13 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 15:45:13 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 15:45:13 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 15:45:13 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 15:45:13 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x00000119B8BF19A0> with data: bitarray('0001000000000011').
+2025-02-04 15:47:54 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 15:47:54 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 15:47:54 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 15:47:54 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 15:47:54 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 15:47:54 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x00000218B625F7D0> with data: bitarray('0001000000000011').
+2025-02-04 15:52:05 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 15:52:05 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 15:52:05 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 15:52:05 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 15:52:05 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 15:52:05 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001C5471EDF70> with data: bitarray('0001000000000011').
+2025-02-04 15:54:39 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 15:54:39 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 15:54:39 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 15:54:39 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 15:54:39 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 15:54:39 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001DD42493DA0> with data: bitarray('0001000000000011').
+2025-02-04 15:55:47 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 15:55:47 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 15:55:47 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 15:55:47 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 15:55:47 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 15:55:47 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001652DF2B0B0> with data: bitarray('0001000000000011').
+2025-02-04 15:58:39 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 15:58:39 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 15:58:39 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 15:58:39 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 15:58:39 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 15:58:39 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000002117F060590> with data: bitarray('0001000000000011').
+2025-02-04 16:02:16 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 16:02:16 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 16:02:16 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 16:02:16 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 16:02:16 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 16:02:16 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000002F47EC5B0B0> with data: bitarray('0001000000000011').
+2025-02-04 16:10:53 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 16:10:53 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 16:10:53 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 16:10:53 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 16:10:53 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 16:10:53 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x00000216FF7BEE10> with data: bitarray('0001000000000011').
+2025-02-04 16:13:06 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 16:13:06 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 16:13:06 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 16:13:06 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 16:13:06 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 16:13:06 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x000001C704D74A40> with data: bitarray('0001000000000011').
+2025-02-04 16:15:43 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 16:15:43 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 16:15:43 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 16:15:43 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 16:15:43 - INFO - CONFIGURATION - Send callable function from CAN has been set.
+2025-02-04 16:15:43 - INFO - SEND - Sending message to <uds_layer.uds_client.Address object at 0x0000023B4998EF00> with data: bitarray('0001000000000011').
+2025-02-04 16:31:19 - INFO - INITIALIZATION - CAN bus initialized successfully.
+2025-02-04 16:31:19 - INFO - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}].
+2025-02-04 16:31:19 - INFO - INITIALIZATION - Starting CAN message reception loop.
+2025-02-04 16:31:19 - INFO - INITIALIZATION - CAN reception thread started successfully.
+2025-02-04 16:31:19 - INFO - CONFIGURATION - Send callable function from CAN has been set.
