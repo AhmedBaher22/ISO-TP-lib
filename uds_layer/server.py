@@ -540,6 +540,82 @@ class Server:
                 print(error_msg)
                 self.add_log(error_msg)
 
+    def erase_memory(self, memory_address: bytearray, memory_size: bytearray) -> List[int]:
+        if not self.check_access_required(OperationType.ERASE_MEMORY):
+            error_msg = f"Error: Insufficient session level for ERASE_MEMORY. Current session: {self._session}"
+            print(error_msg)
+            self.add_log(error_msg)
+            return [0x00]
+
+        # Calculate AddressAndSizeFormat
+        address_length = len(memory_address)
+        size_length = len(memory_size)
+        address_and_size_format = (address_length << 4) | size_length
+
+        # Prepare message
+        message = [0x31, 0x01, 0xFF, 0x00, address_and_size_format]
+        message.extend(memory_address)
+        message.extend(memory_size)
+        message.append(0x00)  # Reserved byte
+
+        # Create and add operation
+        operation = Operation(OperationType.ERASE_MEMORY, message)
+        self.add_pending_operation(operation)
+
+        log_msg = (f"Created ERASE_MEMORY operation. "
+                  f"Address Length: {address_length}, "
+                  f"Size Length: {size_length}, "
+                  f"Address: {[hex(x) for x in memory_address]}, "
+                  f"Size: {[hex(x) for x in memory_size]}")
+        self.add_log(log_msg)
+
+        return message
+
+    def on_erase_memory_respond(self, message: List[int]):
+        if message[0] == 0x71:  # Positive response
+            # Find matching operation based on routine identifier bytes
+            operation = next((op for op in self._pending_operations 
+                            if op.operation_type == OperationType.ERASE_MEMORY 
+                            and op.message[1] == message[1]  # 0x01
+                            and op.message[2] == message[2]  # 0xFF
+                            and op.message[3] == message[3]  # 0x00
+                            ), None)
+
+            if operation:
+                operation.status = OperationStatus.COMPLETED
+                self.remove_pending_operation(operation)
+                self.add_completed_operation(operation)
+
+                success_msg = "Memory Erase Operation Completed Successfully"
+                print(success_msg)
+                self.add_log(success_msg)
+
+        elif message[0] == 0x7F and message[1] == 0x31:  # Negative response
+            operation = next((op for op in self._pending_operations 
+                            if op.operation_type == OperationType.ERASE_MEMORY), None)
+            
+            if operation:
+                operation.status = OperationStatus.REJECTED
+                self.remove_pending_operation(operation)
+                self.add_completed_operation(operation)
+
+                nrc = message[2]
+                nrc_descriptions = {
+                    0x10: "General Reject",
+                    0x11: "Service Not Supported",
+                    0x12: "Sub-Function Not Supported",
+                    0x13: "Invalid Format",
+                    0x22: "Conditions Not Correct",
+                    0x31: "Request Out Of Range",
+                    0x33: "Security Access Denied",
+                    0x72: "General Programming Failure",
+                    # Add more NRC codes as needed
+                }
+                
+                error_msg = f"Memory Erase Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
+                print(error_msg)
+                self.add_log(error_msg)
+
     def get_pending_operations(self):
         return self._pending_operations
     

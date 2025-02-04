@@ -16,7 +16,7 @@ class OperationType(Enum):
     REQUEST_DOWNLOAD = auto()
     REQUEST_TRANSFER_EXIT = auto()
     COMMUNICATION_CONTROL =auto()
-
+    ERASE_MEMORY=auto()
 
 class OperationStatus(Enum):
     PENDING = auto()
