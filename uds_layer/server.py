@@ -8,6 +8,7 @@ from uds_layer.uds_enums import SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
 from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
+import zlib  # For CRC32 calculation
 
 class Server:
     def __init__(self, can_id: [int]):
@@ -353,7 +354,117 @@ class Server:
             self.add_log(error_msg)
 
 
-    def request_transfer_exit(self):
-        pass
+    def transfer_data(self, transfer_request: TransferRequest) -> List[int]:
+        if transfer_request.status != TransferStatus.SENDING_BLOCKS_IN_PROGRESS:
+            error_msg = f"Invalid transfer status for TRANSFER_DATA: {transfer_request.status}"
+            print(error_msg)
+            self.add_log(error_msg)
+            return [0x00]
+
+        # Prepare BlockSequenceCounter
+        block_sequence_counter = (transfer_request.current_number_of_steps + 1) & 0xFF
+
+        # Calculate data slice indices
+        start_idx = transfer_request.current_number_of_steps * transfer_request.max_number_of_block_length
+        
+        if transfer_request.max_number_of_block_length == 0:
+            # Use all data if MaxNumberOfBlockLength is 0
+            data_record = list(transfer_request.data)
+        else:
+            end_idx = min(start_idx + transfer_request.max_number_of_block_length, 
+                         transfer_request.data_size)
+            data_record = list(transfer_request.data[start_idx:end_idx])
+
+        # Prepare message
+        message = [0x36, block_sequence_counter] + data_record
+
+        # Increment counter
+        transfer_request.current_number_of_steps = (transfer_request.current_number_of_steps + 1) & 0xFF
+
+        log_msg = f"Created TRANSFER_DATA message. Block: {block_sequence_counter}, Data size: {len(data_record)}"
+        self.add_log(log_msg)
+        
+        return message
+
+    def on_transfer_data_respond(self, message: List[int]):
+        transfer_request = next((req for req in self.transfer_requests 
+                               if req.status == TransferStatus.SENDING_BLOCKS_IN_PROGRESS), None)
+        
+        if not transfer_request:
+            error_msg = "No transfer request in progress"
+            print(error_msg)
+            self.add_log(error_msg)
+            return
+
+        if message[0] == 0x76:  # Positive response
+            block_sequence_counter = message[1]
+            
+            if block_sequence_counter != transfer_request.current_number_of_steps:
+                transfer_request.status = TransferStatus.REJECTED
+                transfer_request.NRC = 0x73  # Wrong Block Sequence Counter
+                error_msg = "Wrong Block Sequence Counter"
+                print(error_msg)
+                self.add_log(error_msg)
+                return
+
+            if (transfer_request.current_number_of_steps * transfer_request.max_number_of_block_length 
+                    > transfer_request.data_size) or transfer_request.max_number_of_block_length == 0:
+                transfer_request.status = TransferStatus.COMPLETED
+                return self.request_transfer_exit(transfer_request)
+            else:
+                return self.transfer_data(transfer_request)
+
+        elif message[0] == 0x7F:  # Negative response
+            transfer_request.status = TransferStatus.REJECTED
+            transfer_request.NRC = message[2]
+            error_msg = f"Transfer Data Failed - NRC: {hex(transfer_request.NRC)}"
+            print(error_msg)
+            self.add_log(error_msg)
+
+    def request_transfer_exit(self, transfer_request: TransferRequest) -> List[int]:
+        if transfer_request.status != TransferStatus.COMPLETED:
+            error_msg = f"Invalid transfer status for REQUEST_TRANSFER_EXIT: {transfer_request.status}"
+            print(error_msg)
+            self.add_log(error_msg)
+            return [0x00]
+
+        if transfer_request.checksum_required:
+            crc = self.calculate_crc32(transfer_request.data)
+            message = [0x37] + list(crc)
+        else:
+            message = [0x37]
+
+        log_msg = f"Created REQUEST_TRANSFER_EXIT message. Checksum: {transfer_request.checksum_required}"
+        self.add_log(log_msg)
+        
+        return message
+
+    def on_request_transfer_exit_respond(self, message: List[int]):
+        transfer_request = next((req for req in self.transfer_requests 
+                               if req.status == TransferStatus.COMPLETED), None)
+        
+        if not transfer_request:
+            error_msg = "No completed transfer request found"
+            print(error_msg)
+            self.add_log(error_msg)
+            return
+
+        if message[0] == 0x77:  # Positive response
+            transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
+            success_msg = "Transfer completed successfully"
+            print(success_msg)
+            self.add_log(success_msg)
+        
+        elif message[0] == 0x7F:  # Negative response
+            transfer_request.status = TransferStatus.REJECTED
+            transfer_request.NRC = message[2]
+            error_msg = f"Transfer Exit Failed - NRC: {hex(transfer_request.NRC)}"
+            print(error_msg)
+            self.add_log(error_msg)
+
     def get_pending_operations(self):
         return self._pending_operations
+    
+    def calculate_crc32(self, data: bytearray) -> bytearray:
+        crc = zlib.crc32(data) & 0xFFFFFFFF
+        return crc.to_bytes(4, byteorder='big')

@@ -17,3 +17,4 @@ class TransferStatus(Enum):
     SENDING_BLOCKS_IN_PROGRESS = "sendingBlocksInProgress"
     COMPLETED = "completed"
     REJECTED = "rejected"
+    CLOSED_SUCCESSFULLY = "closedSuccessfully"

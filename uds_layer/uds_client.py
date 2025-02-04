@@ -66,6 +66,16 @@ class UdsClient:
                 if server:
                     server.on_request_download_respond(data)
 
+            elif requested_service == 0x36:  # Transfer Data
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_transfer_data_respond(data)
+                    
+            elif requested_service == 0x37:  # Request Transfer Exit
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_request_transfer_exit_respond(data)
+
             elif requested_service == 0x22:  # Read Data By Identifier
                 server = self._find_server_by_can_id(address._txid, self._servers)
                 if server:
@@ -85,6 +95,21 @@ class UdsClient:
                 server = self._find_server_by_can_id(address._txid, self._servers)
                 if server:
                     server.on_ecu_reset_respond(0x7F, [data[2]], None)
+        elif service_id == 0x74:  # Positive response to Request Download
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_request_download_respond(data)
+                
+        elif service_id == 0x76:  # Positive response to Transfer Data
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_transfer_data_respond(data)
+                
+        elif service_id == 0x77:  # Positive response to Request Transfer Exit
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_request_transfer_exit_respond(data)
+                                    
         elif service_id == 0x74:  # Positive response to Request Download
             server = self._find_server_by_can_id(address._txid, self._servers)
             if server:
