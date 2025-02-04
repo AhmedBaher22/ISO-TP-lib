@@ -362,26 +362,34 @@ class Server:
             return [0x00]
 
         # Prepare BlockSequenceCounter
-        block_sequence_counter = (transfer_request.current_number_of_steps + 1) & 0xFF
+        block_sequence_counter = (transfer_request.current_number_of_steps + 1) % 0xFF
+
+        # If block_sequence_counter wrapped around to 0, increment iteration
+        if block_sequence_counter == 0:
+            transfer_request.iteration += 1
+
+        # Calculate actual data position using iteration and block_sequence_counter
+        actual_position = ((transfer_request.iteration - 1) * 0xFF + block_sequence_counter - 1) * transfer_request.max_number_of_block_length
 
         # Calculate data slice indices
-        start_idx = transfer_request.current_number_of_steps * transfer_request.max_number_of_block_length
-        
         if transfer_request.max_number_of_block_length == 0:
             # Use all data if MaxNumberOfBlockLength is 0
             data_record = list(transfer_request.data)
         else:
-            end_idx = min(start_idx + transfer_request.max_number_of_block_length, 
-                         transfer_request.data_size)
-            data_record = list(transfer_request.data[start_idx:end_idx])
+            end_idx = min(actual_position + transfer_request.max_number_of_block_length, 
+                        transfer_request.data_size)
+            data_record = list(transfer_request.data[actual_position:end_idx])
 
         # Prepare message
         message = [0x36, block_sequence_counter] + data_record
 
-        # Increment counter
-        transfer_request.current_number_of_steps = (transfer_request.current_number_of_steps + 1) & 0xFF
+        # Increment counter with modulus to stay within byte range
+        transfer_request.current_number_of_steps = (transfer_request.current_number_of_steps + 1) % 0xFF
 
-        log_msg = f"Created TRANSFER_DATA message. Block: {block_sequence_counter}, Data size: {len(data_record)}"
+        log_msg = (f"Created TRANSFER_DATA message. Block: {block_sequence_counter}, "
+                f"Iteration: {transfer_request.iteration}, "
+                f"Actual Position: {actual_position}, "
+                f"Data size: {len(data_record)}")
         self.add_log(log_msg)
         
         return message

@@ -14,7 +14,7 @@ class TransferRequest:
         self.compression_method = compression_method
         self.memory_address = memory_address
         self.checksum_required = checksum_required
-        
+        self.iteration: int = 1
         # Computed or later initialized attributes
         self.data_size = len(data)
         self.max_number_of_block_length: Optional[int] = None
