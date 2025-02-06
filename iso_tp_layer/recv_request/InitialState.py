@@ -16,7 +16,6 @@ class InitialState(RequestState):
     def handle(self, request, message):
         try:
             if message.frameType == FrameType.SingleFrame:
-                print("reached single frame")
                 request.set_data_length(message.dataLength)
                 request.append_bits(message.data)
                 request.set_state(FinalState())
@@ -34,5 +33,5 @@ class InitialState(RequestState):
                 raise InvalidFirstFrameException(message.frameType)
         except Exception as e:
             request.set_state(ErrorState())
-            request.send_error_frame()
+            request.send_error_frame(e)
             request.on_error(e)

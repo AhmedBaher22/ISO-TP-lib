@@ -2,14 +2,15 @@ from bitarray import bitarray
 from typing import Callable, List, Optional
 import sys
 import os
-
+from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
+from uds_layer.transfer_request import TransferRequest
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
 from uds_layer.server import Server
 from uds_layer.operation import Operation
 from uds_layer.uds_enums import SessionType, OperationStatus, OperationType
-from uds_layer.UdsLogger import UdsLogger
+from logger import Logger, LogType
 
 
 class Address:
@@ -25,7 +26,7 @@ class UdsClient:
         self._servers: List[Server] = []
         self._pending_servers: List[Server] = []
         self._isotp_send: Callable = None
-        self.logger = UdsLogger()
+        self._logger = Logger("uds")
 
     def set_isotp_send(self, e: Callable):
         self._isotp_send = e
@@ -44,10 +45,12 @@ class UdsClient:
         self.send_message(address._txid, message)
 
         # Create new server and add to pending
-        server = Server(address._rxid)
+        server = Server(address._rxid,client_send=self.send_message)
 
         self._pending_servers.append(server)
-        self.logger.log_acknowledgment(f"Server {address._rxid} Added successfully")
+        self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"Server {address._rxid} Added successfully")
 
     def process_message(self, address: Address, data: bytearray):
         service_id = data[0]
@@ -62,6 +65,28 @@ class UdsClient:
                     server.session = SessionType.NONE
                     self._servers.append(server)
                     self._pending_servers.remove(server)
+            elif requested_service == 0x31:  # Erase Memory
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_erase_memory_respond(data)                    
+            elif requested_service == 0x28:  # Communication Control
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_communication_control_respond(data)
+            elif requested_service == 0x34:  # Negative response to Request Download
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_request_download_respond(data)
+
+            elif requested_service == 0x36:  # Transfer Data
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_transfer_data_respond(data)
+                    
+            elif requested_service == 0x37:  # Request Transfer Exit
+                server = self._find_server_by_can_id(address._txid, self._servers)
+                if server:
+                    server.on_request_transfer_exit_respond(data)
 
             elif requested_service == 0x22:  # Read Data By Identifier
                 server = self._find_server_by_can_id(address._txid, self._servers)
@@ -82,7 +107,34 @@ class UdsClient:
                 server = self._find_server_by_can_id(address._txid, self._servers)
                 if server:
                     server.on_ecu_reset_respond(0x7F, [data[2]], None)
+        elif service_id == 0x74:  # Positive response to Request Download
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_request_download_respond(data)
+                
+        elif service_id == 0x76:  # Positive response to Transfer Data
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_transfer_data_respond(data)
 
+        elif service_id == 0x68:  # Positive response to Communication Control
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_communication_control_respond(data)    
+
+        elif service_id == 0x77:  # Positive response to Request Transfer Exit
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_request_transfer_exit_respond(data)
+                
+        elif service_id == 0x71:  # Positive response to Erase Memory
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_erase_memory_respond(data)                                    
+        elif service_id == 0x74:  # Positive response to Request Download
+            server = self._find_server_by_can_id(address._txid, self._servers)
+            if server:
+                server.on_request_download_respond(data)
         elif service_id == 0x62:  # Positive response to Read Data By Identifier
 
             server = self._find_server_by_can_id(address._txid, self._servers)
@@ -126,6 +178,7 @@ class UdsClient:
                     server.p2_star_timing = (data[4] << 8) | data[5]  # Combine fifth and sixth bytes
                 self._servers.append(server)
                 self._pending_servers.remove(server)
+                print("Gained control session ",server.session," with timings:: ", "P2 timing", server.p2_timing, "P2 star timing", server.p2_star_timing )
 
 
 
@@ -146,7 +199,9 @@ class UdsClient:
     def receive_message(self, data: bitarray, address: Address):
         data = data.tobytes()
         self.process_message(address, data)
-        self.logger.log_acknowledgment(f"Message {data} received successfully")
+        self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"Message {data} received successfully")
 
     def send_message(self, server_can_id: int, message: List[int]):
         address = Address(addressing_mode=0, txid=self._client_id, rxid=server_can_id)
@@ -159,7 +214,9 @@ class UdsClient:
                 chunk = message[i:i + 4095]
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
-        self.logger.log_acknowledgment(f"Message {message} sent successfully")
+        self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"Message {message} sent successfully")
 
     def on_success_send(self):
         pass
@@ -172,3 +229,38 @@ class UdsClient:
 
     def get_client_id(self):
         return self._client_id
+    
+    def transfer_NEW_data_to_ecu(self, recv_DA: int, data: bytearray, 
+                                encryption_method: EncryptionMethod,
+                                compression_method: CompressionMethod,
+                                memory_address: bytearray,
+                                checksum_required: bool) -> None:
+        # Create TransferRequest object
+        transfer_request = TransferRequest(
+            recv_DA=recv_DA,
+            data=data,
+            encryption_method=encryption_method,
+            compression_method=compression_method,
+            memory_address=memory_address,
+            checksum_required=checksum_required
+        )
+
+        # Find server with matching CAN ID
+        server = next((s for s in self._servers if s.can_id == recv_DA), None)
+        if server:
+            # Get request download message
+            message = server.request_download(transfer_request)
+            if message != [0x00]:  # Check if request was successful
+                # Create address object for ISO-TP
+                address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)
+                self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=f"request donwload for diagnostic address {recv_DA}send successfully with messaage: {message}"
+                )
+                # Send message using ISO-TP
+                self._isotp_send(message, address,self.on_success_send,self.on_fail_send)
+        else:
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=f"Error: No server found to send request download  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control"
+            )            

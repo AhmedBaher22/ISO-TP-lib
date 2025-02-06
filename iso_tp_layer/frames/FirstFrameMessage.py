@@ -17,3 +17,7 @@ class FirstFrameMessage(DataFrame):
     def __init__(self, dataLength: int, data: bitarray):
         super().__init__(FrameType.FirstFrame, data)
         self.dataLength = np.uint16(dataLength)
+
+    def __str__(self):
+        """Return a human-readable string representation of the object."""
+        return f"FirstFrameMessage(dataLength={self.dataLength}, data={self.data.tobytes().hex().upper()})"

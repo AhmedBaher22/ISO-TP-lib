@@ -1,3 +1,4 @@
+import uuid
 from typing import Callable
 import threading
 import time
@@ -13,12 +14,16 @@ from iso_tp_layer.Address import Address
 from iso_tp_layer.Exceptions import MessageLengthExceededException, FlowStatusAbortException, \
     InvalidFlowStatusException, TimeoutException
 from iso_tp_layer.frames.FlowStatus import FlowStatus
+from logger import Logger, LogType
+
 
 
 class SendRequest:
+
     def __init__(self, txfn: Callable, rxfn: Callable, on_success: Callable,
                  on_error: Callable, address: Address, timeout=0,
                  stmin=0, block_size=0, tx_padding=0xFF):
+        self._id = str(uuid.uuid4())[:8]  # Assign a unique ID
         self._tx_padding = tx_padding  # Default padding value
         self._txfn = txfn
         self._rxfn = rxfn
@@ -35,6 +40,11 @@ class SendRequest:
         self._block_counter = 0
         self._isFinished = False
         self._received_error_frame = False  # New attribute for error frame tracking
+        self.logger = Logger("iso-tp")
+        self.logger.log_message(
+            log_type=LogType.SEND,
+            message=f"SendRequest initialized: ID={self._id}, Address={self._address}, Timeout={self._timeout}, STmin={self._stmin}, BlockSize={self._block_size}"
+        )
 
     def set_received_error_frame(self, value: bool):
         self._received_error_frame = value
@@ -53,13 +63,17 @@ class SendRequest:
         try:
             self._data = data.tobytes()  # Set the class attribute
             byte_length = len(self._data)
+            self.logger.log_message(
+                log_type=LogType.SEND,
+                message=f"SendRequest {self._id}: Sending data of length {byte_length} bytes."
+            )
 
             if byte_length <= 7:
                 self._send_single()
             else:
                 self._send_first()
         except Exception as e:
-            print(f"Error during send: {e}")
+            self.logger.log_message(log_type=LogType.ERROR, message=f"SendRequest {self._id}: Error during send - {e}")
             self._on_error(e)
 
     def _send_single(self):
@@ -68,11 +82,18 @@ class SendRequest:
             first_byte = (0x0 << 4) | (len(self._data) & 0x0F)
             frame = bytes([first_byte]) + self._data.ljust(7, self._tx_padding.to_bytes(1, 'little'))
             hex_frame = frame.hex()
+            self.logger.log_message(
+                log_type=LogType.SEND,
+                message=f"SendRequest {self._id}: Sending single frame - {hex_frame}"
+            )
             # print(f"Single frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
             self._end_request()  # Successful completion
         except Exception as e:
-            print(f"Error in _send_single: {e}")
+            # print(f"Error in _send_single: {e}")
+            self.logger.log_message(log_type=LogType.ERROR,
+                                    message=f"SendRequest {self._id}: Error in _send_single - {e}")
+
             self._on_error(e)
 
     def _send_first(self):
@@ -88,6 +109,10 @@ class SendRequest:
             first_frame_data = self._data[:6]
             frame = bytes([first_byte, second_byte]) + first_frame_data
             hex_frame = frame.hex()
+            self.logger.log_message(
+                log_type=LogType.SEND,
+                message=f"SendRequest {self._id}: Sending first frame - {hex_frame}"
+            )
             # print(f"First frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
 
@@ -100,7 +125,8 @@ class SendRequest:
             listener_thread.start()
 
         except Exception as e:
-            print(f"Error in _send_first: {e}")
+            self.logger.log_message(log_type=LogType.ERROR,
+                                    message=f"SendRequest {self._id}: Error in _send_first - {e}")
             self._on_error(e)
 
     def _send_consecutive(self):
@@ -109,14 +135,18 @@ class SendRequest:
             if not self._remaining_data:
                 self._remaining_data = self._data[6:]  # Initialize with the remaining data after the first frame
 
+            self.logger.log_message(log_type=LogType.SEND,
+                                    message=f"Starting consecutive frame transmission. Remaining data size: {len(self._remaining_data)} bytes.")
 
             while self._index < len(self._remaining_data):
                 if self._received_error_frame:
+                    self.logger.log_message(log_type=LogType.ERROR,
+                                            message="Transmission stopped due to received error frame.")
                     return
 
                 if 0 < self._block_size <= self._block_counter:
-                    # print(f"block_counter: {self._block_counter}\nblock_size: {self._block_size}")
-                    # print("Block size limit reached. Waiting for next control frame...")
+                    self.logger.log_message(log_type=LogType.SEND,
+                                            message=f"Block size limit reached. Block counter: {self._block_counter}, Block size: {self._block_size}. Waiting for next control frame.")
                     listener_thread = threading.Thread(
                         target=self.listen_for_control_frame,
                         args=(self._reset_block_counter,),
@@ -126,23 +156,33 @@ class SendRequest:
                     return
 
                 if self._stmin > 0:
-                    # print(f"Sleeping for {self._stmin / 100.0}")
+                    self.logger.log_message(log_type=LogType.SEND,
+                                            message=f"Sleeping for {self._stmin / 100.0} seconds before sending the next frame.")
                     time.sleep(self._stmin / 100.0)
 
                 first_byte = (0x2 << 4) | (self._sequence_num & 0x0F)
-                frame = bytes([first_byte]) + self._remaining_data[self._index:self._index + 7].ljust(7, self._tx_padding.to_bytes(1, 'little'))
+                frame = bytes([first_byte]) + self._remaining_data[self._index:self._index + 7].ljust(7,
+                                                                                                      self._tx_padding.to_bytes(
+                                                                                                          1, 'little'))
                 hex_frame = frame.hex()
-                # print(f"Consecutive frame (hex): {hex_frame}")
+
+                self.logger.log_message(log_type=LogType.SEND,
+                                        message=f"Sending consecutive frame: {hex_frame} (Sequence Num: {self._sequence_num})")
+
                 self._txfn(self._address, hex_frame)
 
                 self._index += 7
                 self._sequence_num = (self._sequence_num + 1) % 16
                 self._block_counter += 1
 
+            self.logger.log_message(log_type=LogType.SEND,
+                                    message="All consecutive frames sent successfully. Ending request.")
             self._end_request()
         except Exception as e:
-            print(f"Error in _send_consecutive: {e}")
+            self.logger.log_message(log_type=LogType.ERROR,
+                                    message=f"Error in _send_consecutive: {e}")
             self._on_error(e)
+
 
     def listen_for_control_frame(self, callBackFn: Callable):
         """Thread function to listen for control frames."""
@@ -170,7 +210,10 @@ class SendRequest:
                 stmin = control_frame[2]
                 self._stmin = stmin
                 self._block_size = block_size
-
+                self.logger.log_message(
+                    log_type=LogType.SEND,
+                    message=f"SendRequest {self._id}: Received flow control frame - Status={flow_status}, BlockSize={block_size}, STmin={stmin}"
+                )
                 if flow_status == FlowStatus.Continue:
                     # print("Flow status: Continue to send.")
                     is_control_frame_received = True
@@ -189,7 +232,8 @@ class SendRequest:
             if is_control_frame_received:
                 callBackFn()
         except Exception as e:
-            print(f"Error in listen_for_control_frame: {e}")
+            self.logger.log_message(log_type=LogType.ERROR,
+                                    message=f"SendRequest {self._id}: Error in listen_for_control_frame - {e}")
             self._on_error(e)
 
     def _reset_block_counter(self):
@@ -199,6 +243,9 @@ class SendRequest:
 
     def _end_request(self):
         self._isFinished = True
+        self.logger.log_message(log_type=LogType.SEND,
+                                message=f"SendRequest {self._id}: Request completed successfully.")
+
         self._on_success()
 
     def send_control_frame(self, flow_status=0, block_size=0, separation_time=0):

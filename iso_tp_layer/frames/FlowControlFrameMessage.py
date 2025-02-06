@@ -23,3 +23,4 @@ class FlowControlFrameMessage(FrameMessage):
         self.blockSize = np.uint8(blockSize)
         self.separationTime = np.uint8(separationTime)
 
+

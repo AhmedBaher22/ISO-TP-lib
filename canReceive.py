@@ -52,40 +52,83 @@ time_out_in_seconds=10
 
 try:
     # Initialize the CAN bus with the Vector interface
-    with can.Bus(interface="vector", channel=channel_number, app_name="UDSwithIsoTp", fd=fd_flag) as bus:
+    with can.Bus(interface="vector", channel=channel_number, app_name="UDS", fd=fd_flag) as bus:
         
         logger.info("CAN bus initialized successfully for receiving messages.")
-        s=True
+        s = True
         while True:
-
             logger.info("Waiting to receive a CAN message...")
             bus.set_filters(filterFlashCommand)
             # Receive a message
-            time=4
+            time = 5
+            message = bytearray()
             msg = bus.recv(timeout=None)  # Adjust timeout as needed
+            flg = False
             if msg:
-
-
+                send_flag = False
                 logger.info("Message received with arbitration_id=0x%X and data=%s , and hole message = %s", msg.arbitration_id, msg.data, msg)
-                if msg.data[0]==0x02 and msg.data[1]==0x10:
-                    ack_msg = can.Message(arbitration_id=0x33, data=[0x06,0x50,0x02,0x00,0x55,0x01,0x55], is_extended_id=extended_flag,is_fd=fd_flag)
+                if msg.data[0] == 0x02 and msg.data[1]==0x10:
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x06,0x50,0x03,0x00,0x55,0x01,0x55], is_extended_id=extended_flag,is_fd=fd_flag)
  
-                    time -=1
-                #read data by indentifier     
-                elif msg.data[0]==0x03 and msg.data[1]==0x22:
+                    time -= 1
+                #  read data by identifier
+                elif msg.data[0] == 0x03 and msg.data[1]==0x22:
                     ack_msg = can.Message(arbitration_id=0x33, data=[0x04,0x62,0x01,0x90,0x55], is_extended_id=extended_flag,is_fd=fd_flag)
-                    time -=1 
+                    time -= 1
                 elif msg.data[1] == 0x11:
                     ack_msg = can.Message(arbitration_id=0x33, data=[0x03,0x7F,0x11,0x12], is_extended_id=extended_flag,is_fd=fd_flag)
-                    time -=1
-                #write data by indetifier    
+                    time -= 1
+                # write data by indetifier
                 elif msg.data[1] == 0x2E:
                     ack_msg = can.Message(arbitration_id=0x33, data=[0x03,0x6E,0x01,0x90], is_extended_id=extended_flag,is_fd=fd_flag)
-                    time -=1
+                    time -= 1
+
+                elif msg.data[1] == 0x34:
+                    print("Hello")
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x03, 0x74, 0x01, 0x02],
+                                          is_extended_id=extended_flag, is_fd=fd_flag)
+                    print("ack_msg")
+                    print(ack_msg)
+                    flg = True
+                    time-=1
+                elif msg.data[1] == 0x36 and msg.data[2] == 0x01:
+                    message.append( msg.data[3])
+                    message.append( msg.data[4])
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x02, 0x76, 0x01],
+                                          is_extended_id=extended_flag, is_fd=fd_flag)
+                    time -= 1
+                    flg = True
+
+                elif msg.data[1] == 0x36 and msg.data[2] == 0x02:
+                    message.append( msg.data[3])
+                    message.append( msg.data[4])
+                    logger.info(f"Complete msg received: {message}")
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x02, 0x76, 0x02],
+                                          is_extended_id=extended_flag, is_fd=fd_flag)
+                    time -= 1
+                    flg = True
+
+                elif msg.data[1] == 0x37:
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x01, 0x77],
+                                          is_extended_id=extended_flag, is_fd=fd_flag)
+                    time -= 1
+                    flg = True
+
+                elif msg.data[1] == 0x31:
+                    memory = msg.data[5]
+                    memoryAddress = msg.data[6]
+                    memorySize = msg.data[7]
+                    logger.info("Message address = 0x%X and memorySize= 0x%X",
+                                memoryAddress, memorySize)
+
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x03, 0x01, 0xff, 0x00],
+                                          is_extended_id=extended_flag, is_fd=fd_flag)
+                    time -= 1
+                    flg = True
+
                 # Send acknowledgment
-                
                 try:
-                    if (msg.data[0]==0x03 or msg.data[0]==0x02 or msg.data[1] == 0x11) and time >0:
+                    if (msg.data[0]==0x03 or msg.data[0]==0x02 or msg.data[1] == 0x11 or flg) and time >0:
                         bus.send(ack_msg)
                         print("ack message",ack_msg)
 

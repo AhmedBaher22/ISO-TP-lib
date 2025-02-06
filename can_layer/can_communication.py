@@ -4,11 +4,11 @@ import time
 import threading
 import sys
 import os
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
 from can_layer.enums import CANInterface
-from can_layer.logger import CANLogger
 from can_layer.CanExceptions import (
     CANError,
     CANInitializationError,
@@ -20,11 +20,16 @@ from can_layer.CanExceptions import (
     CANConfigurationError,
     CANShutdownError
 )
+package_dir = os.path.abspath(os.path.join(package_dir, ".."))
+sys.path.append(package_dir)
+# from logger import Logger, LogType
+from logger import Logger, LogType
 
 
 class CANConfiguration:
     """Configuration class for CAN communication parameters."""
-    def __init__(self, 
+
+    def __init__(self,
                  recv_callback: Callable,
                  interface: CANInterface = CANInterface.VECTOR,
                  channel: int = 0,
@@ -60,8 +65,10 @@ class CANConfiguration:
         if not isinstance(self.app_name, str) or not self.app_name:
             raise CANConfigurationError("Invalid application name")
 
+
 class CANCommunication:
     """Main class for CAN communication handling."""
+
     def __init__(self, config: CANConfiguration):
         """
         Initialize CAN communication.
@@ -70,7 +77,7 @@ class CANCommunication:
             config: CANConfiguration object containing setup parameters
         """
         self.config = config
-        self.logger = CANLogger()
+        self.logger = Logger("can")
         self.bus = None
         self._initialize_bus()
 
@@ -82,7 +89,7 @@ class CANCommunication:
             raise CANError("CAN bus not initialized")
 
         def _receive_loop():
-            self.logger.log_info("Starting CAN message reception loop with no timeout")
+            self.logger.log_message(log_type=LogType.INITIALIZATION, message="Starting CAN message reception loop")
             while True:
                 try:
                     self.receive_message(timeout=900)  # Wait indefinitely for messages
@@ -91,12 +98,13 @@ class CANCommunication:
                         message="Error during continuous message reception",
                         original_exception=e
                     )
-                    self.logger.log_error(error)
+                    self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
 
         # Start the thread
         self._receiving_thread = threading.Thread(target=_receive_loop, daemon=True)
         self._receiving_thread.start()
-        self.logger.log_info("CAN reception thread started successfully")
+        self.logger.log_message(log_type=LogType.INITIALIZATION, message="CAN reception thread started successfully")
+
     def _initialize_bus(self):
         """Initialize the CAN bus with the provided configuration."""
         try:
@@ -110,18 +118,18 @@ class CANCommunication:
                 fd=self.config.fd_flag,
                 bitrate=self.config.bitrate
             )
-            self.logger.log_initialization("CAN bus initialized successfully")
-            
+            self.logger.log_message(log_type=LogType.INITIALIZATION, message="CAN bus initialized successfully")
+
         except CANConfigurationError as e:
-            self.logger.log_error(e)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{e}")
             raise
-            
+
         except Exception as e:
             error = CANInitializationError(
                 message="Failed to initialize CAN bus",
                 original_exception=e
             )
-            self.logger.log_error(error)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
 
     def set_filters(self, filters: List[Dict]):
@@ -134,25 +142,24 @@ class CANCommunication:
         try:
             if not self.bus:
                 raise CANError("CAN bus not initialized")
-                
+
             self.bus.set_filters(filters)
-            self.logger.log_configuration(f"Filters set successfully: {filters}")
-            
+            self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message=f"Filters set successfully: {filters}")
+
         except Exception as e:
             error = CANFilterError(
                 message="Failed to set CAN filters",
                 original_exception=e
             )
-            self.logger.log_error(error)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
 
-    def send_message(self, 
-                    arbitration_id: int, 
-                    data: bytearray, 
-                    timeout: float = 1.0,
-                    require_ack: bool = False,
-                    retries: int = 3,
-                    retry_delay: float = 0.5) -> bool:
+    def send_message(self,
+                     arbitration_id: int,
+                     data: bytearray,
+                     timeout: float = 1.0,
+                     retries: int = 3,
+                     retry_delay: float = 0.5) -> bool:
         """
         Send a CAN message with optional acknowledgment waiting.
         
@@ -182,30 +189,11 @@ class CANCommunication:
             try:
                 # Send the message
                 self.bus.send(message)
-                self.logger.log_send(
-                    f"Message sent: ID=0x{arbitration_id:X}, Data={data}, "
-                    f"Attempts remaining: {attempts_remaining}"
-                )
-
-                if require_ack:
-                    # Wait for acknowledgment
-                    ack = self.receive_message(timeout=timeout)
-                    if ack:
-                        self.logger.log_acknowledgment(
-                            f"Acknowledgment received for ID=0x{arbitration_id:X}"
-                        )
-                        return True
-                    else:
-                        attempts_remaining -= 1
-                        if attempts_remaining > 0:
-                            self.logger.log_warning(
-                                f"No acknowledgment received. Retrying... "
-                                f"{attempts_remaining} attempts left"
-                            )
-                            time.sleep(retry_delay)
-                        continue
-                else:
-                    return
+                self.logger.log_message(log_type=LogType.SEND,
+                                        message=f"Message sent: ID=0x{arbitration_id:X}, Data={data}, "
+                                                f"Attempts remaining: {attempts_remaining}"
+                                        )
+                return True
 
             except Exception as e:
                 attempts_remaining -= 1
@@ -213,8 +201,8 @@ class CANCommunication:
                     message=f"Failed to send message (attempts left: {attempts_remaining})",
                     original_exception=e
                 )
-                self.logger.log_error(error)
-                
+                self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
+
                 if attempts_remaining > 0:
                     time.sleep(retry_delay)
                 continue
@@ -222,7 +210,7 @@ class CANCommunication:
         error = CANAcknowledgmentError(
             message=f"Failed to send message 0x{arbitration_id:X} after all retries"
         )
-        self.logger.log_error(error)
+        self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
         return False
 
     def receive_message(self, timeout: float = 1.0) -> Optional[can.Message]:
@@ -241,24 +229,23 @@ class CANCommunication:
         try:
             message = self.bus.recv(timeout=timeout)
             if message:
-                self.logger.log_receive(
-                    f"Message received: ID=0x{message.arbitration_id:X}, "
-                    f"Data={message.data}"
-                )
+                self.logger.log_message(log_type=LogType.RECEIVE,
+                                        message=f"Message received: ID=0x{message.arbitration_id:X}, "
+                                                f"Data={message.data}")
 
                 self.config.recv_callback(message)
-            
-            self.logger.log_warning(
-                f"No message received within timeout period ({timeout}s)"
-            )
+
+            self.logger.log_message(log_type=LogType.WARNING,
+                                    message=
+                                    f"No message received within timeout period ({timeout}s)")
             return None
-            
+
         except Exception as e:
             error = CANReceptionError(
                 message="Error receiving message",
                 original_exception=e
             )
-            self.logger.log_error(error)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
 
     def close(self):
@@ -266,15 +253,15 @@ class CANCommunication:
         try:
             if self.bus:
                 self.bus.shutdown()
-                self.logger.log_initialization("CAN bus shut down successfully")
+                self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message="CAN bus shut down successfully")
                 self.bus = None
-                
+
         except Exception as e:
             error = CANShutdownError(
                 message="Error shutting down CAN bus",
                 original_exception=e
             )
-            self.logger.log_error(error)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
 
     def __enter__(self):
@@ -293,23 +280,23 @@ class CANCommunication:
 
     def reset(self):
         """Reset the CAN bus connection."""
-        self.logger.log_initialization("Resetting CAN bus connection")
+        self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message="Resetting CAN bus connection")
         self.close()
         self._initialize_bus()
 
     def flush_receive_buffer(self):
         """Flush the receive buffer by reading all pending messages."""
         try:
-            self.logger.log_info("Flushing receive buffer")
+            self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message="Flushing receive buffer")
             while self.receive_message(timeout=0.1):
                 pass
-            self.logger.log_info("Receive buffer flushed successfully")
+            self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message="Receive buffer flushed successfully")
         except Exception as e:
             error = CANError(
                 message="Error flushing receive buffer",
                 original_exception=e
             )
-            self.logger.log_error(error)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
 
     def get_bus_statistics(self) -> Dict:
@@ -324,16 +311,16 @@ class CANCommunication:
                 "errors": getattr(self.bus, "errors", 0),
                 "state": getattr(self.bus, "state", "unknown")
             }
-            
-            self.logger.log_info(f"Bus statistics retrieved: {stats}")
+
+            self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message=f"Bus statistics retrieved: {stats}")
             return stats
-            
+
         except Exception as e:
             error = CANError(
                 message="Error getting bus statistics",
                 original_exception=e
             )
-            self.logger.log_error(error)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
 
     def clear_bus_statistics(self):
@@ -344,14 +331,14 @@ class CANCommunication:
 
             if hasattr(self.bus, "clear_statistics"):
                 self.bus.clear_statistics()
-                self.logger.log_info("Bus statistics cleared successfully")
+                self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message="Bus statistics cleared successfully")
             else:
-                self.logger.log_warning("Bus statistics clearing not supported")
-                
+                self.logger.log_message(log_type=LogType.WARNING, message="Bus statistics clearing not supported")
+
         except Exception as e:
             error = CANError(
                 message="Error clearing bus statistics",
                 original_exception=e
             )
-            self.logger.log_error(error)
+            self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
