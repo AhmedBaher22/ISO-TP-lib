@@ -26,7 +26,7 @@ class UdsClient:
         self._servers: List[Server] = []
         self._pending_servers: List[Server] = []
         self._isotp_send: Callable = None
-        self.logger = Logger("uds")
+        self._logger = Logger("uds")
 
     def set_isotp_send(self, e: Callable):
         self._isotp_send = e
@@ -45,10 +45,10 @@ class UdsClient:
         self.send_message(address._txid, message)
 
         # Create new server and add to pending
-        server = Server(address._rxid)
+        server = Server(address._rxid,client_send=self.send_message)
 
         self._pending_servers.append(server)
-        self.logger.log_message(
+        self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
             message=f"Server {address._rxid} Added successfully")
 
@@ -199,7 +199,7 @@ class UdsClient:
     def receive_message(self, data: bitarray, address: Address):
         data = data.tobytes()
         self.process_message(address, data)
-        self.logger.log_message(
+        self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
             message=f"Message {data} received successfully")
 
@@ -214,7 +214,7 @@ class UdsClient:
                 chunk = message[i:i + 4095]
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
-        self.logger.log_message(
+        self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
             message=f"Message {message} sent successfully")
 
@@ -253,7 +253,14 @@ class UdsClient:
             if message != [0x00]:  # Check if request was successful
                 # Create address object for ISO-TP
                 address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)
+                self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=f"request donwload for diagnostic address {recv_DA}send successfully with messaage: {message}"
+                )
                 # Send message using ISO-TP
-                self._isotp_send(message, address)
+                self._isotp_send(message, address,self.on_success_send,self.on_fail_send)
         else:
-            print(f"Error: No server found with CAN ID: {hex(recv_DA)}")
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=f"Error: No server found to send request download  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control"
+            )            

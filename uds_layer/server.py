@@ -1,17 +1,19 @@
-from typing import List, Optional
+from typing import Callable, List, Optional
 import sys
 import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
+
 from uds_layer.uds_enums import CommunicationControlSubFunction, CommunicationControlType, SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
 from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
+from logger import Logger, LogType
 import zlib  # For CRC32 calculation
 
 class Server:
-    def __init__(self, can_id: [int]):
+    def __init__(self, can_id: [int],client_send:Callable):
         self._can_id = can_id
         self._session = SessionType.NONE
         self._pending_operations: List[Operation] = []
@@ -20,7 +22,8 @@ class Server:
         self._p2_timing = 0
         self._p2_star_timing = 0
         self.transfer_requests: List[TransferRequest] = []
-
+        self._logger = Logger(log_directory="uds")
+        self.clientSend:Callable=client_send
     # Getters and setters
     @property
     def can_id(self) -> [int]:
@@ -272,11 +275,20 @@ class Server:
         pass
 
     def request_download(self, transfer_request: TransferRequest) -> List[int]:
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Request download function for {transfer_request.recv_DA} is being processing and preparing message"
+            )
+                
         if not self.check_access_required(OperationType.REQUEST_DOWNLOAD):
             error_msg = f"Error: Insufficient session level for REQUEST_DOWNLOAD. Current session: {self._session}"
-            print(error_msg)
+            # print(error_msg)
+            self._logger.log_message(
+            log_type=LogType.ERROR,
+            message=error_msg)
             self.add_log(error_msg)
             return [0x00]
+
 
         # Calculate DataFormatIdentifier
         data_format_identifier = (transfer_request.compression_method.value << 4) | transfer_request.encryption_method.value
@@ -300,23 +312,38 @@ class Server:
         transfer_request.status = TransferStatus.CREATED
         self.transfer_requests.append(transfer_request)
 
-        log_msg = f"Created REQUEST_DOWNLOAD operation. Message: {[hex(x) for x in message]}"
+        log_msg = f"Created REQUEST_DOWNLOAD operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=log_msg)        
         self.add_log(log_msg)
         
         return message
 
     def on_request_download_respond(self, message: List[int]):
+
         # Find transfer request with CREATED status
         transfer_request = next((req for req in self.transfer_requests 
                                if req.status == TransferStatus.CREATED), None)
         
         if not transfer_request:
             error_msg = "No pending transfer request found"
-            print(error_msg)
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
             self.add_log(error_msg)
             return
-
+        
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Request download respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
+        
         if message[0] == 0x74:  # Positive response
+            self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Request download respond for {transfer_request.recv_DA} is positive")
+
             length_format_identifier = message[1]
             block_length_bytes = message[2:2+length_format_identifier]
             
@@ -331,9 +358,20 @@ class Server:
             transfer_request.current_number_of_steps = 0
             
             # Start transfer data
-            self.transfer_data(transfer_request)
-            
+            message=self.transfer_data(transfer_request)
+
+
+
+            self.clientSend(message=message,server_can_id=self.can_id)
+            self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"Transfer data request for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}")
+
         elif message[0] == 0x7F and message[1] == 0x34:  # Negative response
+            self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Request download respond for {transfer_request.recv_DA} is negative")
+
             transfer_request.NRC = message[2]
             transfer_request.status = TransferStatus.REJECTED
             
@@ -350,14 +388,23 @@ class Server:
             }
             
             error_msg = f"Download Request Failed - NRC: {hex(transfer_request.NRC)} - {nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}"
-            print(error_msg)
+            self._logger.log_message(
+            log_type=LogType.error,
+            message=error_msg)
             self.add_log(error_msg)
 
 
     def transfer_data(self, transfer_request: TransferRequest) -> List[int]:
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Transfer data function for {transfer_request.recv_DA} is being processing and preparing message")
+                        
         if transfer_request.status != TransferStatus.SENDING_BLOCKS_IN_PROGRESS:
             error_msg = f"Invalid transfer status for TRANSFER_DATA: {transfer_request.status}"
-            print(error_msg)
+            self._logger.log_message(
+            log_type=LogType.ERROR,
+            message=error_msg)
+                
             self.add_log(error_msg)
             return [0x00]
 
@@ -391,63 +438,106 @@ class Server:
                 f"Actual Position: {actual_position}, "
                 f"Data size: {len(data_record)}")
         self.add_log(log_msg)
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=log_msg
+        )
         
         return message
 
     def on_transfer_data_respond(self, message: List[int]):
+
         transfer_request = next((req for req in self.transfer_requests 
                                if req.status == TransferStatus.SENDING_BLOCKS_IN_PROGRESS), None)
         
         if not transfer_request:
             error_msg = "No transfer request in progress"
-            print(error_msg)
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
             self.add_log(error_msg)
             return
-
+        
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Transfer data respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
+        
         if message[0] == 0x76:  # Positive response
+            self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Request download respond for {transfer_request.recv_DA} is postitive")
+                    
             block_sequence_counter = message[1]
             
             if block_sequence_counter != transfer_request.current_number_of_steps:
                 transfer_request.status = TransferStatus.REJECTED
                 transfer_request.NRC = 0x73  # Wrong Block Sequence Counter
                 error_msg = "Wrong Block Sequence Counter"
-                print(error_msg)
+                self._logger.log_message(
+                log_type=LogType.INFO,
+                 message=error_msg)
+        
                 self.add_log(error_msg)
                 return
 
             if (transfer_request.current_number_of_steps * transfer_request.max_number_of_block_length 
                     > transfer_request.data_size) or transfer_request.max_number_of_block_length == 0:
                 transfer_request.status = TransferStatus.COMPLETED
-                return self.request_transfer_exit(transfer_request)
+                message= self.request_transfer_exit(transfer_request)
+                self.clientSend(message=message,server_can_id=self.can_id)
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=f"Transfer data request for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}")                
             else:
-                return self.transfer_data(transfer_request)
+                message= self.transfer_data(transfer_request)
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=f"Transfer Exit request for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}")                
+                self.clientSend(message=message,server_can_id=self.can_id)
 
         elif message[0] == 0x7F:  # Negative response
             transfer_request.status = TransferStatus.REJECTED
             transfer_request.NRC = message[2]
             error_msg = f"Transfer Data Failed - NRC: {hex(transfer_request.NRC)}"
-            print(error_msg)
+            self._logger.log_message(
+            log_type=LogType.ERROR,
+            message=error_msg)
             self.add_log(error_msg)
 
     def request_transfer_exit(self, transfer_request: TransferRequest) -> List[int]:
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Transfer Exit request function for {transfer_request.recv_DA} is being processing and preparing message")
+                               
         if transfer_request.status != TransferStatus.COMPLETED:
             error_msg = f"Invalid transfer status for REQUEST_TRANSFER_EXIT: {transfer_request.status}"
-            print(error_msg)
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg)
+                        
             self.add_log(error_msg)
             return [0x00]
 
         if transfer_request.checksum_required:
             crc = self.calculate_crc32(transfer_request.data)
-            message = [0x37] + list(crc)
+            message = [0x37]
+            print(f"crc: {crc}")
+            message.append(crc)
+            # message.append(crc)
         else:
             message = [0x37]
 
         log_msg = f"Created REQUEST_TRANSFER_EXIT message. Checksum: {transfer_request.checksum_required}"
         self.add_log(log_msg)
-        
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=log_msg
+        )        
         return message
 
     def on_request_transfer_exit_respond(self, message: List[int]):
+
         transfer_request = next((req for req in self.transfer_requests 
                                if req.status == TransferStatus.COMPLETED), None)
         
@@ -456,18 +546,26 @@ class Server:
             print(error_msg)
             self.add_log(error_msg)
             return
-
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=f"Transfer Exit respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
+        
         if message[0] == 0x77:  # Positive response
             transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
-            success_msg = "Transfer completed successfully"
-            print(success_msg)
+            success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
+            self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=success_msg)
+        
             self.add_log(success_msg)
         
         elif message[0] == 0x7F:  # Negative response
             transfer_request.status = TransferStatus.REJECTED
             transfer_request.NRC = message[2]
             error_msg = f"Transfer Exit Failed - NRC: {hex(transfer_request.NRC)}"
-            print(error_msg)
+            self._logger.log_message(
+            log_type=LogType.ERROR,
+            message=error_msg)
             self.add_log(error_msg)
 
     def communication_control(self, sub_function: CommunicationControlSubFunction, 
@@ -619,6 +717,8 @@ class Server:
     def get_pending_operations(self):
         return self._pending_operations
     
-    def calculate_crc32(self, data: bytearray) -> bytearray:
+    def calculate_crc32(self, data: bytearray) -> int:
         crc = zlib.crc32(data) & 0xFFFFFFFF
-        return crc.to_bytes(4, byteorder='big')
+        return crc
+        # return crc.to_bytes(4, byteorder='big')
+    
