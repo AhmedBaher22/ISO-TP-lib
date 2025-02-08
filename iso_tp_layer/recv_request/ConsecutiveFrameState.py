@@ -49,7 +49,10 @@ class ConsecutiveFrameState(RequestState):
                     request.append_bits(message.data)
                     if request.get_current_data_length() == request.get_data_length():
                         request.set_state(FinalState())
-                        request.on_success(request.get_message(), request.get_address())
+                        try:
+                            request.on_success(request.get_message(), request.get_address())
+                        except Exception as e:
+                            pass
                 else:
                     # f"Consecutive message out of sequence! Expected sequence number {expected_seq} and received {received_seq}"
                     raise ConsecutiveFrameOutOfSequenceException(request.get_expected_sequence_number(),

@@ -14,7 +14,7 @@ from iso_tp_layer.Address import Address
 from iso_tp_layer.Exceptions import MessageLengthExceededException, FlowStatusAbortException, \
     InvalidFlowStatusException, TimeoutException
 from iso_tp_layer.frames.FlowStatus import FlowStatus
-from logger import Logger, LogType
+from logger import Logger, LogType, ProtocolType
 
 
 
@@ -40,7 +40,7 @@ class SendRequest:
         self._block_counter = 0
         self._isFinished = False
         self._received_error_frame = False  # New attribute for error frame tracking
-        self.logger = Logger("iso-tp")
+        self.logger = Logger(ProtocolType.ISO_TP)
         self.logger.log_message(
             log_type=LogType.SEND,
             message=f"SendRequest initialized: ID={self._id}, Address={self._address}, Timeout={self._timeout}, STmin={self._stmin}, BlockSize={self._block_size}"
