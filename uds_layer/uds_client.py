@@ -10,7 +10,7 @@ sys.path.append(package_dir)
 from uds_layer.server import Server
 from uds_layer.operation import Operation
 from uds_layer.uds_enums import SessionType, OperationStatus, OperationType
-from logger import Logger, LogType
+from logger import Logger, LogType, ProtocolType
 
 
 class Address:
@@ -26,7 +26,7 @@ class UdsClient:
         self._servers: List[Server] = []
         self._pending_servers: List[Server] = []
         self._isotp_send: Callable = None
-        self._logger = Logger("uds")
+        self._logger = Logger(ProtocolType.UDS)
 
     def set_isotp_send(self, e: Callable):
         self._isotp_send = e

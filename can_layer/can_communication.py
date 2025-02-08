@@ -22,8 +22,7 @@ from can_layer.CanExceptions import (
 )
 package_dir = os.path.abspath(os.path.join(package_dir, ".."))
 sys.path.append(package_dir)
-# from logger import Logger, LogType
-from logger import Logger, LogType
+from logger import Logger, LogType, ProtocolType
 
 
 class CANConfiguration:
@@ -77,7 +76,7 @@ class CANCommunication:
             config: CANConfiguration object containing setup parameters
         """
         self.config = config
-        self.logger = Logger("can")
+        self.logger = Logger(ProtocolType.CAN)
         self.bus = None
         self._initialize_bus()
 

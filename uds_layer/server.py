@@ -9,7 +9,7 @@ from uds_layer.uds_enums import CommunicationControlSubFunction, CommunicationCo
 from uds_layer.operation import Operation
 from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
-from logger import Logger, LogType
+from logger import Logger, LogType, ProtocolType
 import zlib  # For CRC32 calculation
 
 class Server:
@@ -22,7 +22,7 @@ class Server:
         self._p2_timing = 0
         self._p2_star_timing = 0
         self.transfer_requests: List[TransferRequest] = []
-        self._logger = Logger(log_directory="uds")
+        self._logger = Logger(ProtocolType.UDS)
         self.clientSend:Callable=client_send
     # Getters and setters
     @property

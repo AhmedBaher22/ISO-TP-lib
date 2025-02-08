@@ -15,7 +15,7 @@ from iso_tp_layer.Exceptions import TimeoutException
 from iso_tp_layer.frames.FrameMessage import FrameMessage
 from iso_tp_layer.Address import Address
 from iso_tp_layer.recv_request.InitialState import InitialState
-from logger import Logger, LogType
+from logger import Logger, LogType, ProtocolType
 
 
 class RecvRequest:
@@ -40,7 +40,7 @@ class RecvRequest:
         self._data_length = 0
         self._last_received_time = time.time()  # Store the time of last received message
         self._flow_status = FlowStatus.Continue
-        self.logger = Logger("iso-tp")
+        self.logger = Logger(ProtocolType.ISO_TP)
         self.logger.log_message(
             log_type=LogType.RECEIVE,
             message=f"[RecvRequest-{self._id}] Initialized with address {self._address}, block_size={self._max_block_size}, timeout={self._timeout}ms"

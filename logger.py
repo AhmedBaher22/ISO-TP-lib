@@ -15,76 +15,82 @@ class LogType(Enum):
     CONFIGURATION = "configuration"
 
 
+class ProtocolType(Enum):
+    ISO_TP = "ISO-TP"
+    UDS = "UDS"
+    CAN = "CAN"
+
+
 class Logger:
-    def __init__(self, log_directory):
+    def __init__(self, protocol: ProtocolType):
         """
-        Initialize the logger with two log files:
-        - success.log: Contains all logs except errors.
-        - error.log: Contains only error logs.
-        - high_level.log (optional): Contains high-priority logs.
+        Initialize a logger with a separate directory and log files for the chosen protocol.
+
+        Args:
+            protocol (ProtocolType): The selected protocol (ISO-TP, UDS, CAN).
         """
+        self.protocol = protocol.value  # Store protocol name as a string
+
+        # Define log directory based on protocol
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        self.log_directory = os.path.join(current_dir, "logs", log_directory)
+        self.log_directory = os.path.join(current_dir, "logs", self.protocol)
         self.success_log = os.path.join(self.log_directory, "success.log")
         self.error_log = os.path.join(self.log_directory, "error.log")
-        self.high_level_log = os.path.join(current_dir, "logs", "communication.log")
+        self.communication_log = os.path.join(current_dir, "logs", "general_logs.log")
 
+        # **Ensure the log directory exists before creating loggers**
         self._create_log_structure()
-        self._setup_loggers()
+
+        # Create separate loggers for each protocol instance
+        self.success_logger = self._create_logger(f"{self.protocol}_success", self.success_log, logging.INFO, False)
+        self.error_logger = self._create_logger(f"{self.protocol}_error", self.error_log, logging.ERROR, False)
+        self.communication_logger = self._create_logger(f"{self.protocol}_communication", self.communication_log, logging.INFO, True)
 
     def _create_log_structure(self):
-        """Create the log directory structure"""
+        """Create the log directory structure for the protocol."""
         os.makedirs(self.log_directory, exist_ok=True)
 
-    def _setup_loggers(self):
-        """Setup loggers for success, error, and high-level logs"""
-        self.success_logger = self._create_logger("success", logging.INFO, self.success_log)
-        self.error_logger = self._create_logger("error", logging.ERROR, self.error_log)
-        self.high_level_logger = self._create_logger("communication", logging.INFO, self.high_level_log)
 
-    def _create_logger(self, name: str, level: int, filename: str) -> logging.Logger:
-        """Create and configure a logger"""
+    def _create_logger(self, name: str, filename: str, level: int, add_console: bool) -> logging.Logger:
+        """Create a unique logger for each protocol instance."""
         logger = logging.getLogger(name)
         logger.setLevel(level)
-        logger.handlers = []  # Remove existing handlers
 
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+        # Remove existing handlers if re-initialized
+        if logger.hasHandlers():
+            logger.handlers.clear()
 
-        # File handler
+        formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+
+        # File handler (this now works since directory exists)
         file_handler = logging.FileHandler(filename)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 
-        # Console handler
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
-        logger.addHandler(console_handler)
+        # Console handler (only for communication log)
+        if add_console:
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(formatter)
+            logger.addHandler(console_handler)
 
         return logger
 
-    def log_message(self, log_type: LogType, message: str, important: bool = False):
-        """Log a message based on log type, and optionally add to high-level log."""
-        log_level = self._get_log_level(log_type)
-        formatted_message = f"{log_type.value.upper()} - {message}."  # Include LogType after timestamp
+    def log_message(self, log_type: LogType, message: str):
+        """
+        Logs a message in the format:
+        YYYY-MM-DD HH:MM:SS - PROTOCOL - LOG_TYPE - message
 
+        Args:
+            log_type (LogType): Type of log message.
+            message (str): The actual log message.
+        """
+        formatted_message = f"{self.protocol} - {log_type.name} - {message}"
+
+        # Log to respective log files
         if log_type == LogType.ERROR:
-            self.error_logger.log(log_level, formatted_message)
+            self.error_logger.error(formatted_message)
         else:
-            self.success_logger.log(log_level, formatted_message)
+            self.success_logger.info(formatted_message)
 
-        if important:
-            self.high_level_logger.log(logging.INFO, formatted_message)
-
-    def _get_log_level(self, log_type: LogType) -> int:
-        """Map LogType to logging level."""
-        return {
-            LogType.INFO: logging.INFO,
-            LogType.WARNING: logging.WARNING,
-            LogType.DEBUG: logging.DEBUG,
-            LogType.SEND: logging.INFO,
-            LogType.RECEIVE: logging.INFO,
-            LogType.ACKNOWLEDGMENT: logging.INFO,
-            LogType.ERROR: logging.ERROR,
-            LogType.INITIALIZATION: logging.INFO,
-            LogType.CONFIGURATION: logging.INFO
-        }[log_type]
+        # Always log to communication.log and print once
+        self.communication_logger.info(formatted_message)

@@ -18,7 +18,7 @@ from iso_tp_layer.frames.FrameType import FrameType
 from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
 from iso_tp_layer.recv_request.RecvRequest import RecvRequest
 from iso_tp_layer.send_request.SendRequest import SendRequest
-from logger import Logger, LogType
+from logger import Logger, LogType, ProtocolType
 
 
 def _parse_message(data: bitarray) -> Union[FrameMessage, None]:
@@ -117,7 +117,7 @@ class IsoTp:
         self._send_requests: List[SendRequest] = []
         self._control_frames: List[
             tuple[Address, FlowControlFrameMessage]] = []  # List to store control frames and addresses
-        self.logger = Logger("iso-tp")
+        self.logger = Logger(ProtocolType.ISO_TP)
         self.lock = threading.Lock()
         self.logger.log_message(log_type=LogType.INITIALIZATION, message="IsoTp instance initialized with provided configuration.")
 

@@ -2,6 +2,7 @@ import sys
 import os
 from time import sleep
 from typing import List
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
@@ -18,18 +19,23 @@ from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod
 from app_initialization import init_uds_client
 
+
 def main():
     client = init_uds_client()
 
-    #opening session control 
+    # opening session control
     # Initialize communication with an ECU
     print("\n=== Initializing Communication with ECU ===")
-    ecu_address  = Address(addressing_mode=0, txid=0x33, rxid=0x33)
+    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
     client.add_server(ecu_address, SessionType.PROGRAMMING)
     servers: List[Server] = client.get_servers()
     sleep(1)
-    
-    client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id,data=[0x52,0x55,0x32],encryption_method=EncryptionMethod.NO_ENCRYPTION,compression_method=CompressionMethod.NO_COMPRESSION,memory_address=[0x22,0x10],checksum_required=False)
+
+    client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],
+                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,
+                                    compression_method=CompressionMethod.NO_COMPRESSION,
+                                    memory_address=[0x22, 0x10],
+                                    checksum_required=False)
     # #sending read data by identifier request
     # message=servers[0].read_data_by_identifier(vin=[0x01,0x90])
     # client.send_message(servers[0].can_id,message)
@@ -37,17 +43,13 @@ def main():
     # #sending ecu reset request
     # message=servers[0].ecu_reset(reset_type=0x01)
     # client.send_message(servers[0].can_id,message)
-    
+
     # #sending write data by intentifier request
     # message=servers[0].write_data_by_identifier(vin=[0x01,0x90],data=[0x55,0x26])
     # client.send_message(servers[0].can_id,message)
 
-
     while True:
         sleep(1)
-
-
-
 
 
 if __name__ == "__main__":
