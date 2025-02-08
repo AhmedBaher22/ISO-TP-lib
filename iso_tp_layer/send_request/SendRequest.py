@@ -157,8 +157,8 @@ class SendRequest:
 
                 if self._stmin > 0:
                     self.logger.log_message(log_type=LogType.SEND,
-                                            message=f"Sleeping for {self._stmin / 100.0} seconds before sending the next frame.")
-                    time.sleep(self._stmin / 100.0)
+                                            message=f"Sleeping for {self._stmin / 1000.0} seconds before sending the next frame.")
+                    time.sleep(self._stmin / 1000.0)
 
                 first_byte = (0x2 << 4) | (self._sequence_num & 0x0F)
                 frame = bytes([first_byte]) + self._remaining_data[self._index:self._index + 7].ljust(7,
@@ -220,7 +220,7 @@ class SendRequest:
                 elif flow_status == FlowStatus.Wait:
                     # print("Flow status: Wait.")
                     while not is_control_frame_received:
-                        time.sleep(stmin / 100.0)
+                        time.sleep(stmin / 1000.0)
                         is_control_frame_received = True
                 elif flow_status == FlowStatus.Abort:
                     # "Flow status: Abort received. Transmission terminated."
