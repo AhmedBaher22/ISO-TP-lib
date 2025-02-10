@@ -54,6 +54,7 @@ def init_uds_client(
         if not can_config:
             can_config = CANConfiguration(
                 interface=CANInterface.VECTOR,
+                serial_number=100,
                 channel=0,
                 app_name="UDS",
                 fd_flag=False,

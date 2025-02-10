@@ -29,10 +29,11 @@ class CANConfiguration:
     """Configuration class for CAN communication parameters."""
 
     def __init__(self,
+                 serial_number,
                  recv_callback: Callable,
                  interface: CANInterface = CANInterface.VECTOR,
                  channel: int = 0,
-                 app_name: str = "CANApp",
+                 app_name: str = "UDS",
                  fd_flag: bool = False,
                  extended_flag: bool = False,
                  bitrate: int = 500000):
@@ -54,6 +55,7 @@ class CANConfiguration:
         self.extended_flag = extended_flag
         self.bitrate = bitrate
         self.recv_callback = recv_callback
+        self.serial_number = serial_number
 
     def validate(self):
         """Validate configuration parameters."""
@@ -115,7 +117,8 @@ class CANCommunication:
                 channel=self.config.channel,
                 app_name=self.config.app_name,
                 fd=self.config.fd_flag,
-                bitrate=self.config.bitrate
+                bitrate=self.config.bitrate,
+                serial=self.config.serial_number
             )
             self.logger.log_message(log_type=LogType.INITIALIZATION, message="CAN bus initialized successfully")
 
@@ -227,6 +230,8 @@ class CANCommunication:
 
         try:
             message = self.bus.recv(timeout=timeout)
+            if not message or message.arbitration_id == 0x0 or len(message.data) == 0:
+                return
             if message:
                 self.logger.log_message(log_type=LogType.RECEIVE,
                                         message=f"Message received: ID=0x{message.arbitration_id:X}, "
