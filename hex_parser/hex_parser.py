@@ -16,6 +16,17 @@ class DataRecord:
     data_length: int
 
 
+def verify_checksum(record: str, provided_checksum: int) -> bool:
+    """
+    Verifies the checksum of an S-Record.
+    The checksum is calculated as the one's complement of the sum of all bytes in the record (excluding 'S' and checksum itself).
+    """
+    byte_values = [int(record[i:i+2], 16) for i in range(2, len(record) - 3, 2)]
+    sum_bytes = sum(byte_values)
+    calculated_checksum = 0xFF - (sum_bytes & 0xFF)
+    return calculated_checksum == provided_checksum
+
+
 class SRecordParser:
     def __init__(self):
         self.records: list[DataRecord] = []  # Initialize an empty list for parsed records
@@ -23,17 +34,6 @@ class SRecordParser:
         self._s1_start_address = -1
         self._s2_start_address = -1
         self._s3_start_address = -1
-
-
-    def verify_checksum(self, record: str, provided_checksum: int) -> bool:
-        """
-        Verifies the checksum of an S-Record.
-        The checksum is calculated as the one's complement of the sum of all bytes in the record (excluding 'S' and checksum itself).
-        """
-        byte_values = [int(record[i:i+2], 16) for i in range(2, len(record) - 3, 2)]
-        sum_bytes = sum(byte_values)
-        calculated_checksum = 0xFF - (sum_bytes & 0xFF)
-        return calculated_checksum == provided_checksum
 
     def sort_records(self):
         """Sorts the records based on the address (from lowest to highest)."""
@@ -50,7 +50,7 @@ class SRecordParser:
             data = record[address_end_index:data_end_index]
             check_sum = int(record[data_end_index:data_end_index + 2], 16)
 
-            if not self.verify_checksum(record, check_sum):
+            if not verify_checksum(record, check_sum):
                 print(f"Error in record {record} - Checksum mismatch")
                 return
 
@@ -77,7 +77,7 @@ class SRecordParser:
 
         check_sum = int(record[count_end_index:count_end_index + 2], 16)
 
-        if not self.verify_checksum(record, check_sum):
+        if not verify_checksum(record, check_sum):
             print(f"Error in record {record} - Checksum mismatch")
             return
 
@@ -96,7 +96,7 @@ class SRecordParser:
             address = record[address_start_index:address_end_index]
             check_sum = int(record[address_end_index:address_end_index + 2], 16)
 
-            if not self.verify_checksum(record, check_sum):
+            if not verify_checksum(record, check_sum):
                 print(f"Error in record {record} - Checksum mismatch")
                 return
 
@@ -157,21 +157,33 @@ class SRecordParser:
             case _:
                 print(f"Error in record {record}")
 
-    def parse_file(self, filename: str):
+    def add_padding(self, max_block_length: int):
+        """Pads records with 'FF' if data length is less than max_block_length."""
+        self.sort_records()
+        for record in self.records:
+            if record.data_length < max_block_length:
+                # Calculate missing bytes and pad with 'FF'
+                missing_bytes = max_block_length - record.data_length
+                record.data += 'FF' * missing_bytes
+                record.data_length = max_block_length
+
+
+    def parse_file(self, filename: str, max_block_length: int):
         try:
             with open(filename, "r") as file:
                 for line in file:
                     self.process_record(line.split(" ")[0].strip())
+            self.add_padding(max_block_length)
         except FileNotFoundError:
             print(f"Error: File '{filename}' not found.")
 
 
 # Example usage
 parser = SRecordParser()
-parser.parse_file("example.srec")
-parser.sort_records()
+parser.parse_file(filename="example.srec", max_block_length=28)
+# parser.sort_records()
 
 # Access parsed records
 print("\nParsed Records:")
-for record in parser.records:
-    print(record)
+for rec in parser.records:
+    print(rec)
