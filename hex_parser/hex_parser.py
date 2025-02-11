@@ -29,7 +29,8 @@ def verify_checksum(record: str, provided_checksum: int) -> bool:
 
 class SRecordParser:
     def __init__(self):
-        self.records: list[DataRecord] = []  # Initialize an empty list for parsed records
+        self._records: list[DataRecord] = []  # Initialize an empty list for parsed records
+        self._records_to_be_sent: list[DataRecord] = []  # Initialize an empty list for parsed records
         self._records_count = -1
         self._s1_start_address = -1
         self._s2_start_address = -1
@@ -37,7 +38,7 @@ class SRecordParser:
 
     def sort_records(self):
         """Sorts the records based on the address (from lowest to highest)."""
-        self.records.sort(key=lambda record: int(record.address, 16))
+        self._records.sort(key=lambda record: int(record.address, 16))
 
     def process_data_record(self, record: str, record_type: RecordType, byte_count: int):
         try:
@@ -55,7 +56,7 @@ class SRecordParser:
                 return
 
             data_record = DataRecord(record_type=record_type, address=address, data=data, data_length=(data_length//2))
-            self.records.append(data_record)  # Store parsed record
+            self._records.append(data_record)  # Store parsed record
 
             print(f"record: {record}\n"
                   f"byte_count: {byte_count}\n"
@@ -157,33 +158,69 @@ class SRecordParser:
             case _:
                 print(f"Error in record {record}")
 
-    def add_padding(self, max_block_length: int):
-        """Pads records with 'FF' if data length is less than max_block_length."""
-        self.sort_records()
-        for record in self.records:
-            if record.data_length < max_block_length:
-                # Calculate missing bytes and pad with 'FF'
-                missing_bytes = max_block_length - record.data_length
-                record.data += 'FF' * missing_bytes
-                record.data_length = max_block_length
 
-
-    def parse_file(self, filename: str, max_block_length: int):
+    def parse_file(self, filename: str):
         try:
+            self._records: list[DataRecord] = []  # Make sure the old file is deleted
+            self._records_to_be_sent: list[DataRecord] = []  # Make sure the old file is deleted
             with open(filename, "r") as file:
                 for line in file:
                     self.process_record(line.split(" ")[0].strip())
-            self.add_padding(max_block_length)
+
+            self._merge_consecutive_records()
         except FileNotFoundError:
             print(f"Error: File '{filename}' not found.")
+
+    def _merge_consecutive_records(self, max_length: int = 4096):
+        """
+        Merges consecutive records whose addresses are sequential while ensuring
+        that the total data length does not exceed max_length.
+
+        :param max_length: The maximum allowed data length (in bytes) per merged record.
+        """
+        if not self._records:
+            return
+
+        self.sort_records()  # Ensure records are sorted by address
+        merged_records = []
+        current_record = self._records[0]
+
+        for next_record in self._records[1:]:
+            current_address = int(current_record.address, 16)
+            next_address = int(next_record.address, 16)
+
+            # Check if the next record is consecutive
+            if next_address == current_address + current_record.data_length:
+                # Check if adding the next record exceeds max_length
+                if current_record.data_length + next_record.data_length > max_length:
+                    # Store the current merged record and start a new one
+                    merged_records.append(current_record)
+                    current_record = next_record
+                else:
+                    # Merge the record
+                    current_record.data += next_record.data
+                    current_record.data_length += next_record.data_length
+            else:
+                # Store the current merged record and start a new one
+                merged_records.append(current_record)
+                current_record = next_record
+
+        # Append the last record
+        merged_records.append(current_record)
+
+        self._records = merged_records  # Update the records list
+
+    def send_file(self):
+        if not self._records:
+            return
 
 
 # Example usage
 parser = SRecordParser()
-parser.parse_file(filename="example.srec", max_block_length=28)
+parser.parse_file(filename="flash_program_erase_mpc5748g.srec")
 # parser.sort_records()
 
 # Access parsed records
 print("\nParsed Records:")
-for rec in parser.records:
+for rec in parser._records:
     print(rec)
