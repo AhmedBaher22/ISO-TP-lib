@@ -181,6 +181,12 @@ class SRecordParser:
         if not self._records:
             return
 
+        # Access parsed records
+        print("\nParsed Records:")
+        for rec in self._records:
+            print(rec)
+
+
         self.sort_records()  # Ensure records are sorted by address
         merged_records = []
         current_record = self._records[0]
@@ -217,7 +223,7 @@ class SRecordParser:
 
 # Example usage
 parser = SRecordParser()
-parser.parse_file(filename="flash_program_erase_mpc5748g.srec")
+parser.parse_file(filename="hello_world_mpc5748g.srec")
 # parser.sort_records()
 
 # Access parsed records
