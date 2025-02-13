@@ -40,6 +40,8 @@ class SendRequest:
         self._block_counter = 0
         self._isFinished = False
         self._received_error_frame = False  # New attribute for error frame tracking
+        self._current_length = -1
+        self._total_length = -1
         self.logger = Logger(ProtocolType.ISO_TP)
         self.logger.log_message(
             log_type=LogType.SEND,
@@ -88,6 +90,11 @@ class SendRequest:
             )
             # print(f"Single frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
+
+            # PROGRESS BAR
+            self._on_success(1)
+
+
             self._end_request()  # Successful completion
         except Exception as e:
             # print(f"Error in _send_single: {e}")
@@ -103,7 +110,8 @@ class SendRequest:
             if message_length > 4095:
                 # "Message length exceeds the maximum limit of 4095 bytes for ISO-TP."
                 raise MessageLengthExceededException()
-
+            self._total_length = message_length
+            self._current_length = 6
             first_byte = (0x1 << 4) | ((message_length >> 8) & 0x0F)
             second_byte = message_length & 0xFF
             first_frame_data = self._data[:6]
@@ -115,6 +123,9 @@ class SendRequest:
             )
             # print(f"First frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
+
+            # PROGRESS BAR
+            self._on_success(self._current_length/self._total_length)
 
             # Start listening for control frames in a separate thread
             listener_thread = threading.Thread(
@@ -170,6 +181,13 @@ class SendRequest:
                                         message=f"Sending consecutive frame: {hex_frame} (Sequence Num: {self._sequence_num})")
 
                 self._txfn(self._address, hex_frame)
+
+                # PROGRESS BAR
+                self._current_length += 7
+                if self._current_length > self._total_length:
+                    self._current_length = self._total_length
+
+                self._on_success(self._current_length/self._total_length)
 
                 self._index += 7
                 self._sequence_num = (self._sequence_num + 1) % 16
@@ -231,6 +249,7 @@ class SendRequest:
 
             if is_control_frame_received:
                 callBackFn()
+
         except Exception as e:
             self.logger.log_message(log_type=LogType.ERROR,
                                     message=f"[SendRequest-{self._id}] Error in listen_for_control_frame - {e}")
@@ -246,7 +265,8 @@ class SendRequest:
         self.logger.log_message(log_type=LogType.SEND,
                                 message=f"[SendRequest-{self._id}] Request completed successfully.")
 
-        self._on_success()
+
+        # self._on_success()
 
     def send_control_frame(self, flow_status=0, block_size=0, separation_time=0):
         """

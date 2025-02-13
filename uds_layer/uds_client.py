@@ -218,8 +218,9 @@ class UdsClient:
             log_type=LogType.ACKNOWLEDGMENT,
             message=f"Message {message} sent successfully")
 
-    def on_success_send(self):
-        pass
+    def on_success_send(self, progress: float):
+        print(f"Progress: {progress}")
+
 
     def on_fail_send(self, e: Exception):
         pass
