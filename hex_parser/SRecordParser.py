@@ -45,9 +45,7 @@ class SRecordParser:
         self._records: list[DataRecord] = []  # Initialize an empty list for parsed records
         self._merged_records: list[DataRecord] = []  # Initialize an empty list for parsed records
         self._records_count = -1
-        self._s1_start_address = -1
-        self._s2_start_address = -1
-        self._s3_start_address = -1
+        self._start_address = -1
         self._logger = Logger(ProtocolType.HEX_PARSER)
         self._logger.log_message(log_type=LogType.INITIALIZATION,
                                  message="Parser Initialized Successfully.")
@@ -101,26 +99,12 @@ class SRecordParser:
         if not verify_checksum(record, check_sum):
             raise ValueError(f"Error in record {record} - Checksum mismatch")
 
-        if record_type == RecordType.TWO_BYTES:
-            if self._s1_start_address == -1:
-                self._s1_start_address = address
-            else:
-                raise ValueError(f"Error in record {record} - more than one start address record (Termination)")
-
-        elif record_type == RecordType.THREE_BYTES:
-            if self._s2_start_address == -1:
-                self._s2_start_address = address
-            else:
-                raise ValueError(f"Error in record {record} - more than one start address record (Termination)")
-
-        elif record_type == RecordType.FOUR_BYTES:
-            if self._s3_start_address == -1:
-                self._s3_start_address = address
-            else:
-                raise ValueError(f"Error in record {record} - more than one start address record (Termination)")
-
+        if self._start_address == -1:
+            self._start_address = address
         else:
-            raise ValueError(f"Error in record {record} - Unknown RecordType {record_type}")
+            raise ValueError(f"Error in record {record} - more than one start address record (Termination)")
+
+
 
     def _process_record(self, record: str):
         if record[0] not in ('s', 'S'):
