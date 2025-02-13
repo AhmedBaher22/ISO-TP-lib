@@ -20,14 +20,14 @@ from logger import Logger, LogType, ProtocolType
 
 class SendRequest:
 
-    def __init__(self, txfn: Callable, rxfn: Callable, on_success: Callable,
+    def __init__(self, txfn: Callable, rxfn: Callable, update_progress: Callable,
                  on_error: Callable, address: Address, timeout=0,
                  stmin=0, block_size=0, tx_padding=0xFF):
         self._id = str(uuid.uuid4())[:8]  # Assign a unique ID
         self._tx_padding = tx_padding  # Default padding value
         self._txfn = txfn
         self._rxfn = rxfn
-        self._on_success = on_success
+        self._update_progress = update_progress
         self._on_error = on_error
         self._stmin = stmin
         self._timeout = timeout
@@ -92,7 +92,7 @@ class SendRequest:
             self._txfn(self._address, hex_frame)
 
             # PROGRESS BAR
-            self._on_success(1)
+            self._update_progress(1)
 
 
             self._end_request()  # Successful completion
@@ -125,7 +125,7 @@ class SendRequest:
             self._txfn(self._address, hex_frame)
 
             # PROGRESS BAR
-            self._on_success(self._current_length/self._total_length)
+            self._update_progress(self._current_length/self._total_length)
 
             # Start listening for control frames in a separate thread
             listener_thread = threading.Thread(
@@ -187,7 +187,7 @@ class SendRequest:
                 if self._current_length > self._total_length:
                     self._current_length = self._total_length
 
-                self._on_success(self._current_length/self._total_length)
+                self._update_progress(self._current_length/self._total_length)
 
                 self._index += 7
                 self._sequence_num = (self._sequence_num + 1) % 16
@@ -266,7 +266,7 @@ class SendRequest:
                                 message=f"[SendRequest-{self._id}] Request completed successfully.")
 
 
-        # self._on_success()
+        # self._update_progress()
 
     def send_control_frame(self, flow_status=0, block_size=0, separation_time=0):
         """
