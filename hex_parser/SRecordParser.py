@@ -10,9 +10,18 @@ from logger import Logger, LogType, ProtocolType
 
 
 class RecordType(Enum):
-    TWO_BYTES = 2
+    TWO_BYTES   = 2
     THREE_BYTES = 3
-    FOUR_BYTES = 4
+    FOUR_BYTES  = 4
+
+
+class ValidExtensions(Enum):
+    SREC = ".srec"
+    S19  = ".s19"
+    S28  = ".s28"
+    S37  = ".s37"
+    S    = ".s"
+    MOT  = ".mot"
 
 
 @dataclass
@@ -29,26 +38,38 @@ class DataRecord:
                 f"data_length={self.data_length})")
 
 
-def verify_checksum(record: str, provided_checksum: int) -> bool:
-    """
-    Verifies the checksum of an S-Record.
-    The checksum is calculated as the one's complement of the sum of all bytes in the record (excluding 'S' and checksum itself).
-    """
-    byte_values = [int(record[i:i + 2], 16) for i in range(2, len(record) - 3, 2)]
-    sum_bytes = sum(byte_values)
-    calculated_checksum = 0xFF - (sum_bytes & 0xFF)
-    return calculated_checksum == provided_checksum
-
 
 class SRecordParser:
+    # Define valid record mappings once as a class attribute
+    _valid_records_by_extension = {
+        ValidExtensions.SREC: {'0', '1', '2', '3', '5', '6', '7', '8', '9'},
+        ValidExtensions.MOT:  {'0', '1', '2', '3', '5', '6', '7', '8', '9'},
+        ValidExtensions.S:    {'0', '1', '2', '3', '5', '6', '7', '8', '9'},
+        ValidExtensions.S19:  {'0', '1',           '5', '6',           '9'},
+        ValidExtensions.S28:  {'0',      '2',      '5', '6',      '8'     },
+        ValidExtensions.S37:  {'0',           '3', '5', '6', '7'          },
+    }
+
     def __init__(self):
         self._records: list[DataRecord] = []  # Initialize an empty list for parsed records
         self._merged_records: list[DataRecord] = []  # Initialize an empty list for parsed records
         self._records_count = -1
         self._start_address = -1
+        self._file_extension = None
         self._logger = Logger(ProtocolType.HEX_PARSER)
         self._logger.log_message(log_type=LogType.INITIALIZATION,
                                  message="Parser Initialized Successfully.")
+
+    @staticmethod
+    def _verify_checksum(record: str, provided_checksum: int) -> bool:
+        """
+        Verifies the checksum of an S-Record.
+        The checksum is calculated as the one's complement of the sum of all bytes in the record (excluding 'S' and checksum itself).
+        """
+        byte_values = [int(record[i:i + 2], 16) for i in range(2, len(record) - 3, 2)]
+        sum_bytes = sum(byte_values)
+        calculated_checksum = 0xFF - (sum_bytes & 0xFF)
+        return calculated_checksum == provided_checksum
 
     def _sort_records(self):
         """Sorts the records based on the address (from lowest to highest)."""
@@ -64,7 +85,7 @@ class SRecordParser:
         data_hex_str = record[address_end_index:data_end_index]
         check_sum = int(record[data_end_index:data_end_index + 2], 16)
 
-        if not verify_checksum(record, check_sum):
+        if not SRecordParser._verify_checksum(record, check_sum):
             raise ValueError(f"Error in record {record} - Checksum mismatch")
 
         # Convert hex string to bytearray
@@ -82,7 +103,7 @@ class SRecordParser:
 
         check_sum = int(record[count_end_index:count_end_index + 2], 16)
 
-        if not verify_checksum(record, check_sum):
+        if not SRecordParser._verify_checksum(record, check_sum):
             raise ValueError(f"Error in record {record} - Checksum mismatch")
 
         if self._records_count == -1:
@@ -96,7 +117,7 @@ class SRecordParser:
         address = record[address_start_index:address_end_index]
         check_sum = int(record[address_end_index:address_end_index + 2], 16)
 
-        if not verify_checksum(record, check_sum):
+        if not SRecordParser._verify_checksum(record, check_sum):
             raise ValueError(f"Error in record {record} - Checksum mismatch")
 
         if self._start_address == -1:
@@ -111,10 +132,20 @@ class SRecordParser:
             raise ValueError(f"Error in record {record} - Doesn't start with 'S'")
 
         byte_count = int(record[2:4], 16)
-        if byte_count <= 2 and byte_count > 255:
+        if byte_count <= 2 or byte_count > 255:
             raise ValueError(f"Error in record {record} - Invalid byte count must be more than > 2 and less than 256")
 
-        match record[1]:
+
+        # Check if the record type is valid for the current file extension
+        record_type = record[1]
+        if self._file_extension not in self._valid_records_by_extension:
+            raise ValueError(f"Unknown file extension {self._file_extension}")
+
+        if record_type not in self._valid_records_by_extension[self._file_extension]:
+            raise ValueError(
+                f"Error in record {record} - Type S{record_type} is not allowed for {self._file_extension}")
+
+        match record_type:
             case '0':
                 # print(f"Header {record}")
                 pass
@@ -139,12 +170,25 @@ class SRecordParser:
 
     def parse_file(self, filename: str):
         try:
+            # Extract file extension
+            file_extension = os.path.splitext(filename)[1].lower()
+
+            # Validate the extension using the Enum
+            if file_extension not in {e.value for e in ValidExtensions}:
+                self._logger.log_message(log_type=LogType.ERROR,
+                                         message=f"Error: Invalid file extension. Expected one of {[e.value for e in ValidExtensions]}, got '{file_extension}'.")
+                return
+
+            # Store the validated extension
+            self._file_extension = ValidExtensions(file_extension)
+
             self._logger.log_message(log_type=LogType.INFO,
                                      message=f"Starting parsing Hex file: {filename}.")
 
-            self._records: list[DataRecord] = []  # Make sure the old file is deleted
-            self._merged_records: list[DataRecord] = []  # Make sure the old file is deleted
-            with open(filename, "r") as file:
+            self._records.clear()
+            self._merged_records.clear()
+
+            with open(filename, "r", encoding="utf-8") as file:
                 for line in file:
                     self._process_record(line.split(" ")[0].strip())
 
@@ -211,4 +255,3 @@ class SRecordParser:
     def send_file(self):
         if not self._records:
             return
-

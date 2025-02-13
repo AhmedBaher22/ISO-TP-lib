@@ -6,11 +6,11 @@ parser = SRecordParser()
 parser.parse_file(filename="hello_world_mpc5748g.srec")
 
 
-print("\nParsed Records:")
-for rec in parser._records:
-    print(rec)
-
-
-print("\nMerged Records:")
-for rec in parser._merged_records:
-    print(rec)
+# print("\nParsed Records:")
+# for rec in parser._records:
+#     print(rec)
+#
+#
+# print("\nMerged Records:")
+# for rec in parser._merged_records:
+#     print(rec)
