@@ -19,6 +19,7 @@ class ProtocolType(Enum):
     ISO_TP = "ISO-TP"
     UDS = "UDS"
     CAN = "CAN"
+    HEX_PARSER = "HEX_PARSER"
 
 
 class Logger:

@@ -32,8 +32,8 @@ def mock_rxfn_abort(address: Address):
 
 
 # Success and error callbacks
-def on_success():
-    print("✅ Transmission successful!")
+def on_success(x: float):
+    print(f"Progress bar: {x}")
 
 
 def on_error(error):

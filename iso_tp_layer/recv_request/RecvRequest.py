@@ -3,6 +3,7 @@ from math import ceil
 from typing import Callable
 from bitarray import bitarray
 import time
+import threading
 import sys
 import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +16,7 @@ from iso_tp_layer.Exceptions import TimeoutException
 from iso_tp_layer.frames.FrameMessage import FrameMessage
 from iso_tp_layer.Address import Address
 from iso_tp_layer.recv_request.InitialState import InitialState
+from iso_tp_layer.recv_request.ErrorState import ErrorState
 from logger import Logger, LogType, ProtocolType
 
 
@@ -40,6 +42,7 @@ class RecvRequest:
         self._data_length = 0
         self._last_received_time = time.time()  # Store the time of last received message
         self._flow_status = FlowStatus.Continue
+        self._timeout_thread = None
         self.logger = Logger(ProtocolType.ISO_TP)
         self.logger.log_message(
             log_type=LogType.RECEIVE,
@@ -168,15 +171,50 @@ class RecvRequest:
                     f"Current message (HEX): {self._message.tobytes().hex().upper()} | Length: {len(self._message)//8} bytes"
         )
 
-    def update_last_received_time(self):
-        self._last_received_time = time.time()
-        self.logger.log_message(
-            log_type=LogType.RECEIVE,
-            message=f"[RecvRequest-{self._id}] Last received time updated"
-        )
+
 
     def get_last_received_time(self):
         return self._last_received_time
+
+    def start_timeout_timer(self):
+        """
+        Starts a timer that monitors for timeouts.
+        If no message is received within `self._timeout` milliseconds, an exception is raised.
+        """
+
+        def monitor_timeout():
+            if self._timeout == 0:
+                return
+
+            while True:
+                if self._state.__class__.__name__ in {"ErrorState", "FinalState"}:
+                    break
+
+                time.sleep(self._timeout/1000)
+                elapsed_time_ms = (time.time() - self._last_received_time) * 1000
+
+                if elapsed_time_ms >= self._timeout:
+                    self.logger.log_message(
+                        log_type=LogType.ERROR,
+                        message=f"[RecvRequest-{self._id}] Timeout occurred after {elapsed_time_ms:.2f} ms"
+                    )
+                    self.set_state(ErrorState())  # Transition to ErrorState
+                    self.on_error(TimeoutException())
+                    break  # Exit thread when timeout occurs
+
+        self._timeout_thread = threading.Thread(target=monitor_timeout, daemon=True)
+        self._timeout_thread.start()
+
+    def reset_timeout_timer(self):
+        """
+        Resets the timeout timer whenever a new message is received.
+        """
+        self._last_received_time = time.time()
+        self.logger.log_message(
+            log_type=LogType.RECEIVE,
+            message=f"[RecvRequest-{self._id}] Timeout timer reset"
+        )
+
 
     def process(self, frameMessage: FrameMessage):
         """
@@ -184,20 +222,6 @@ class RecvRequest:
         The state will modify the recv_request as needed.
         """
         try:
-            current_time = time.time()
-            elapsed_time_ms = (current_time - self._last_received_time) * 1000  # Convert seconds to milliseconds
-
-            if 0 < self._timeout <= elapsed_time_ms:
-                self.logger.log_message(
-                    log_type=LogType.ERROR,
-                    message=f"[RecvRequest-{self._id}] Timeout occurred after {elapsed_time_ms:.2f} ms"
-                )
-                self.on_error(TimeoutException())
-
-            self.logger.log_message(
-                log_type=LogType.RECEIVE,
-                message=f"[RecvRequest-{self._id}] Processing frame: {frameMessage}"
-            )
             self._state.handle(self, frameMessage)
         except Exception as e:
             self.logger.log_message(

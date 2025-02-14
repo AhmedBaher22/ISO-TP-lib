@@ -145,7 +145,7 @@ class IsoTp:
                 address=address,
                 txfn=self._send_to_can,  # Can send function ( takes hex frame as a parameter)
                 rxfn=self._get_control_frame_by_address,  # Function to read from can
-                on_success=on_success,
+                update_progress=on_success,
                 on_error=on_error,
                 stmin=self._config.stmin,
                 timeout=self._config.timeout,

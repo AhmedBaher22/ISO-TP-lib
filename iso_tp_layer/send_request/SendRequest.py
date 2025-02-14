@@ -20,14 +20,14 @@ from logger import Logger, LogType, ProtocolType
 
 class SendRequest:
 
-    def __init__(self, txfn: Callable, rxfn: Callable, on_success: Callable,
+    def __init__(self, txfn: Callable, rxfn: Callable, update_progress: Callable,
                  on_error: Callable, address: Address, timeout=0,
                  stmin=0, block_size=0, tx_padding=0xFF):
         self._id = str(uuid.uuid4())[:8]  # Assign a unique ID
         self._tx_padding = tx_padding  # Default padding value
         self._txfn = txfn
         self._rxfn = rxfn
-        self._on_success = on_success
+        self._update_progress = update_progress
         self._on_error = on_error
         self._stmin = stmin
         self._timeout = timeout
@@ -40,6 +40,8 @@ class SendRequest:
         self._block_counter = 0
         self._isFinished = False
         self._received_error_frame = False  # New attribute for error frame tracking
+        self._current_length = -1
+        self._total_length = -1
         self.logger = Logger(ProtocolType.ISO_TP)
         self.logger.log_message(
             log_type=LogType.SEND,
@@ -88,6 +90,11 @@ class SendRequest:
             )
             # print(f"Single frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
+
+            # PROGRESS BAR
+            self._update_progress(1)
+
+
             self._end_request()  # Successful completion
         except Exception as e:
             # print(f"Error in _send_single: {e}")
@@ -103,7 +110,8 @@ class SendRequest:
             if message_length > 4095:
                 # "Message length exceeds the maximum limit of 4095 bytes for ISO-TP."
                 raise MessageLengthExceededException()
-
+            self._total_length = message_length
+            self._current_length = 6
             first_byte = (0x1 << 4) | ((message_length >> 8) & 0x0F)
             second_byte = message_length & 0xFF
             first_frame_data = self._data[:6]
@@ -115,6 +123,9 @@ class SendRequest:
             )
             # print(f"First frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
+
+            # PROGRESS BAR
+            self._update_progress(self._current_length/self._total_length)
 
             # Start listening for control frames in a separate thread
             listener_thread = threading.Thread(
@@ -170,6 +181,13 @@ class SendRequest:
                                         message=f"Sending consecutive frame: {hex_frame} (Sequence Num: {self._sequence_num})")
 
                 self._txfn(self._address, hex_frame)
+
+                # PROGRESS BAR
+                self._current_length += 7
+                if self._current_length > self._total_length:
+                    self._current_length = self._total_length
+
+                self._update_progress(self._current_length/self._total_length)
 
                 self._index += 7
                 self._sequence_num = (self._sequence_num + 1) % 16
@@ -231,6 +249,7 @@ class SendRequest:
 
             if is_control_frame_received:
                 callBackFn()
+
         except Exception as e:
             self.logger.log_message(log_type=LogType.ERROR,
                                     message=f"[SendRequest-{self._id}] Error in listen_for_control_frame - {e}")
@@ -246,7 +265,8 @@ class SendRequest:
         self.logger.log_message(log_type=LogType.SEND,
                                 message=f"[SendRequest-{self._id}] Request completed successfully.")
 
-        self._on_success()
+
+        # self._update_progress()
 
     def send_control_frame(self, flow_status=0, block_size=0, separation_time=0):
         """

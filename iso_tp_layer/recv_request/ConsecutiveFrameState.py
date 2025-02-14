@@ -38,7 +38,8 @@ class ConsecutiveFrameState(RequestState):
                             # "Received ConsecutiveFrame before sending the control flow"
                             raise ConsecutiveFrameBeforeFlowControlException()
 
-                    request.update_last_received_time()
+                    request.reset_timeout_timer()
+                    request.start_timeout_timer()
                     request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)
                     message_length = ceil(len(message.data) / 8)
                     if (request.get_current_data_length() + message_length) > request.get_data_length():

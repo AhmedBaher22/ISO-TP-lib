@@ -29,7 +29,8 @@ class InitialState(RequestState):
 
                 request.send_flow_control_frame()
 
-                request.update_last_received_time()
+                request.reset_timeout_timer()
+                request.start_timeout_timer()
                 request.set_state(FirstFrameState())
             else:
                 # f"The first frame can't be {frame_type}"
