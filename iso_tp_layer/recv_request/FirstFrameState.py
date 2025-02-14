@@ -20,7 +20,8 @@ class FirstFrameState(RequestState):
                     request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)
                     request.append_bits(message.data)
                     request.set_state(ConsecutiveFrameState())
-                    request.update_last_received_time()
+                    request.reset_timeout_timer()
+                    request.start_timeout_timer()
                 else:
                     raise ConsecutiveFrameOutOfSequenceException(request.get_expected_sequence_number(),
                                                                  message.sequenceNumber)
