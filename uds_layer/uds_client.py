@@ -1,5 +1,5 @@
 from bitarray import bitarray
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Tuple
 import sys
 import os
 from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
@@ -53,43 +53,44 @@ class UdsClient:
             message=f"Server {address._rxid} Added successfully")
 
     def process_message(self, address: Address, data: bytearray):
+        diagnostic_address,data=self.extract_diagnostic_address(data=data)
         service_id = data[0]
 
         if service_id == 0x7F:  # Negative response
             requested_service = data[1]
 
             if requested_service == 0x10:  # Session Control
-                server = self._find_server_by_can_id(address._txid, self._pending_servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)
                 if server:
                     server.add_log(f"Session Control Negative response: {hex(data[2])}")
                     server.session = SessionType.NONE
                     self._servers.append(server)
                     self._pending_servers.remove(server)
             elif requested_service == 0x31:  # Erase Memory
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_erase_memory_respond(data)                    
             elif requested_service == 0x28:  # Communication Control
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_communication_control_respond(data)
             elif requested_service == 0x34:  # Negative response to Request Download
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_request_download_respond(data)
 
             elif requested_service == 0x36:  # Transfer Data
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_transfer_data_respond(data)
                     
             elif requested_service == 0x37:  # Request Transfer Exit
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_request_transfer_exit_respond(data)
 
             elif requested_service == 0x22:  # Read Data By Identifier
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     operation = server.get_pending_operation_by_type(OperationType.READ_DATA_BY_IDENTIFIER)
                     if operation:
@@ -99,45 +100,45 @@ class UdsClient:
                         server.on_read_data_by_identifier_respond(0x7F, [data[2]])
 
             elif requested_service == 0x2E:  # Write Data By Identifier
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_write_data_by_identifier_respond(0x7F, [data[2]], None)
 
             elif requested_service == 0x11:  # ECU Reset
-                server = self._find_server_by_can_id(address._txid, self._servers)
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_ecu_reset_respond(0x7F, [data[2]], None)
         elif service_id == 0x74:  # Positive response to Request Download
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 server.on_request_download_respond(data)
                 
         elif service_id == 0x76:  # Positive response to Transfer Data
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 server.on_transfer_data_respond(data)
 
         elif service_id == 0x68:  # Positive response to Communication Control
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 server.on_communication_control_respond(data)    
 
         elif service_id == 0x77:  # Positive response to Request Transfer Exit
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 server.on_request_transfer_exit_respond(data)
                 
         elif service_id == 0x71:  # Positive response to Erase Memory
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 server.on_erase_memory_respond(data)                                    
         elif service_id == 0x74:  # Positive response to Request Download
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 server.on_request_download_respond(data)
         elif service_id == 0x62:  # Positive response to Read Data By Identifier
 
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
 
                 operation = server.get_pending_operation_by_type(OperationType.READ_DATA_BY_IDENTIFIER)
@@ -150,7 +151,7 @@ class UdsClient:
                     server.on_read_data_by_identifier_respond(0x62, response_data, data[1:3])
 
         elif service_id == 0x6E:  # Positive response to Write Data By Identifier
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 operation = server.get_pending_operation_by_type(OperationType.WRITE_DATA_BY_IDENTIFIER)
                 if operation:
@@ -159,7 +160,7 @@ class UdsClient:
                     server.on_write_data_by_identifier_respond(0x6E, data[1:3], vin)
 
         elif service_id == 0x51:  # Positive response to ECU Reset
-            server = self._find_server_by_can_id(address._txid, self._servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
                 operation = server.get_pending_operation_by_type(OperationType.ECU_RESET)
                 if operation:
@@ -169,7 +170,7 @@ class UdsClient:
                     server.on_ecu_reset_respond(0x51, data[1:], reset_type)
 
         elif service_id == 0x50:  # Positive response to Session Control
-            server = self._find_server_by_can_id(address._txid, self._pending_servers)
+            server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)
             if server:
                 server.session = SessionType(data[1])
                 # Set timing parameters
@@ -207,6 +208,9 @@ class UdsClient:
         address = Address(addressing_mode=0, txid=self._client_id, rxid=server_can_id)
 
         if len(message) <= 4095:
+            print(message)
+            message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
+            print(message)
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
             # Split message into chunks of 4095 bytes
@@ -217,6 +221,18 @@ class UdsClient:
         self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
             message=f"Message {message} sent successfully")
+
+    def append_diagnostic_address(self, server_can_id: int, message: bytearray) -> bytearray:
+        return bytearray([server_can_id >> 8, server_can_id & 0xFF]) + message
+
+    def extract_diagnostic_address(self, data: bytearray) -> Tuple[int, bytearray]:
+        if len(data) < 2:
+            raise ValueError("Input bytearray must be at least 2 bytes long")
+
+        server_can_id = (data[0] << 8) | data[1]  # Combine the first two bytes into an integer
+        remaining_data = data[2:]  # Slice to remove the first two bytes
+
+        return server_can_id, remaining_data     
 
     def on_success_send(self, progress: float):
         print(f"Progress: {progress}")
