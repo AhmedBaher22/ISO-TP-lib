@@ -150,6 +150,7 @@ try:
         #                 is_fd=fd_flag
         #             )                
         # send_message_with_retry(msg=ack_msg,bus=bus)        
+        ack_msg2= None
         while True:
             try:
 
@@ -167,17 +168,28 @@ try:
                 ack_msg = None
                 flg = False
 
+                flag_ack2=False
+
+                print(hex(msg.data[0]))
                 # Message handling logic
-                if msg.data[0] == 0x02 and msg.data[1] == 0x10:
+                if msg.data[0]==0x30:
+                    print("WESL")
+                    flag_ack2=True
+                elif  msg.data[3] == 0x10:
                     ack_msg = can.Message(
                         arbitration_id=0x33,
-                        data=[0x06, 0x50, 0x03, 0x00, 0x55, 0x01, 0x55],
+                        data=[0x10,0x08,0x00,0x33, 0x50, 0x03, 0x00, 0x55],
                         is_extended_id=extended_flag,
                         is_fd=fd_flag
                     )
                     remaining_attempts -= 1
-                
-                elif msg.data[0] == 0x03 and msg.data[1] == 0x22:
+                    ack_msg2 =can.Message(
+                        arbitration_id=0x33,
+                        data=[0x21,0x01, 0x55],
+                        is_extended_id=extended_flag,
+                        is_fd=fd_flag                        
+                    )                
+                elif msg.data[2] == 0x03 and msg.data[3] == 0x22:
                     ack_msg = can.Message(
                         arbitration_id=0x33,
                         data=[0x04, 0x62, 0x01, 0x90, 0x55],
@@ -186,7 +198,7 @@ try:
                     )
                     remaining_attempts -= 1
                 
-                elif msg.data[1] == 0x11:
+                elif msg.data[3] == 0x11:
                     ack_msg = can.Message(
                         arbitration_id=0x33,
                         data=[0x03, 0x7F, 0x11, 0x12],
@@ -195,7 +207,7 @@ try:
                     )
                     remaining_attempts -= 1
                 
-                elif msg.data[1] == 0x2E:
+                elif msg.data[3] == 0x2E:
                     ack_msg = can.Message(
                         arbitration_id=0x33,
                         data=[0x03, 0x6E, 0x01, 0x90],
@@ -204,7 +216,7 @@ try:
                     )
                     remaining_attempts -= 1
 
-                elif msg.data[1] == 0x34:
+                elif msg.data[3] == 0x34:
                     logger.info("Request Download received")
                     ack_msg = can.Message(
                         arbitration_id=0x33,
@@ -216,7 +228,7 @@ try:
                     flg = True
                     remaining_attempts -= 1
                 
-                elif msg.data[1] == 0x36 and msg.data[2] == 0x01:
+                elif msg.data[3] == 0x36 and msg.data[4] == 0x01:
                     message.append(msg.data[3])
                     message.append(msg.data[4])
                     ack_msg = can.Message(
@@ -228,7 +240,7 @@ try:
                     remaining_attempts -= 1
                     flg = True
 
-                elif msg.data[1] == 0x36 and msg.data[2] == 0x02:
+                elif msg.data[3] == 0x36 and msg.data[4] == 0x02:
                     message.append(msg.data[3])
                     message.append(msg.data[4])
                     logger.info(f"Complete msg received: {message}")
@@ -241,7 +253,7 @@ try:
                     remaining_attempts -= 1
                     flg = True
 
-                elif msg.data[1] == 0x37:
+                elif msg.data[3] == 0x37:
                     ack_msg = can.Message(
                         arbitration_id=0x33,
                         data=[0x01, 0x77],
@@ -251,10 +263,10 @@ try:
                     remaining_attempts -= 1
                     flg = True
 
-                elif msg.data[1] == 0x31:
-                    memory = msg.data[5]
-                    memoryAddress = msg.data[6]
-                    memorySize = msg.data[7]
+                elif msg.data[3] == 0x31:
+                    memory = msg.data[7]
+                    memoryAddress = msg.data[8]
+                    memorySize = msg.data[9]
                     logger.info("Message address = 0x%X and memorySize= 0x%X",
                               memoryAddress, memorySize)
 
@@ -271,7 +283,11 @@ try:
                 if ack_msg and remaining_attempts > 0:
                     if not send_message_with_retry(bus, ack_msg):
                         logger.error("Failed to send acknowledgment after maximum retries")
-                
+                if ack_msg2 and flag_ack2:
+                        
+                        send_message_with_retry(bus, ack_msg2)
+                        flag_ack2=False
+                        ack_msg2=None
             except VectorOperationError as e:
                 logger.error(f"Vector operation error during message handling: {e}")
                 time.sleep(RETRY_DELAY)
