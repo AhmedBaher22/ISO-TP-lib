@@ -69,7 +69,10 @@ class UdsClient:
             elif requested_service == 0x31:  # Erase Memory
                 server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
-                    server.on_erase_memory_respond(data)                    
+                    if data[3] == 0x00:
+                        server.on_erase_memory_respond(data)
+                    elif data[3]==0x01:
+                        server.on_check_memory_respond(data)                    
             elif requested_service == 0x28:  # Communication Control
                 server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
@@ -131,7 +134,10 @@ class UdsClient:
         elif service_id == 0x71:  # Positive response to Erase Memory
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
-                server.on_erase_memory_respond(data)                                    
+                if data[2]==0x00:
+                    server.on_erase_memory_respond(data) 
+                elif data[2]==0x01:
+                    server.on_check_memory_respond(data)                                       
         elif service_id == 0x74:  # Positive response to Request Download
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
