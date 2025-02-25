@@ -21,5 +21,5 @@ class SingleFrameMessage(DataFrame):
 
     def __str__(self):
         """Return a human-readable string representation of the object."""
-        return f"SingleFrameMessage(dataLength={self.dataLength}, data={self.data.tobytes().hex().upper()})"
+        return f"SingleFrameMessage(dataLength={self.dataLength}, data=0x{self.data.tobytes().hex().upper()})"
 

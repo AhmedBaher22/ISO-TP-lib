@@ -10,12 +10,17 @@ from iso_tp_layer.recv_request.FinalState import FinalState
 from iso_tp_layer.recv_request.FirstFrameState import FirstFrameState
 from iso_tp_layer.recv_request.ErrorState import ErrorState
 from iso_tp_layer.recv_request.RequestState import RequestState
+from logger import LogType
 
 
 class InitialState(RequestState):
     def handle(self, request, message):
         try:
             if message.frameType == FrameType.SingleFrame:
+                request.logger.log_message(
+                    log_type=LogType.RECEIVE,
+                    message=f"[RecvRequest-{request._id}] Received {message}"
+                )
                 request.set_data_length(message.dataLength)
                 request.append_bits(message.data)
                 request.set_state(FinalState())
@@ -24,6 +29,10 @@ class InitialState(RequestState):
                 except Exception as e:
                     pass
             elif message.frameType == FrameType.FirstFrame:
+                request.logger.log_message(
+                    log_type=LogType.RECEIVE,
+                    message=f"[RecvRequest-{request._id}] Received {message}"
+                )
                 request.set_data_length(message.dataLength)
                 request.append_bits(message.data)
 

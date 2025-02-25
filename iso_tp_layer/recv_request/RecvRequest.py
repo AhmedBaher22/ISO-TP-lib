@@ -145,10 +145,11 @@ class RecvRequest:
         Change the state of the recv_request.
         """
         self._state = state
-        self.logger.log_message(
-            log_type=LogType.RECEIVE,
-            message=f"[RecvRequest-{self._id}] State changed to {self._state.__class__.__name__}"
-        )
+        if self._state.__class__.__name__ in {"ErrorState", "FinalState"}:
+            self.logger.log_message(
+                log_type=LogType.RECEIVE,
+                message=f"[RecvRequest-{self._id}] State changed to {self._state.__class__.__name__}"
+            )
 
     def get_state(self):
         return self._state.__class__.__name__
@@ -192,6 +193,9 @@ class RecvRequest:
 
                 time.sleep(self._timeout/1000)
                 elapsed_time_ms = (time.time() - self._last_received_time) * 1000
+
+                if self._state.__class__.__name__ in {"ErrorState", "FinalState"}:
+                    break
 
                 if elapsed_time_ms >= self._timeout:
                     self.logger.log_message(

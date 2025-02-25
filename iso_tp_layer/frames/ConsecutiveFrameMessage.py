@@ -21,4 +21,4 @@ class ConsecutiveFrameMessage(DataFrame):
 
     def __str__(self):
         """Return a human-readable string representation of the object."""
-        return f"ConsecutiveFrameMessage(seq={self.sequenceNumber}, data={self.data.tobytes().hex().upper()})"
+        return f"ConsecutiveFrameMessage(seq={self.sequenceNumber}, data=0x{self.data.tobytes().hex().upper()})"

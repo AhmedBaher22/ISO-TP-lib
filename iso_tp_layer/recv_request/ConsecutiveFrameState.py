@@ -15,12 +15,18 @@ from iso_tp_layer.Exceptions import (
     ConsecutiveFrameOutOfSequenceException,
     UnexpectedFrameTypeException,
 )
+from logger import LogType
+
 
 
 class ConsecutiveFrameState(RequestState):
     def handle(self, request, message):
         try:
             if message.frameType == FrameType.ConsecutiveFrame:
+                request.logger.log_message(
+                    log_type=LogType.RECEIVE,
+                    message=f"[RecvRequest-{request._id}] Received {message}"
+                )
                 if message.sequenceNumber == request.get_expected_sequence_number():
                     max_block_size = request.get_max_block_size()
                     current_block_size = request.get_current_block_size()
