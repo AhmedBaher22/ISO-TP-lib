@@ -49,7 +49,7 @@ extended_flag=False
 channel_number=0
 filterFlashCommand = [{"can_id": 0x33, "can_mask": 0x7FF, "extended": False}]
 time_out_in_seconds=10
-
+ack_flag=False
 try:
     # Initialize the CAN bus with the Vector interface
     with can.Bus(interface="vector", channel=channel_number, app_name="UDS", fd=fd_flag) as bus:
@@ -67,7 +67,24 @@ try:
             if msg:
                 send_flag = False
                 logger.info("Message received with arbitration_id=0x%X and data=%s , and hole message = %s", msg.arbitration_id, msg.data, msg)
-                if msg.data[0] == 0x02 and msg.data[1]==0x10:
+                if ack_flag ==True:
+                    ack_flag=False
+                    memory = msg.data[5]
+                    memoryAddress = msg.data[6]
+                    memorySize = msg.data[7]
+                    logger.info("Message address = 0x%X and memorySize= 0x%X",
+                                memoryAddress, memorySize)
+
+                    ack_msg = can.Message(
+                        arbitration_id=0x33,
+                        data=[0x05,0x71, 0x01, 0xff, 0x00,0x00],
+                        is_extended_id=extended_flag,
+                        is_fd=fd_flag
+                    )
+                
+                    time -= 1
+                    flg = True
+                elif msg.data[0] == 0x02 and msg.data[1]==0x10:
                     ack_msg = can.Message(arbitration_id=0x33, data=[0x06,0x50,0x03,0x00,0x55,0x01,0x55], is_extended_id=extended_flag,is_fd=fd_flag)
  
                     time -= 1
@@ -113,6 +130,7 @@ try:
                                           is_extended_id=extended_flag, is_fd=fd_flag)
                     time -= 1
                     flg = True
+                    
                 elif msg.data[1]==0x31 and msg.data[4]==0x01:
                     memory = msg.data[5]
                     memoryAddress = msg.data[6]
@@ -123,7 +141,22 @@ try:
                     ack_msg = can.Message(arbitration_id=0x33, data=[0x05, 0x71, 0x01, 0xFF, 0x01, 0x00],
                                           is_extended_id=extended_flag, is_fd=fd_flag)
                     time -= 1
-                    flg = True                    
+                    flg = True
+
+                elif msg.data[2] == 0x31 and msg.data[5]==0x00:
+                    
+                    memory = msg.data[5]
+                    memoryAddress = msg.data[6]
+                    memorySize = msg.data[7]
+                    logger.info("Message address = 0x%X and memorySize= 0x%X",
+                                memoryAddress, memorySize)
+
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x30,0x00,0x00],
+                                          is_extended_id=extended_flag, is_fd=fd_flag)
+                    time -= 1
+                    flg = True
+                    ack_flag=True
+
                 elif msg.data[1] == 0x31 and msg.data[4]==0x00:
                     memory = msg.data[5]
                     memoryAddress = msg.data[6]

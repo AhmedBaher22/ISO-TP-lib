@@ -19,6 +19,7 @@ class CheckSumMethod(Enum):
     
 class TransferStatus(Enum):
     CREATED = "created"
+    MEMORY_ERASED="memory erased"
     SENDING_BLOCKS_IN_PROGRESS = "sendingBlocksInProgress"
     COMPLETED = "completed"
     CHECKING_CRC="checking CRC"

@@ -84,7 +84,8 @@ class Server:
             OperationType.ECU_RESET: [SessionType.EXTENDED, SessionType.PROGRAMMING],
             OperationType.TRANSFER_DATA: [SessionType.PROGRAMMING],
             OperationType.REQUEST_DOWNLOAD: [SessionType.PROGRAMMING],
-            OperationType.REQUEST_TRANSFER_EXIT: [SessionType.PROGRAMMING]
+            OperationType.REQUEST_TRANSFER_EXIT: [SessionType.PROGRAMMING],
+            OperationType.ERASE_MEMORY:[SessionType.EXTENDED, SessionType.PROGRAMMING]
         }
 
         required_sessions = session_requirements.get(operation_type, [])
@@ -310,7 +311,7 @@ class Server:
         message.extend(size_bytes)
 
         # Update transfer request and add to list
-        transfer_request.status = TransferStatus.CREATED
+        transfer_request.status = TransferStatus.MEMORY_ERASED
         self.transfer_requests.append(transfer_request)
 
         log_msg = f"Created REQUEST_DOWNLOAD operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
@@ -325,7 +326,7 @@ class Server:
 
         # Find transfer request with CREATED status
         transfer_request = next((req for req in self.transfer_requests 
-                               if req.status == TransferStatus.CREATED), None)
+                               if req.status == TransferStatus.MEMORY_ERASED), None)
         
         if not transfer_request:
             error_msg = "No pending transfer request found"
@@ -651,22 +652,34 @@ class Server:
                 print(error_msg)
                 self.add_log(error_msg)
 
-    def erase_memory(self, memory_address: bytearray, memory_size: bytearray) -> List[int]:
+    def erase_memory(self, transfer_request: TransferRequest) -> List[int]:
+
+
+        
         if not self.check_access_required(OperationType.ERASE_MEMORY):
             error_msg = f"Error: Insufficient session level for ERASE_MEMORY. Current session: {self._session}"
             print(error_msg)
             self.add_log(error_msg)
             return [0x00]
+        
+        memory_address=transfer_request.memory_address
+        memory_size=transfer_request.data_size        
+        transfer_request.status=TransferStatus.CREATED
 
-        # Calculate AddressAndSizeFormat
-        address_length = len(memory_address)
-        size_length = len(memory_size)
-        address_and_size_format = (address_length << 4) | size_length
+        self.transfer_requests.append(transfer_request)      
 
+        # Calculate AddressAndLengthFormatIdentifier
+        address_length = len(transfer_request.memory_address)
+        size_length = len(str(transfer_request.data_size))
+        address_length_format_identifier = (address_length << 4) | size_length
         # Prepare message
-        message = [0x31, 0x01, 0xFF, 0x00, address_and_size_format]
-        message.extend(memory_address)
-        message.extend(memory_size)
+        message = [0x31, 0x01, 0xFF, 0x00, address_length_format_identifier]
+        # Add memory address
+        message.extend(transfer_request.memory_address)
+        
+        # Add memory size
+        size_bytes = transfer_request.data_size.to_bytes(size_length, byteorder='big')
+        message.extend(size_bytes)
         message.append(0x00)  # Reserved byte
 
         # Create and add operation
@@ -677,12 +690,18 @@ class Server:
                   f"Address Length: {address_length}, "
                   f"Size Length: {size_length}, "
                   f"Address: {[hex(x) for x in memory_address]}, "
-                  f"Size: {[hex(x) for x in memory_size]}")
+                  f"Size: { memory_size}")
         self.add_log(log_msg)
-
+        
+        log_msg = f"Created Erase_Memory operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=log_msg)        
+        self.add_log(log_msg)
         return message
 
     def on_erase_memory_respond(self, message: List[int]):
+
         if message[0] == 0x71:  # Positive response
             # Find matching operation based on routine identifier bytes
             operation = next((op for op in self._pending_operations 
@@ -697,10 +716,24 @@ class Server:
                 self.remove_pending_operation(operation)
                 self.add_completed_operation(operation)
 
-                success_msg = "Memory Erase Operation Completed Successfully"
+                success_msg = f"Memory Erase Operation Completed Successfully for server with DA:: {self.can_id}"
                 print(success_msg)
                 self.add_log(success_msg)
+                transfer_request = next((req for req in self.transfer_requests 
+                               if req.status == TransferStatus.CREATED), None)
+            
+                if  transfer_request:
+                    transfer_request.status=TransferStatus.MEMORY_ERASED
+                    message = self.request_download(transfer_request)
+                    if message != [0x00]:  # Check if request was successful
+                # Create address object for ISO-TP
+                        self.clientSend(message=message,server_can_id=self.can_id)
+                        self._logger.log_message(
+                            log_type=LogType.ACKNOWLEDGMENT,
+                            message=f"REQUEST download for diagnostic address {recv_DA}send successfully with messaage: {message}"
+                        )
 
+                      
         elif message[0] == 0x7F and message[1] == 0x31:  # Negative response
             operation = next((op for op in self._pending_operations 
                             if op.operation_type == OperationType.ERASE_MEMORY), None)
