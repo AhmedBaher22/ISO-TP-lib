@@ -8,9 +8,10 @@ sys.path.append(package_dir)
 from uds_layer.uds_enums import CommunicationControlSubFunction, CommunicationControlType, SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
 from uds_layer.transfer_request import TransferRequest
-from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
+from uds_layer.transfer_enums import CheckSumMethod, TransferStatus, EncryptionMethod, CompressionMethod
 from logger import Logger, LogType, ProtocolType
 import zlib  # For CRC32 calculation
+from crccheck.crc import Crc16
 
 class Server:
     def __init__(self, can_id: [int],client_send:Callable):
@@ -83,7 +84,8 @@ class Server:
             OperationType.ECU_RESET: [SessionType.EXTENDED, SessionType.PROGRAMMING],
             OperationType.TRANSFER_DATA: [SessionType.PROGRAMMING],
             OperationType.REQUEST_DOWNLOAD: [SessionType.PROGRAMMING],
-            OperationType.REQUEST_TRANSFER_EXIT: [SessionType.PROGRAMMING]
+            OperationType.REQUEST_TRANSFER_EXIT: [SessionType.PROGRAMMING],
+            OperationType.ERASE_MEMORY:[SessionType.EXTENDED, SessionType.PROGRAMMING]
         }
 
         required_sessions = session_requirements.get(operation_type, [])
@@ -309,7 +311,7 @@ class Server:
         message.extend(size_bytes)
 
         # Update transfer request and add to list
-        transfer_request.status = TransferStatus.CREATED
+        transfer_request.status = TransferStatus.MEMORY_ERASED
         self.transfer_requests.append(transfer_request)
 
         log_msg = f"Created REQUEST_DOWNLOAD operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
@@ -324,7 +326,7 @@ class Server:
 
         # Find transfer request with CREATED status
         transfer_request = next((req for req in self.transfer_requests 
-                               if req.status == TransferStatus.CREATED), None)
+                               if req.status == TransferStatus.MEMORY_ERASED), None)
         
         if not transfer_request:
             error_msg = "No pending transfer request found"
@@ -519,14 +521,14 @@ class Server:
             self.add_log(error_msg)
             return [0x00]
 
-        if transfer_request.checksum_required:
-            crc = self.calculate_crc32(transfer_request.data)
-            message = [0x37]
-            print(f"crc: {crc}")
-            message.append(crc)
-            # message.append(crc)
-        else:
-            message = [0x37]
+        # if transfer_request.checksum_required:
+        #     crc = self.calculate_crc32(transfer_request.data)
+        #     message = [0x37]
+        #     print(f"crc: {crc}")
+        #     message.append(crc)
+        #     # message.append(crc)
+        # else:
+        message = [0x37]
 
         log_msg = f"Created REQUEST_TRANSFER_EXIT message. Checksum: {transfer_request.checksum_required}"
         self.add_log(log_msg)
@@ -551,12 +553,24 @@ class Server:
             message=f"Transfer Exit respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
         
         if message[0] == 0x77:  # Positive response
-            transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
-            success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
-            self._logger.log_message(
-            log_type=LogType.ACKNOWLEDGMENT,
-            message=success_msg)
-        
+            transfer_request.status = TransferStatus.CHECKING_CRC
+            if  transfer_request.checksum_required == CheckSumMethod.NO_CHECKSUM:
+                transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
+                success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=success_msg)
+                self.add_log(success_msg)
+                return
+            else:
+                print("da5l hett check memory")
+                message=self.check_memory(transfer_request)
+                print("reg3 mn check memory")
+                self.clientSend(message=message,server_can_id=self.can_id)
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=f"Check Memory subroutine service for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}") 
+
             self.add_log(success_msg)
         
         elif message[0] == 0x7F:  # Negative response
@@ -638,22 +652,34 @@ class Server:
                 print(error_msg)
                 self.add_log(error_msg)
 
-    def erase_memory(self, memory_address: bytearray, memory_size: bytearray) -> List[int]:
+    def erase_memory(self, transfer_request: TransferRequest) -> List[int]:
+
+
+        
         if not self.check_access_required(OperationType.ERASE_MEMORY):
             error_msg = f"Error: Insufficient session level for ERASE_MEMORY. Current session: {self._session}"
             print(error_msg)
             self.add_log(error_msg)
             return [0x00]
+        
+        memory_address=transfer_request.memory_address
+        memory_size=transfer_request.data_size        
+        transfer_request.status=TransferStatus.CREATED
 
-        # Calculate AddressAndSizeFormat
-        address_length = len(memory_address)
-        size_length = len(memory_size)
-        address_and_size_format = (address_length << 4) | size_length
+        self.transfer_requests.append(transfer_request)      
 
+        # Calculate AddressAndLengthFormatIdentifier
+        address_length = len(transfer_request.memory_address)
+        size_length = len(str(transfer_request.data_size))
+        address_length_format_identifier = (address_length << 4) | size_length
         # Prepare message
-        message = [0x31, 0x01, 0xFF, 0x00, address_and_size_format]
-        message.extend(memory_address)
-        message.extend(memory_size)
+        message = [0x31, 0x01, 0xFF, 0x00, address_length_format_identifier]
+        # Add memory address
+        message.extend(transfer_request.memory_address)
+        
+        # Add memory size
+        size_bytes = transfer_request.data_size.to_bytes(size_length, byteorder='big')
+        message.extend(size_bytes)
         message.append(0x00)  # Reserved byte
 
         # Create and add operation
@@ -664,12 +690,18 @@ class Server:
                   f"Address Length: {address_length}, "
                   f"Size Length: {size_length}, "
                   f"Address: {[hex(x) for x in memory_address]}, "
-                  f"Size: {[hex(x) for x in memory_size]}")
+                  f"Size: { memory_size}")
         self.add_log(log_msg)
-
+        
+        log_msg = f"Created Erase_Memory operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=log_msg)        
+        self.add_log(log_msg)
         return message
 
     def on_erase_memory_respond(self, message: List[int]):
+
         if message[0] == 0x71:  # Positive response
             # Find matching operation based on routine identifier bytes
             operation = next((op for op in self._pending_operations 
@@ -684,10 +716,24 @@ class Server:
                 self.remove_pending_operation(operation)
                 self.add_completed_operation(operation)
 
-                success_msg = "Memory Erase Operation Completed Successfully"
+                success_msg = f"Memory Erase Operation Completed Successfully for server with DA:: {self.can_id}"
                 print(success_msg)
                 self.add_log(success_msg)
+                transfer_request = next((req for req in self.transfer_requests 
+                               if req.status == TransferStatus.CREATED), None)
+            
+                if  transfer_request:
+                    transfer_request.status=TransferStatus.MEMORY_ERASED
+                    message = self.request_download(transfer_request)
+                    if message != [0x00]:  # Check if request was successful
+                # Create address object for ISO-TP
+                        self.clientSend(message=message,server_can_id=self.can_id)
+                        self._logger.log_message(
+                            log_type=LogType.ACKNOWLEDGMENT,
+                            message=f"REQUEST download for diagnostic address {recv_DA}send successfully with messaage: {message}"
+                        )
 
+                      
         elif message[0] == 0x7F and message[1] == 0x31:  # Negative response
             operation = next((op for op in self._pending_operations 
                             if op.operation_type == OperationType.ERASE_MEMORY), None)
@@ -714,11 +760,120 @@ class Server:
                 print(error_msg)
                 self.add_log(error_msg)
 
+
+    def check_memory(self, transfer_request: TransferRequest) -> List[int]:
+        if transfer_request.status != TransferStatus.CHECKING_CRC:
+            error_msg = f"Invalid transfer status for CHECK_MEMORY: {transfer_request.status}"
+            print(error_msg)
+            self.add_log(error_msg)
+            return [0x00]
+
+        # Prepare base message
+        message = [0x31, 0x01, 0xFF, 0x01, transfer_request.checksum_required.value]
+
+        # Calculate and add checksum based on method
+        if transfer_request.checksum_required == CheckSumMethod.CRC_16:
+            print("da5l condition l crc16")
+            checksum = self.calculate_crc16(transfer_request.data)
+            print("rg3 mn crc 16")
+            message.extend(checksum)
+            print("m3rf4 y3ml extend")
+            log_msg = f"Using CRC-16 checksum: {[hex(x) for x in checksum]}"
+        elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
+            try:
+                print("da5l condition l crc32")
+                checksum = self.calculate_crc32(transfer_request.data)
+                print(f"reg3 w hasb l crc32={checksum}")
+                message.extend(checksum)
+                print("lmessage al gdeda",message)
+                log_msg = f"Using CRC-32 checksum: {[hex(x) for x in checksum]}"
+            except Exception as e:
+                print(e)                
+        else:
+            log_msg = "No checksum required"
+
+        self.add_log(log_msg)
+        log_msg = f"Created CHECK_MEMORY operation. Message: {[hex(x) for x in message]}"
+        self.add_log(log_msg)
+        
+        return message
+
+    def on_check_memory_respond(self, message: List[int]):
+        # Find transfer request with CHECKING_CRC status
+        transfer_request = next((req for req in self.transfer_requests 
+                               if req.status == TransferStatus.CHECKING_CRC), None)
+        
+        if not transfer_request:
+            error_msg = "No transfer request in CRC checking state"
+            print(error_msg)
+            self.add_log(error_msg)
+            return
+
+        if message[0] == 0x71:  # Positive response
+            if (message[1] == 0x01 and 
+                message[2] == 0xFF and 
+                message[3] == 0x01):  # Validate routine identifier
+                
+                transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
+                success_msg = (f"Memory Check Success - Checksum verified using "
+                             f"{transfer_request.checksum_required.name}")
+                
+                print(success_msg)
+                self.add_log(success_msg)
+                success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=success_msg)
+                self.add_log(success_msg)                
+                
+            
+        elif message[0] == 0x7F:  # Negative response
+            transfer_request.status = TransferStatus.REJECTED
+            transfer_request.NRC = message[2]
+            
+            nrc_descriptions = {
+                0x10: "General Reject",
+                0x11: "Service Not Supported",
+                0x12: "Sub-Function Not Supported",
+                0x13: "Invalid Format",
+                0x22: "Conditions Not Correct",
+                0x24: "Request Sequence Error",
+                0x31: "Request Out Of Range",
+                0x72: "General Programming Failure",
+                0x73: "Wrong Block Sequence Counter",
+                0x77: "Checksum Verification Failed",
+                # Add more NRC codes as needed
+            }
+            
+            error_msg = (f"Memory Check Failed - NRC: {hex(transfer_request.NRC)} - "
+                        f"{nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}")
+            print(error_msg)
+            self.add_log(error_msg)
+            
     def get_pending_operations(self):
         return self._pending_operations
     
-    def calculate_crc32(self, data: bytearray) -> int:
+    def calculate_crc16(self, data: bytearray) -> bytearray:
+        crc = Crc16.calc(data)
+        return crc.to_bytes(2, byteorder='big')
+
+    def calculate_crc32(self, data: bytearray) -> bytearray:
+        # Convert data to bytes if it's not already
+        if isinstance(data, list):
+            data = bytes(data)
+        elif isinstance(data, bytearray):
+            data = bytes(data)
+            
         crc = zlib.crc32(data) & 0xFFFFFFFF
-        return crc
-        # return crc.to_bytes(4, byteorder='big')
+        return crc.to_bytes(4, byteorder='big')
     
+# def calculate_crc32(data: bytearray) -> bytearray:
+#     crc = zlib.crc32(data) & 0xFFFFFFFF
+#     return crc.to_bytes(4, byteorder='big')
+# data=[0x52, 0x55, 0x32]
+# data=bytearray(data)
+# print(data)
+# checksu=calculate_crc32(data=data)  
+# print(checksu)
+# data.extend(checksu)
+# print(data)

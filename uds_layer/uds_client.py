@@ -2,7 +2,7 @@ from bitarray import bitarray
 from typing import Callable, List, Optional, Tuple
 import sys
 import os
-from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod
+from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod, CheckSumMethod
 from uds_layer.transfer_request import TransferRequest
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
@@ -11,13 +11,13 @@ from uds_layer.server import Server
 from uds_layer.operation import Operation
 from uds_layer.uds_enums import SessionType, OperationStatus, OperationType
 from logger import Logger, LogType, ProtocolType
+from iso_tp_layer.Address import Address
 
-
-class Address:
-    def __init__(self, addressing_mode: int = 0, txid: Optional[int] = None, rxid: Optional[int] = None):
-        self.addressing_mode = addressing_mode
-        self._txid = txid
-        self._rxid = rxid
+# class Address:
+#     def __init__(self, addressing_mode: int = 0, txid: Optional[int] = None, rxid: Optional[int] = None):
+#         self.addressing_mode = addressing_mode
+#         self._txid = txid
+#         self._rxid = rxid
 
 
 class UdsClient:
@@ -53,7 +53,8 @@ class UdsClient:
             message=f"Server {address._rxid} Added successfully")
 
     def process_message(self, address: Address, data: bytearray):
-        diagnostic_address,data=self.extract_diagnostic_address(data=data)
+        # diagnostic_address,data=self.extract_diagnostic_address(data=data)
+        diagnostic_address=address._txid
         service_id = data[0]
 
         if service_id == 0x7F:  # Negative response
@@ -69,7 +70,10 @@ class UdsClient:
             elif requested_service == 0x31:  # Erase Memory
                 server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
-                    server.on_erase_memory_respond(data)                    
+                    if data[3] == 0x00:
+                        server.on_erase_memory_respond(data)
+                    elif data[3]==0x01:
+                        server.on_check_memory_respond(data)                    
             elif requested_service == 0x28:  # Communication Control
                 server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
@@ -131,7 +135,12 @@ class UdsClient:
         elif service_id == 0x71:  # Positive response to Erase Memory
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
-                server.on_erase_memory_respond(data)                                    
+                print("da5l ydwr")
+                print(data[3])
+                if data[3]==0x00:
+                    server.on_erase_memory_respond(data) 
+                elif data[3]==0x01:
+                    server.on_check_memory_respond(data)                                       
         elif service_id == 0x74:  # Positive response to Request Download
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
@@ -209,13 +218,14 @@ class UdsClient:
 
         if len(message) <= 4095:
             print(message)
-            message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
+            # message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
             print(message)
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
             # Split message into chunks of 4095 bytes
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
+                # chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
         self._logger.log_message(
@@ -251,7 +261,7 @@ class UdsClient:
                                 encryption_method: EncryptionMethod,
                                 compression_method: CompressionMethod,
                                 memory_address: bytearray,
-                                checksum_required: bool) -> None:
+                                checksum_required: CheckSumMethod) -> None:
         # Create TransferRequest object
         transfer_request = TransferRequest(
             recv_DA=recv_DA,
@@ -266,16 +276,18 @@ class UdsClient:
         server = next((s for s in self._servers if s.can_id == recv_DA), None)
         if server:
             # Get request download message
-            message = server.request_download(transfer_request)
+            message = server.erase_memory(transfer_request)
             if message != [0x00]:  # Check if request was successful
                 # Create address object for ISO-TP
                 address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)
-                self._logger.log_message(
-                    log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"request donwload for diagnostic address {recv_DA}send successfully with messaage: {message}"
-                )
                 # Send message using ISO-TP
                 self._isotp_send(message, address,self.on_success_send,self.on_fail_send)
+
+                self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=f"ERASE memory for diagnostic address {recv_DA}send successfully with messaage: {message}"
+                )
+
         else:
             self._logger.log_message(
                 log_type=LogType.ERROR,

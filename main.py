@@ -16,7 +16,7 @@ from can_layer.CanExceptions import CANError
 from uds_layer.uds_enums import SessionType
 from uds_layer.server import Server
 from uds_layer.transfer_request import TransferRequest
-from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod
+from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckSumMethod
 from app_initialization import init_uds_client
 
 
@@ -35,7 +35,7 @@ def main():
                                     encryption_method=EncryptionMethod.NO_ENCRYPTION,
                                     compression_method=CompressionMethod.NO_COMPRESSION,
                                     memory_address=[0x22, 0x10],
-                                    checksum_required=False)
+                                    checksum_required=CheckSumMethod.CRC_16)
     # #sending read data by identifier request
     # message=servers[0].read_data_by_identifier(vin=[0x01,0x90])
     # client.send_message(servers[0].can_id,message)

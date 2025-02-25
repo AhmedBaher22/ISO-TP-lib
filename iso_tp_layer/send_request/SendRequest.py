@@ -36,7 +36,7 @@ class SendRequest:
         self._data = b""  # Initialize the data attribute
         self._remaining_data = b""
         self._index = 0
-        self._sequence_num = 0
+        self._sequence_num = 1
         self._block_counter = 0
         self._isFinished = False
         self._received_error_frame = False  # New attribute for error frame tracking
@@ -221,11 +221,12 @@ class SendRequest:
                     time.sleep(0.1)
                     continue
 
-                flow_status_value = control_frame[0] & 0x0F
-                flow_status = FlowStatus(flow_status_value)
 
-                block_size = control_frame[1]
-                stmin = control_frame[2]
+                flow_status = control_frame.flowStatus
+
+
+                block_size = control_frame.blockSize
+                stmin = control_frame.separationTime
                 self._stmin = stmin
                 self._block_size = block_size
                 self.logger.log_message(
