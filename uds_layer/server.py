@@ -11,6 +11,7 @@ from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import CheckSumMethod, TransferStatus, EncryptionMethod, CompressionMethod
 from logger import Logger, LogType, ProtocolType
 import zlib  # For CRC32 calculation
+from crccheck.crc import Crc16
 
 class Server:
     def __init__(self, can_id: [int],client_send:Callable):
@@ -552,7 +553,7 @@ class Server:
         
         if message[0] == 0x77:  # Positive response
             transfer_request.status = TransferStatus.CHECKING_CRC
-            if not transfer_request.checksum_required:
+            if  transfer_request.checksum_required == CheckSumMethod.NO_CHECKSUM:
                 transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
                 success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
                 self._logger.log_message(
@@ -561,7 +562,9 @@ class Server:
                 self.add_log(success_msg)
                 return
             else:
+                print("da5l hett check memory")
                 message=self.check_memory(transfer_request)
+                print("reg3 mn check memory")
                 self.clientSend(message=message,server_can_id=self.can_id)
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
@@ -737,13 +740,22 @@ class Server:
 
         # Calculate and add checksum based on method
         if transfer_request.checksum_required == CheckSumMethod.CRC_16:
+            print("da5l condition l crc16")
             checksum = self.calculate_crc16(transfer_request.data)
+            print("rg3 mn crc 16")
             message.extend(checksum)
+            print("m3rf4 y3ml extend")
             log_msg = f"Using CRC-16 checksum: {[hex(x) for x in checksum]}"
         elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
-            checksum = self.calculate_crc32(transfer_request.data)
-            message.extend(checksum)
-            log_msg = f"Using CRC-32 checksum: {[hex(x) for x in checksum]}"
+            try:
+                print("da5l condition l crc32")
+                checksum = self.calculate_crc32(transfer_request.data)
+                print(f"reg3 w hasb l crc32={checksum}")
+                message.extend(checksum)
+                print("lmessage al gdeda",message)
+                log_msg = f"Using CRC-32 checksum: {[hex(x) for x in checksum]}"
+            except Exception as e:
+                print(e)                
         else:
             log_msg = "No checksum required"
 
@@ -772,8 +784,15 @@ class Server:
                 transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
                 success_msg = (f"Memory Check Success - Checksum verified using "
                              f"{transfer_request.checksum_required.name}")
+                
                 print(success_msg)
                 self.add_log(success_msg)
+                success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=success_msg)
+                self.add_log(success_msg)                
+                
             
         elif message[0] == 0x7F:  # Negative response
             transfer_request.status = TransferStatus.REJECTED
@@ -806,6 +825,22 @@ class Server:
         return crc.to_bytes(2, byteorder='big')
 
     def calculate_crc32(self, data: bytearray) -> bytearray:
+        # Convert data to bytes if it's not already
+        if isinstance(data, list):
+            data = bytes(data)
+        elif isinstance(data, bytearray):
+            data = bytes(data)
+            
         crc = zlib.crc32(data) & 0xFFFFFFFF
         return crc.to_bytes(4, byteorder='big')
     
+# def calculate_crc32(data: bytearray) -> bytearray:
+#     crc = zlib.crc32(data) & 0xFFFFFFFF
+#     return crc.to_bytes(4, byteorder='big')
+# data=[0x52, 0x55, 0x32]
+# data=bytearray(data)
+# print(data)
+# checksu=calculate_crc32(data=data)  
+# print(checksu)
+# data.extend(checksu)
+# print(data)

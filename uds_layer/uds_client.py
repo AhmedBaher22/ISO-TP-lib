@@ -53,7 +53,8 @@ class UdsClient:
             message=f"Server {address._rxid} Added successfully")
 
     def process_message(self, address: Address, data: bytearray):
-        diagnostic_address,data=self.extract_diagnostic_address(data=data)
+        # diagnostic_address,data=self.extract_diagnostic_address(data=data)
+        diagnostic_address=address._txid
         service_id = data[0]
 
         if service_id == 0x7F:  # Negative response
@@ -134,9 +135,11 @@ class UdsClient:
         elif service_id == 0x71:  # Positive response to Erase Memory
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
-                if data[2]==0x00:
+                print("da5l ydwr")
+                print(data[3])
+                if data[3]==0x00:
                     server.on_erase_memory_respond(data) 
-                elif data[2]==0x01:
+                elif data[3]==0x01:
                     server.on_check_memory_respond(data)                                       
         elif service_id == 0x74:  # Positive response to Request Download
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
@@ -215,13 +218,14 @@ class UdsClient:
 
         if len(message) <= 4095:
             print(message)
-            message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
+            # message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
             print(message)
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
             # Split message into chunks of 4095 bytes
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
+                # chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
         self._logger.log_message(
