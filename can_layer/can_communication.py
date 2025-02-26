@@ -20,6 +20,7 @@ from can_layer.CanExceptions import (
     CANConfigurationError,
     CANShutdownError
 )
+
 package_dir = os.path.abspath(os.path.join(package_dir, ".."))
 sys.path.append(package_dir)
 from logger import Logger, LogType, ProtocolType
@@ -192,7 +193,7 @@ class CANCommunication:
                 # Send the message
                 self.bus.send(message)
                 self.logger.log_message(log_type=LogType.SEND,
-                                        message=f"Message sent: ID=0x{arbitration_id:X}, Data={data}, "
+                                        message=f"Message sent: ID=0x{arbitration_id:X}, Data=0x{data.hex().upper()}, "
                                                 f"Attempts remaining: {attempts_remaining}"
                                         )
                 return True
@@ -235,13 +236,14 @@ class CANCommunication:
             if message:
                 self.logger.log_message(log_type=LogType.RECEIVE,
                                         message=f"Message received: ID=0x{message.arbitration_id:X}, "
-                                                f"Data={message.data}")
+                                                f"Data=0x{message.data.hex().upper()}")
 
                 self.config.recv_callback(message)
 
-            self.logger.log_message(log_type=LogType.WARNING,
-                                    message=
-                                    f"No message received within timeout period ({timeout}s)")
+            else:
+                self.logger.log_message(log_type=LogType.WARNING,
+                                        message=
+                                        f"No message received within timeout period ({timeout}s)")
             return None
 
         except Exception as e:
