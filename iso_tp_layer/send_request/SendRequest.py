@@ -86,7 +86,7 @@ class SendRequest:
             hex_frame = frame.hex()
             self.logger.log_message(
                 log_type=LogType.SEND,
-                message=f"[SendRequest-{self._id}] Sending single frame - {hex_frame}"
+                message=f"[SendRequest-{self._id}] Sending single frame - 0x{hex_frame}"
             )
             # print(f"Single frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
@@ -119,7 +119,7 @@ class SendRequest:
             hex_frame = frame.hex()
             self.logger.log_message(
                 log_type=LogType.SEND,
-                message=f"[SendRequest-{self._id}] Sending first frame - {hex_frame}"
+                message=f"[SendRequest-{self._id}] Sending first frame - 0x{hex_frame}"
             )
             # print(f"First frame (hex): {hex_frame}")
             self._txfn(self._address, hex_frame)
@@ -178,7 +178,7 @@ class SendRequest:
                 hex_frame = frame.hex()
 
                 self.logger.log_message(log_type=LogType.SEND,
-                                        message=f"Sending consecutive frame: {hex_frame} (Sequence Num: {self._sequence_num})")
+                                        message=f"Sending consecutive frame: 0x{hex_frame} (Sequence Num: {self._sequence_num})")
 
                 self._txfn(self._address, hex_frame)
 
@@ -246,7 +246,7 @@ class SendRequest:
                     raise FlowStatusAbortException()
                 else:
                     # f"Invalid flow status received: {flow_status_value}"
-                    raise InvalidFlowStatusException(flow_status_value)
+                    raise InvalidFlowStatusException(flow_status.value)
 
             if is_control_frame_received:
                 callBackFn()

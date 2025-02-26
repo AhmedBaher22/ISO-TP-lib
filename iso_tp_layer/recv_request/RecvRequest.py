@@ -168,8 +168,8 @@ class RecvRequest:
         self._message.extend(bits)
         self.logger.log_message(
             log_type=LogType.RECEIVE,
-            message=f"[RecvRequest-{self._id}] Appended bits: {bitarray(bits).tobytes().hex().upper()} | "
-                    f"Current message (HEX): {self._message.tobytes().hex().upper()} | Length: {len(self._message)//8} bytes"
+            message=f"[RecvRequest-{self._id}] Appended bits: 0x{bitarray(bits).tobytes().hex().upper()} | "
+                    f"Current message (HEX): 0x{self._message.tobytes().hex().upper()} | Length: {len(self._message)//8} bytes"
         )
 
 

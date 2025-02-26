@@ -140,7 +140,7 @@ class IsoTp:
     def send(self, data: bitarray, address: Address, on_success: Callable, on_error: Callable):
         data = bytearray_to_bitarray(data)
         try:
-            self.logger.log_message(log_type=LogType.SEND, message=f"Sending message to {address} with data: {data}")
+            self.logger.log_message(log_type=LogType.SEND, message=f"Sending message to {address} with data: 0x{data.tobytes().hex().upper()}")
             send_request = SendRequest(
                 address=address,
                 txfn=self._send_to_can,  # Can send function ( takes hex frame as a parameter)
@@ -167,7 +167,7 @@ class IsoTp:
 
     def recv(self, message: bitarray, address: Address):
         try:
-            self.logger.log_message(log_type=LogType.RECEIVE, message=f"Receiving message: {message.tobytes().hex().upper()} from {address}")
+            self.logger.log_message(log_type=LogType.RECEIVE, message=f"Receiving message: 0x{message.tobytes().hex().upper()} from {address}")
 
             new_message = _parse_message(data=message)
 
