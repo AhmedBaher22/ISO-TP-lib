@@ -8,13 +8,14 @@ sys.path.append(package_dir)
 from uds_layer.uds_enums import CommunicationControlSubFunction, CommunicationControlType, SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
 from uds_layer.transfer_request import TransferRequest
-from uds_layer.transfer_enums import CheckSumMethod, TransferStatus, EncryptionMethod, CompressionMethod
+from uds_layer.transfer_enums import CheckSumMethod, TransferStatus, EncryptionMethod, CompressionMethod, FlashingECUStatus
 from logger import Logger, LogType, ProtocolType
 import zlib  # For CRC32 calculation
 from crccheck.crc import Crc16
-
+from hex_parser.SRecordParser import DataRecord
+from uds_layer.FlashingECU import FlashingECU
 class Server:
-    def __init__(self, can_id: [int],client_send:Callable):
+    def __init__(self, can_id: [int],client_send:Callable,client_Segment_send:Callable):
         self._can_id = can_id
         self._session = SessionType.NONE
         self._pending_operations: List[Operation] = []
@@ -23,8 +24,10 @@ class Server:
         self._p2_timing = 0
         self._p2_star_timing = 0
         self.transfer_requests: List[TransferRequest] = []
+        self.Flash_ECU_Segments_Request: List[FlashingECU] = []
         self._logger = Logger(ProtocolType.UDS)
         self.clientSend:Callable=client_send
+        self.client_Segment_send:Callable=client_Segment_send
     # Getters and setters
     @property
     def can_id(self) -> [int]:
@@ -824,7 +827,9 @@ class Server:
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
                 message=success_msg)
-                self.add_log(success_msg)                
+                self.add_log(success_msg)
+                if transfer_request.is_multiple_segments == True :
+                    self.handle_flashing_segments(transfer_request)
                 
             
         elif message[0] == 0x7F:  # Negative response
@@ -867,6 +872,35 @@ class Server:
         crc = zlib.crc32(data) & 0xFFFFFFFF
         return crc.to_bytes(4, byteorder='big')
     
+    def handle_flashing_segments(self,transfer_request:TransferRequest):
+        if transfer_request.status == TransferStatus.CLOSED_SUCCESSFULLY:
+            flashing_ECU_Request = next((req for req in self.Flash_ECU_Segments_Request
+            if req.status != FlashingECUStatus.REJECTED or req.status == FlashingECUStatus.RESET), None)
+
+            if flashing_ECU_Request:
+                if flashing_ECU_Request.status == FlashingECUStatus.SENDING_FIRST_SEGMENT or flashing_ECU_Request.status ==FlashingECUStatus.SENDING_CONSECUTIVE_SEGMENTS:
+                    flashing_ECU_Request.current_number_of_segments_send+=1
+                    if flashing_ECU_Request.current_number_of_segments_send == flashing_ECU_Request.number_of_segments:
+                        flashing_ECU_Request.status=FlashingECUStatus.COMPLETED
+                        self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=f"[REQUEST-{flashing_ECU_Request.ID}]Flashing ECU REQUEST had sent all segments successfully")
+                        #make authenticity
+                        #reset the ECU
+                    elif flashing_ECU_Request.current_number_of_segments_send < flashing_ECU_Request.number_of_segments:
+                        flashing_ECU_Request.status=FlashingECUStatus.SENDING_CONSECUTIVE_SEGMENTS
+                        self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=f"[REQUEST-{flashing_ECU_Request.ID}]Flashing ECU REQUEST had sent Segment number: {flashing_ECU_Request.current_number_of_segments_send} successfully")
+                        self.client_Segment_send(recv_DA=flashing_ECU_Request.recv_DA,
+                                        data=flashing_ECU_Request.segments[flashing_ECU_Request.current_number_of_segments_send].data,
+                                        memory_address=flashing_ECU_Request.segments[flashing_ECU_Request.current_number_of_segments_send].address,
+                                        checksum_required=flashing_ECU_Request.checksum_required,
+                                        encryption_method=flashing_ECU_Request.encryption_method,
+                                        compression_method=flashing_ECU_Request.compression_method,
+                                        is_multiple_segments=True)
+                                                
+                    
 # def calculate_crc32(data: bytearray) -> bytearray:
 #     crc = zlib.crc32(data) & 0xFFFFFFFF
 #     return crc.to_bytes(4, byteorder='big')

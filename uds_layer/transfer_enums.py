@@ -25,3 +25,12 @@ class TransferStatus(Enum):
     CHECKING_CRC="checking CRC"
     REJECTED = "rejected"
     CLOSED_SUCCESSFULLY = "closedSuccessfully"
+
+class FlashingECUStatus(Enum):
+    CREATED = "created"
+    SENDING_FIRST_SEGMENT="sending first segment"
+    SENDING_CONSECUTIVE_SEGMENTS = "Sending Consecutive segments"
+    COMPLETED = "completed"
+    CLOSED_SUCCESSFULLY = "closed Successfully with ensuring checks"
+    RESET="RESET"
+    REJECTED = "rejected"

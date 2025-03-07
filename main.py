@@ -18,7 +18,7 @@ from uds_layer.server import Server
 from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckSumMethod
 from app_initialization import init_uds_client
-
+from hex_parser.SRecordParser import DataRecord
 
 def main():
     client = init_uds_client()
@@ -30,7 +30,16 @@ def main():
     client.add_server(ecu_address, SessionType.PROGRAMMING)
     servers: List[Server] = client.get_servers()
     sleep(1)
-
+    data1=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
+    data2=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
+    datas:List[DataRecord]=[]
+    datas.append(data1)
+    datas.append(data2)
+    client.Flash_ECU(datas,recv_DA=servers[0].can_id,
+                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,
+                                    compression_method=CompressionMethod.NO_COMPRESSION,
+                                    checksum_required=CheckSumMethod.CRC_16)
+    
     client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],
                                     encryption_method=EncryptionMethod.NO_ENCRYPTION,
                                     compression_method=CompressionMethod.NO_COMPRESSION,

@@ -2,7 +2,7 @@ from bitarray import bitarray
 from typing import Callable, List, Optional, Tuple
 import sys
 import os
-from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod, CheckSumMethod
+from uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod, CheckSumMethod, FlashingECUStatus
 from uds_layer.transfer_request import TransferRequest
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
@@ -12,7 +12,8 @@ from uds_layer.operation import Operation
 from uds_layer.uds_enums import SessionType, OperationStatus, OperationType
 from logger import Logger, LogType, ProtocolType
 from iso_tp_layer.Address import Address
-
+from uds_layer.FlashingECU import FlashingECU
+from hex_parser.SRecordParser import DataRecord
 # class Address:
 #     def __init__(self, addressing_mode: int = 0, txid: Optional[int] = None, rxid: Optional[int] = None):
 #         self.addressing_mode = addressing_mode
@@ -45,7 +46,7 @@ class UdsClient:
         self.send_message(address._txid, message)
 
         # Create new server and add to pending
-        server = Server(address._rxid,client_send=self.send_message)
+        server = Server(address._rxid,client_send=self.send_message,client_Segment_send=self.transfer_NEW_data_to_ecu)
 
         self._pending_servers.append(server)
         self._logger.log_message(
@@ -261,7 +262,8 @@ class UdsClient:
                                 encryption_method: EncryptionMethod,
                                 compression_method: CompressionMethod,
                                 memory_address: bytearray,
-                                checksum_required: CheckSumMethod) -> None:
+                                checksum_required: CheckSumMethod,
+                                is_multiple_segments:bool=False) -> None:
         # Create TransferRequest object
         transfer_request = TransferRequest(
             recv_DA=recv_DA,
@@ -269,7 +271,9 @@ class UdsClient:
             encryption_method=encryption_method,
             compression_method=compression_method,
             memory_address=memory_address,
-            checksum_required=checksum_required
+            checksum_required=checksum_required,
+            is_multiple_segments=is_multiple_segments
+
         )
 
         # Find server with matching CAN ID
@@ -293,3 +297,38 @@ class UdsClient:
                 log_type=LogType.ERROR,
                 message=f"Error: No server found to send request download  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control"
             )            
+
+    def Flash_ECU(self,segments:List[DataRecord], recv_DA: int,
+                                encryption_method: EncryptionMethod,
+                                compression_method: CompressionMethod,
+                                checksum_required: CheckSumMethod) -> None:
+        newFlashingECUrequest=FlashingECU(segments=segments,recv_DA=recv_DA,checksum_required=checksum_required,encryption_method=encryption_method,compression_method=compression_method)
+        newFlashingECUrequest.current_number_of_segments_send=1
+        newFlashingECUrequest.status=FlashingECUStatus.CREATED
+        self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=f"[REQUEST-{newFlashingECUrequest.ID}]NEW Flashing ECU REQUEST HAS BEEN CREATED to ECU with DA:{hex(newFlashingECUrequest.recv_DA) }  -STATUS:{newFlashingECUrequest.status}"
+                )
+        # Find server with matching CAN ID
+        server = next((s for s in self._servers if s.can_id == recv_DA), None)
+        if server:
+            server.Flash_ECU_Segments_Request.append(newFlashingECUrequest)
+            newFlashingECUrequest.status=FlashingECUStatus.SENDING_FIRST_SEGMENT
+            self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=f"[REQUEST-{newFlashingECUrequest.ID}]Flashing ECU REQUEST is being processing sending segment number :{newFlashingECUrequest.current_number_of_segments_send+1} to ECU with DA:{hex( newFlashingECUrequest.recv_DA)}  -STATUS:{newFlashingECUrequest.status}"
+                )
+            self.transfer_NEW_data_to_ecu(recv_DA=newFlashingECUrequest.recv_DA,
+                                        data=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].data,
+                                        memory_address=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].address,
+                                        checksum_required=newFlashingECUrequest.checksum_required,
+                                        encryption_method=newFlashingECUrequest.encryption_method,
+                                        compression_method=newFlashingECUrequest.compression_method,
+                                        is_multiple_segments=True
+                                        )
+
+        else:
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=f"Error: No server found to Flash ECU  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control"
+            )          

@@ -7,13 +7,15 @@ class TransferRequest:
                  encryption_method: EncryptionMethod,
                  compression_method: CompressionMethod,
                  memory_address: bytearray,
-                 checksum_required: bool):
+                 checksum_required: bool,
+                 is_multiple_segments:bool=False):
         self.recv_DA = recv_DA
         self.data = data
         self.encryption_method = encryption_method
         self.compression_method = compression_method
         self.memory_address = memory_address
         self.checksum_required = checksum_required
+        self.is_multiple_segments=is_multiple_segments
         self.iteration: int = 1
         # Computed or later initialized attributes
         self.data_size = len(data)
