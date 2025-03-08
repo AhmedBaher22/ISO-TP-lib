@@ -1,0 +1,180 @@
+2025-03-08 16:21:05 - INFO - CAN bus initialized successfully for receiving messages.
+2025-03-08 16:21:05 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:19 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x02\x10\x03\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741443679.241240    ID:      033    S Rx                DL:  8    02 10 03 ff ff ff ff ff     Channel: 0
+2025-03-08 16:21:19 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:19 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x10\t1\x01\xff\x00!"') , and hole message = Timestamp: 1741443680.274701    ID:      033    S Rx                DL:  8    10 09 31 01 ff 00 21 22     Channel: 0
+2025-03-08 16:21:20 - INFO - Message address = 0x21 and memorySize= 0x22
+2025-03-08 16:21:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:20 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'!\x10\x03\x00\xff\xff\xff\xff') , and hole message = Timestamp: 1741443680.437935    ID:      033    S Rx                DL:  8    21 10 03 00 ff ff ff ff     Channel: 0
+2025-03-08 16:21:20 - INFO - Message address = 0xFF and memorySize= 0xFF
+2025-03-08 16:21:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:20 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x064\x00!"\x10\x03\xff') , and hole message = Timestamp: 1741443680.498507    ID:      033    S Rx                DL:  8    06 34 00 21 22 10 03 ff     Channel: 0
+2025-03-08 16:21:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:20 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x046\x01RU\xff\xff\xff') , and hole message = Timestamp: 1741443680.559890    ID:      033    S Rx                DL:  8    04 36 01 52 55 ff ff ff     Channel: 0
+2025-03-08 16:21:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:20 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x036\x022\xff\xff\xff\xff') , and hole message = Timestamp: 1741443680.610844    ID:      033    S Rx                DL:  8    03 36 02 32 ff ff ff ff     Channel: 0
+2025-03-08 16:21:20 - INFO - Complete msg received: bytearray(b'2\xff')
+2025-03-08 16:21:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:20 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x017\xff\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741443680.660815    ID:      033    S Rx                DL:  8    01 37 ff ff ff ff ff ff     Channel: 0
+2025-03-08 16:21:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:20 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:21:20 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x071\x01\xff\x01\x01\xd7\xf5') , and hole message = Timestamp: 1741443680.711704    ID:      033    S Rx                DL:  8    07 31 01 ff 01 01 d7 f5     Channel: 0
+2025-03-08 16:21:20 - INFO - Message address = 0xD7 and memorySize= 0xF5
+2025-03-08 16:21:20 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:21:20 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:30 - INFO - CAN bus initialized successfully for receiving messages.
+2025-03-08 16:22:30 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:37 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x02\x10\x03\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741443757.500978    ID:      033    S Rx                DL:  8    02 10 03 ff ff ff ff ff     Channel: 0
+2025-03-08 16:22:37 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:37 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:38 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x10\t1\x01\xff\x00!"') , and hole message = Timestamp: 1741443758.525518    ID:      033    S Rx                DL:  8    10 09 31 01 ff 00 21 22     Channel: 0
+2025-03-08 16:22:38 - INFO - Message address = 0x21 and memorySize= 0x22
+2025-03-08 16:22:38 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:38 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'!\x10\x03\x00\xff\xff\xff\xff') , and hole message = Timestamp: 1741443758.646719    ID:      033    S Rx                DL:  8    21 10 03 00 ff ff ff ff     Channel: 0
+2025-03-08 16:22:38 - INFO - Message address = 0xFF and memorySize= 0xFF
+2025-03-08 16:22:38 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:38 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x064\x00!"\x10\x03\xff') , and hole message = Timestamp: 1741443758.665110    ID:      033    S Rx                DL:  8    06 34 00 21 22 10 03 ff     Channel: 0
+2025-03-08 16:22:38 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:38 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x046\x01RU\xff\xff\xff') , and hole message = Timestamp: 1741443758.684984    ID:      033    S Rx                DL:  8    04 36 01 52 55 ff ff ff     Channel: 0
+2025-03-08 16:22:38 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:38 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x036\x022\xff\xff\xff\xff') , and hole message = Timestamp: 1741443758.701409    ID:      033    S Rx                DL:  8    03 36 02 32 ff ff ff ff     Channel: 0
+2025-03-08 16:22:38 - INFO - Complete msg received: bytearray(b'2\xff')
+2025-03-08 16:22:38 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:38 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x017\xff\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741443758.716531    ID:      033    S Rx                DL:  8    01 37 ff ff ff ff ff ff     Channel: 0
+2025-03-08 16:22:38 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 16:22:38 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x071\x01\xff\x01\x01\xd7\xf5') , and hole message = Timestamp: 1741443758.731834    ID:      033    S Rx                DL:  8    07 31 01 ff 01 01 d7 f5     Channel: 0
+2025-03-08 16:22:38 - INFO - Message address = 0xD7 and memorySize= 0xF5
+2025-03-08 16:22:38 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 16:22:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:07 - INFO - CAN bus initialized successfully for receiving messages.
+2025-03-08 23:44:07 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:10 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x02\x10\x03\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741470250.279236    ID:      033    S Rx                DL:  8    02 10 03 ff ff ff ff ff     Channel: 0
+2025-03-08 23:44:10 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:10 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x10\t1\x01\xff\x00!"') , and hole message = Timestamp: 1741470251.322479    ID:      033    S Rx                DL:  8    10 09 31 01 ff 00 21 22     Channel: 0
+2025-03-08 23:44:11 - INFO - Message address = 0x21 and memorySize= 0x22
+2025-03-08 23:44:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:11 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'!\x10\x03\x00\xff\xff\xff\xff') , and hole message = Timestamp: 1741470251.470369    ID:      033    S Rx                DL:  8    21 10 03 00 ff ff ff ff     Channel: 0
+2025-03-08 23:44:11 - INFO - Message address = 0xFF and memorySize= 0xFF
+2025-03-08 23:44:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:11 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x064\x00!"\x10\x03\xff') , and hole message = Timestamp: 1741470251.530359    ID:      033    S Rx                DL:  8    06 34 00 21 22 10 03 ff     Channel: 0
+2025-03-08 23:44:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:11 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x046\x01RU\xff\xff\xff') , and hole message = Timestamp: 1741470251.562005    ID:      033    S Rx                DL:  8    04 36 01 52 55 ff ff ff     Channel: 0
+2025-03-08 23:44:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:11 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x036\x022\xff\xff\xff\xff') , and hole message = Timestamp: 1741470251.588129    ID:      033    S Rx                DL:  8    03 36 02 32 ff ff ff ff     Channel: 0
+2025-03-08 23:44:11 - INFO - Complete msg received: bytearray(b'2\xff')
+2025-03-08 23:44:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:11 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x017\xff\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741470251.612607    ID:      033    S Rx                DL:  8    01 37 ff ff ff ff ff ff     Channel: 0
+2025-03-08 23:44:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:11 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:44:11 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x071\x01\xff\x01\x01\xd7\xf5') , and hole message = Timestamp: 1741470251.635823    ID:      033    S Rx                DL:  8    07 31 01 ff 01 01 d7 f5     Channel: 0
+2025-03-08 23:44:11 - INFO - Message address = 0xD7 and memorySize= 0xF5
+2025-03-08 23:44:11 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:44:11 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:51 - INFO - CAN bus initialized successfully for receiving messages.
+2025-03-08 23:50:51 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:55 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x02\x10\x03\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741470655.519371    ID:      033    S Rx                DL:  8    02 10 03 ff ff ff ff ff     Channel: 0
+2025-03-08 23:50:55 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:55 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:56 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x10\t1\x01\xff\x00!"') , and hole message = Timestamp: 1741470656.548802    ID:      033    S Rx                DL:  8    10 09 31 01 ff 00 21 22     Channel: 0
+2025-03-08 23:50:56 - INFO - Message address = 0x21 and memorySize= 0x22
+2025-03-08 23:50:56 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:56 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:56 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'!\x10\x03\x00\xff\xff\xff\xff') , and hole message = Timestamp: 1741470656.684478    ID:      033    S Rx                DL:  8    21 10 03 00 ff ff ff ff     Channel: 0
+2025-03-08 23:50:56 - INFO - Message address = 0xFF and memorySize= 0xFF
+2025-03-08 23:50:56 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:56 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:56 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x064\x00!"\x10\x03\xff') , and hole message = Timestamp: 1741470656.743198    ID:      033    S Rx                DL:  8    06 34 00 21 22 10 03 ff     Channel: 0
+2025-03-08 23:50:56 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:56 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:56 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x046\x01RU\xff\xff\xff') , and hole message = Timestamp: 1741470656.779300    ID:      033    S Rx                DL:  8    04 36 01 52 55 ff ff ff     Channel: 0
+2025-03-08 23:50:56 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:56 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:56 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x036\x022\xff\xff\xff\xff') , and hole message = Timestamp: 1741470656.802688    ID:      033    S Rx                DL:  8    03 36 02 32 ff ff ff ff     Channel: 0
+2025-03-08 23:50:56 - INFO - Complete msg received: bytearray(b'2\xff')
+2025-03-08 23:50:56 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:56 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:56 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x017\xff\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741470656.824799    ID:      033    S Rx                DL:  8    01 37 ff ff ff ff ff ff     Channel: 0
+2025-03-08 23:50:56 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:56 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:50:56 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x071\x01\xff\x01\x01\xd7\xf5') , and hole message = Timestamp: 1741470656.847015    ID:      033    S Rx                DL:  8    07 31 01 ff 01 01 d7 f5     Channel: 0
+2025-03-08 23:50:56 - INFO - Message address = 0xD7 and memorySize= 0xF5
+2025-03-08 23:50:56 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:50:56 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:08 - INFO - CAN bus initialized successfully for receiving messages.
+2025-03-08 23:52:08 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:19 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x02\x10\x03\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741470739.982823    ID:      033    S Rx                DL:  8    02 10 03 ff ff ff ff ff     Channel: 0
+2025-03-08 23:52:19 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:19 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:21 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x10\t1\x01\xff\x00!"') , and hole message = Timestamp: 1741470741.027680    ID:      033    S Rx                DL:  8    10 09 31 01 ff 00 21 22     Channel: 0
+2025-03-08 23:52:21 - INFO - Message address = 0x21 and memorySize= 0x22
+2025-03-08 23:52:21 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:21 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:21 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'!\x10\x03\x00\xff\xff\xff\xff') , and hole message = Timestamp: 1741470741.172343    ID:      033    S Rx                DL:  8    21 10 03 00 ff ff ff ff     Channel: 0
+2025-03-08 23:52:21 - INFO - Message address = 0xFF and memorySize= 0xFF
+2025-03-08 23:52:21 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:21 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:21 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x064\x00!"\x10\x03\xff') , and hole message = Timestamp: 1741470741.217554    ID:      033    S Rx                DL:  8    06 34 00 21 22 10 03 ff     Channel: 0
+2025-03-08 23:52:21 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:21 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:21 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x046\x01RU\xff\xff\xff') , and hole message = Timestamp: 1741470741.247176    ID:      033    S Rx                DL:  8    04 36 01 52 55 ff ff ff     Channel: 0
+2025-03-08 23:52:21 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:21 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:21 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x036\x022\xff\xff\xff\xff') , and hole message = Timestamp: 1741470741.270712    ID:      033    S Rx                DL:  8    03 36 02 32 ff ff ff ff     Channel: 0
+2025-03-08 23:52:21 - INFO - Complete msg received: bytearray(b'2\xff')
+2025-03-08 23:52:21 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:21 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:21 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x017\xff\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741470741.292536    ID:      033    S Rx                DL:  8    01 37 ff ff ff ff ff ff     Channel: 0
+2025-03-08 23:52:21 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:21 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:52:21 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x071\x01\xff\x01\x01\xd7\xf5') , and hole message = Timestamp: 1741470741.314662    ID:      033    S Rx                DL:  8    07 31 01 ff 01 01 d7 f5     Channel: 0
+2025-03-08 23:52:21 - INFO - Message address = 0xD7 and memorySize= 0xF5
+2025-03-08 23:52:21 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:52:21 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:38 - INFO - CAN bus initialized successfully for receiving messages.
+2025-03-08 23:58:38 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:41 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x02\x10\x03\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741471121.920413    ID:      033    S Rx                DL:  8    02 10 03 ff ff ff ff ff     Channel: 0
+2025-03-08 23:58:41 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:41 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:42 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x10\t1\x01\xff\x00!"') , and hole message = Timestamp: 1741471122.964663    ID:      033    S Rx                DL:  8    10 09 31 01 ff 00 21 22     Channel: 0
+2025-03-08 23:58:42 - INFO - Message address = 0x21 and memorySize= 0x22
+2025-03-08 23:58:42 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:42 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:43 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'!\x10\x03\x00\xff\xff\xff\xff') , and hole message = Timestamp: 1741471123.110694    ID:      033    S Rx                DL:  8    21 10 03 00 ff ff ff ff     Channel: 0
+2025-03-08 23:58:43 - INFO - Message address = 0xFF and memorySize= 0xFF
+2025-03-08 23:58:43 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:43 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:43 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x064\x00!"\x10\x03\xff') , and hole message = Timestamp: 1741471123.171798    ID:      033    S Rx                DL:  8    06 34 00 21 22 10 03 ff     Channel: 0
+2025-03-08 23:58:43 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:43 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:43 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x046\x01RU\xff\xff\xff') , and hole message = Timestamp: 1741471123.201494    ID:      033    S Rx                DL:  8    04 36 01 52 55 ff ff ff     Channel: 0
+2025-03-08 23:58:43 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:43 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:43 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x036\x022\xff\xff\xff\xff') , and hole message = Timestamp: 1741471123.225071    ID:      033    S Rx                DL:  8    03 36 02 32 ff ff ff ff     Channel: 0
+2025-03-08 23:58:43 - INFO - Complete msg received: bytearray(b'2\xff')
+2025-03-08 23:58:43 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:43 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:43 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x017\xff\xff\xff\xff\xff\xff') , and hole message = Timestamp: 1741471123.246075    ID:      033    S Rx                DL:  8    01 37 ff ff ff ff ff ff     Channel: 0
+2025-03-08 23:58:43 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:43 - INFO - Waiting to receive a CAN message...
+2025-03-08 23:58:43 - INFO - Message received with arbitration_id=0x33 and data=bytearray(b'\x071\x01\xff\x01\x01\xd7\xf5') , and hole message = Timestamp: 1741471123.267866    ID:      033    S Rx                DL:  8    07 31 01 ff 01 01 d7 f5     Channel: 0
+2025-03-08 23:58:43 - INFO - Message address = 0xD7 and memorySize= 0xF5
+2025-03-08 23:58:43 - INFO - Acknowledgment sent for message arbitration_id=0x33
+2025-03-08 23:58:43 - INFO - Waiting to receive a CAN message...

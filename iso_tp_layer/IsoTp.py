@@ -209,7 +209,6 @@ class IsoTp:
                     on_error=self._config.on_recv_error,
                     send_frame=self._send_frame
                 )
-
                 # Add the new request to the list
                 self._recv_requests.append(new_request)  # Safe addition
 
@@ -279,9 +278,10 @@ class IsoTp:
 
         # Create a new thread and start it
         thread = threading.Thread(target=process_message, daemon=True, name="WorkerThread")
-        thread.start()
         self.logger.log_message(log_type=LogType.RECEIVE,
-                                message=f"Started new thread (ID: {thread.ident}). Main thread continues listening to CAN bus.")
+                                message=f"Started new thread. Main thread continues listening to CAN bus.")
+
+        thread.start()
 
     def set_recv_id(self, recv_id):
         self._config.recv_id = recv_id

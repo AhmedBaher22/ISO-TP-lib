@@ -1,0 +1,910 @@
+2025-03-08 16:12:46 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 16:12:46 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 16:12:46 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 16:12:46 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 16:21:19 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 16:21:19 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 16:21:19 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 16:21:19 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 16:21:19 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 16:21:19 - CAN - RECEIVE - Message received: ID=0x33, Data=0x06500300550155
+2025-03-08 16:21:20 - CAN - SEND - Message sent: ID=0x33, Data=0x10093101FF002122, Attempts remaining: 3
+2025-03-08 16:21:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x300000
+2025-03-08 16:21:20 - CAN - SEND - Message sent: ID=0x33, Data=0x21100300FFFFFFFF, Attempts remaining: 3
+2025-03-08 16:21:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0000
+2025-03-08 16:21:20 - CAN - SEND - Message sent: ID=0x33, Data=0x06340021221003FF, Attempts remaining: 3
+2025-03-08 16:21:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x03740102
+2025-03-08 16:21:20 - CAN - SEND - Message sent: ID=0x33, Data=0x0436015255FFFFFF, Attempts remaining: 3
+2025-03-08 16:21:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027601
+2025-03-08 16:21:20 - CAN - SEND - Message sent: ID=0x33, Data=0x03360232FFFFFFFF, Attempts remaining: 3
+2025-03-08 16:21:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027602
+2025-03-08 16:21:20 - CAN - SEND - Message sent: ID=0x33, Data=0x0137FFFFFFFFFFFF, Attempts remaining: 3
+2025-03-08 16:21:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x0177
+2025-03-08 16:21:20 - CAN - SEND - Message sent: ID=0x33, Data=0x073101FF0101D7F5, Attempts remaining: 3
+2025-03-08 16:21:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0100
+2025-03-08 16:22:37 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 16:22:37 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 16:22:37 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 16:22:37 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 16:22:37 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 16:22:37 - CAN - RECEIVE - Message received: ID=0x33, Data=0x06500300550155
+2025-03-08 16:22:38 - CAN - SEND - Message sent: ID=0x33, Data=0x10093101FF002122, Attempts remaining: 3
+2025-03-08 16:22:38 - CAN - RECEIVE - Message received: ID=0x33, Data=0x300000
+2025-03-08 16:22:38 - CAN - SEND - Message sent: ID=0x33, Data=0x21100300FFFFFFFF, Attempts remaining: 3
+2025-03-08 16:22:38 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0000
+2025-03-08 16:22:38 - CAN - SEND - Message sent: ID=0x33, Data=0x06340021221003FF, Attempts remaining: 3
+2025-03-08 16:22:38 - CAN - RECEIVE - Message received: ID=0x33, Data=0x03740102
+2025-03-08 16:22:38 - CAN - SEND - Message sent: ID=0x33, Data=0x0436015255FFFFFF, Attempts remaining: 3
+2025-03-08 16:22:38 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027601
+2025-03-08 16:22:38 - CAN - SEND - Message sent: ID=0x33, Data=0x03360232FFFFFFFF, Attempts remaining: 3
+2025-03-08 16:22:38 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027602
+2025-03-08 16:22:38 - CAN - SEND - Message sent: ID=0x33, Data=0x0137FFFFFFFFFFFF, Attempts remaining: 3
+2025-03-08 16:22:38 - CAN - RECEIVE - Message received: ID=0x33, Data=0x0177
+2025-03-08 16:22:38 - CAN - SEND - Message sent: ID=0x33, Data=0x073101FF0101D7F5, Attempts remaining: 3
+2025-03-08 16:22:38 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0100
+2025-03-08 16:31:47 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 16:31:47 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 16:31:47 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 16:31:47 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 16:32:01 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 16:32:01 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 16:32:01 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 16:32:01 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:30:28 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:30:28 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:30:28 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:30:28 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:31:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:31:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:31:43 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:31:43 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:31:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:31:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:36:21 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:36:21 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:36:21 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:36:21 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:36:21 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:36:21 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:36:45 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:36:45 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:36:45 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:36:45 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:36:45 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:36:45 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:36:56 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:36:56 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:36:56 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:36:56 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:36:56 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:36:56 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:37:58 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:37:58 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:37:58 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:37:58 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:37:58 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:37:58 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:38:33 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:38:33 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:38:33 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:38:33 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:40:16 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:40:16 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:40:16 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:40:16 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:40:16 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:40:16 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:40:16 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:40:16 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:43:56 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:43:56 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:43:56 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:43:56 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:43:56 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:43:56 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:43:56 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:43:56 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:55:27 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:55:27 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:55:27 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:55:27 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:55:27 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:55:27 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:55:27 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:55:27 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:56:10 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:56:10 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:56:10 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:56:10 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:56:20 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:56:20 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:56:20 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:56:20 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:56:20 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 22:56:20 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 22:56:20 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:56:20 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:56:20 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:56:20 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:58:30 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:58:30 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:58:30 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:58:30 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:58:33 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:58:33 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:58:33 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:58:33 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:58:33 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 22:58:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 22:58:33 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:58:33 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:58:33 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:58:33 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:59:20 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:59:20 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:59:20 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:59:20 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:59:22 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:59:22 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:59:22 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:59:22 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 22:59:22 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 22:59:22 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 22:59:23 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 22:59:23 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 22:59:23 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 22:59:23 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:03:56 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:03:56 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:03:56 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:03:56 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:03:58 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:03:58 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:03:58 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:03:58 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:03:58 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:03:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:03:58 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:03:58 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:03:58 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:03:58 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:04:25 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:04:25 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:04:25 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:04:25 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:04:29 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:04:29 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:04:29 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:04:29 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:04:29 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:04:29 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:04:29 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:04:29 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:04:29 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:04:29 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:06:19 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:06:19 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:06:19 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:06:19 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:06:21 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:06:21 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:06:21 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:06:21 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:06:21 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:06:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:06:21 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:06:21 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:06:21 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:06:21 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:07:14 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:07:14 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:07:14 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:07:14 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:07:17 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:07:17 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:07:17 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:07:17 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:07:17 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:07:17 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:07:17 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:07:17 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:07:17 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:07:17 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:08:01 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:08:01 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:08:01 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:08:01 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:08:17 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:08:17 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:08:17 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:08:17 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:08:17 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:08:17 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:08:17 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:08:17 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:08:17 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:08:17 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:09:11 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:09:12 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:09:12 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:09:12 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:09:14 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:09:14 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:09:14 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:09:14 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:09:14 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:09:14 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:09:14 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:09:14 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:09:14 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:09:14 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:09:14 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:09:14 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:09:14 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:09:14 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:09:14 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:09:14 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:09:14 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:09:14 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:09:14 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:10:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:10:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:10:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:10:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:10:08 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:10:08 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:10:08 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:10:08 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:10:08 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:10:08 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:10:08 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:10:08 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:10:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:10:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:10:08 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:10:08 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:10:08 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:10:08 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:02 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:02 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:02 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:02 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:06 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:06 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:06 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:06 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:17:06 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:06 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:06 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:06 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:17:06 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:17:06 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:17:06 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:06 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:06 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:06 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:41 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:41 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:41 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:41 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:43 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:43 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:17:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:43 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:43 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+s remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:17:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:17:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:17:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:17:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:17:43 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:17:43 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:02 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:02 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:02 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:02 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:28:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+s remaining: 3
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:28:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:28:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:28:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:44 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:44 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:44 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:44 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:48 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:48 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:48 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:48 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:48 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:28:48 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:48 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:48 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:48 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:28:48 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:28:48 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:48 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:28:48 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:28:48 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:28:48 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:28:49 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:28:49 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:28:49 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:28:49 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:28:49 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:28:49 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:28:49 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:28:49 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:28:49 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:28:49 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:28:49 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:28:49 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:28:49 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:28:49 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:28:49 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:36:53 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:36:53 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:36:53 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:36:53 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:37:02 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:37:02 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:37:02 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:37:02 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:37:02 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:37:02 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:37:02 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:37:02 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:37:02 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:37:02 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:37:02 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:37:02 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:37:02 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:37:02 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:37:36 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:37:36 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:37:36 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:37:36 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:37:39 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:37:39 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:37:39 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:37:39 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:37:39 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:37:39 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:37:39 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:37:39 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:37:39 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:37:39 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:37:39 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:37:39 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:37:39 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:37:39 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:41:36 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:41:36 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:41:36 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:41:36 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:41:40 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:41:40 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:41:40 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:41:40 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:41:40 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:41:40 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:41:40 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:41:40 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:41:40 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:41:40 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:41:40 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:41:40 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:41:40 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:41:40 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:43:41 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:43:41 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:43:41 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:43:41 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:43:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:43:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:43:43 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:43:43 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:43:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:43:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:43:43 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:43:43 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:43:43 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:43:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:43:43 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:43:43 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:43:43 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:43:43 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:44:10 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:44:10 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:44:10 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:44:10 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:44:10 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:44:10 - CAN - RECEIVE - Message received: ID=0x33, Data=0x06500300550155
+2025-03-08 23:44:11 - CAN - SEND - Message sent: ID=0x33, Data=0x10093101FF002122, Attempts remaining: 3
+2025-03-08 23:44:11 - CAN - RECEIVE - Message received: ID=0x33, Data=0x300000
+2025-03-08 23:44:11 - CAN - SEND - Message sent: ID=0x33, Data=0x21100300FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:44:11 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0000
+2025-03-08 23:44:11 - CAN - SEND - Message sent: ID=0x33, Data=0x06340021221003FF, Attempts remaining: 3
+2025-03-08 23:44:11 - CAN - RECEIVE - Message received: ID=0x33, Data=0x03740102
+2025-03-08 23:44:11 - CAN - SEND - Message sent: ID=0x33, Data=0x0436015255FFFFFF, Attempts remaining: 3
+2025-03-08 23:44:11 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027601
+2025-03-08 23:44:11 - CAN - SEND - Message sent: ID=0x33, Data=0x03360232FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:44:11 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027602
+2025-03-08 23:44:11 - CAN - SEND - Message sent: ID=0x33, Data=0x0137FFFFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:44:11 - CAN - RECEIVE - Message received: ID=0x33, Data=0x0177
+2025-03-08 23:44:11 - CAN - SEND - Message sent: ID=0x33, Data=0x073101FF0101D7F5, Attempts remaining: 3
+2025-03-08 23:44:11 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0100
+2025-03-08 23:44:53 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:44:53 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:44:53 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:44:53 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:44:57 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:44:57 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:44:57 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:44:57 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:44:57 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:44:57 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:44:57 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:44:57 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:44:57 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:44:57 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:44:57 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:44:57 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:44:57 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:44:57 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:44:57 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:44:58 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:44:58 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:44:58 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:44:58 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:44:58 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:44:58 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:44:58 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:44:58 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:44:58 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:50:55 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:50:55 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:50:55 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:50:55 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:50:55 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:50:55 - CAN - RECEIVE - Message received: ID=0x33, Data=0x06500300550155
+2025-03-08 23:50:56 - CAN - SEND - Message sent: ID=0x33, Data=0x10093101FF002122, Attempts remaining: 3
+2025-03-08 23:50:56 - CAN - RECEIVE - Message received: ID=0x33, Data=0x300000
+2025-03-08 23:50:56 - CAN - SEND - Message sent: ID=0x33, Data=0x21100300FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:50:56 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0000
+2025-03-08 23:50:56 - CAN - SEND - Message sent: ID=0x33, Data=0x06340021221003FF, Attempts remaining: 3
+2025-03-08 23:50:56 - CAN - RECEIVE - Message received: ID=0x33, Data=0x03740102
+2025-03-08 23:50:56 - CAN - SEND - Message sent: ID=0x33, Data=0x0436015255FFFFFF, Attempts remaining: 3
+2025-03-08 23:50:56 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027601
+2025-03-08 23:50:56 - CAN - SEND - Message sent: ID=0x33, Data=0x03360232FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:50:56 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027602
+2025-03-08 23:50:56 - CAN - SEND - Message sent: ID=0x33, Data=0x0137FFFFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:50:56 - CAN - RECEIVE - Message received: ID=0x33, Data=0x0177
+2025-03-08 23:50:56 - CAN - SEND - Message sent: ID=0x33, Data=0x073101FF0101D7F5, Attempts remaining: 3
+2025-03-08 23:50:56 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0100
+2025-03-08 23:52:19 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:52:19 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:52:19 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:52:19 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:52:19 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:52:19 - CAN - RECEIVE - Message received: ID=0x33, Data=0x06500300550155
+2025-03-08 23:52:21 - CAN - SEND - Message sent: ID=0x33, Data=0x10093101FF002122, Attempts remaining: 3
+2025-03-08 23:52:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x300000
+2025-03-08 23:52:21 - CAN - SEND - Message sent: ID=0x33, Data=0x21100300FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:52:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0000
+2025-03-08 23:52:21 - CAN - SEND - Message sent: ID=0x33, Data=0x06340021221003FF, Attempts remaining: 3
+2025-03-08 23:52:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x03740102
+2025-03-08 23:52:21 - CAN - SEND - Message sent: ID=0x33, Data=0x0436015255FFFFFF, Attempts remaining: 3
+2025-03-08 23:52:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027601
+2025-03-08 23:52:21 - CAN - SEND - Message sent: ID=0x33, Data=0x03360232FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:52:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027602
+2025-03-08 23:52:21 - CAN - SEND - Message sent: ID=0x33, Data=0x0137FFFFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:52:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x0177
+2025-03-08 23:52:21 - CAN - SEND - Message sent: ID=0x33, Data=0x073101FF0101D7F5, Attempts remaining: 3
+2025-03-08 23:52:21 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0100
+2025-03-08 23:52:54 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:52:54 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:52:54 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:52:54 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:53:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:53:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:53:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:53:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:53:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:53:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:53:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:53:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+s remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:53:05 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:53:05 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:53:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:53:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:53:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:53:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:58:05 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:58:05 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:58:05 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:58:05 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:58:08 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:58:08 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:58:08 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:58:08 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-08 23:58:08 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:58:08 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:58:08 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:58:08 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:58:08 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-08 23:58:08 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-08 23:58:08 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:58:08 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:58:08 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:58:08 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:58:41 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-08 23:58:41 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-08 23:58:41 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-08 23:58:41 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-08 23:58:41 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:58:41 - CAN - RECEIVE - Message received: ID=0x33, Data=0x06500300550155
+2025-03-08 23:58:42 - CAN - SEND - Message sent: ID=0x33, Data=0x10093101FF002122, Attempts remaining: 3
+2025-03-08 23:58:42 - CAN - RECEIVE - Message received: ID=0x33, Data=0x300000
+2025-03-08 23:58:43 - CAN - SEND - Message sent: ID=0x33, Data=0x21100300FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:58:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0000
+2025-03-08 23:58:43 - CAN - SEND - Message sent: ID=0x33, Data=0x06340021221003FF, Attempts remaining: 3
+2025-03-08 23:58:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x03740102
+2025-03-08 23:58:43 - CAN - SEND - Message sent: ID=0x33, Data=0x0436015255FFFFFF, Attempts remaining: 3
+2025-03-08 23:58:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027601
+2025-03-08 23:58:43 - CAN - SEND - Message sent: ID=0x33, Data=0x03360232FFFFFFFF, Attempts remaining: 3
+2025-03-08 23:58:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x027602
+2025-03-08 23:58:43 - CAN - SEND - Message sent: ID=0x33, Data=0x0137FFFFFFFFFFFF, Attempts remaining: 3
+2025-03-08 23:58:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x0177
+2025-03-08 23:58:43 - CAN - SEND - Message sent: ID=0x33, Data=0x073101FF0101D7F5, Attempts remaining: 3
+2025-03-08 23:58:43 - CAN - RECEIVE - Message received: ID=0x33, Data=0x057101FF0100
+2025-03-09 00:04:29 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-09 00:04:29 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-09 00:04:29 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-09 00:04:29 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-09 00:04:33 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-09 00:04:33 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-09 00:04:33 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-09 00:04:33 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x021003FFFFFFFFFF, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x021003FFFFFFFFFF
+2025-03-09 00:04:33 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-09 00:04:33 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-09 00:04:33 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-09 00:04:33 - CAN - INITIALIZATION - CAN reception thread started successfully
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x1030000100010000, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x1030000100010000
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x30080A, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x30080A
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x2100000000000000, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2100000000000000
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x2200010100000000, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2200010100000000
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x2300000000000100, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2300000000000100
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x2401000100010000, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2401000100010000
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x2500000000000100, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2500000000000100
+2025-03-09 00:04:33 - CAN - SEND - Message sent: ID=0x33, Data=0x2601000100010001, Attempts remaining: 3
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-09 00:04:33 - CAN - RECEIVE - Message received: ID=0x33, Data=0x2601000100010001
+2025-03-09 00:04:33 - CAN - INITIALIZATION - CAN bus initialized successfully
+2025-03-09 00:04:33 - CAN - ACKNOWLEDGMENT - Filters set successfully: [{'can_id': 51, 'can_mask': 2047, 'extended': False}]
+2025-03-09 00:04:33 - CAN - INITIALIZATION - Starting CAN message reception loop
+2025-03-09 00:04:33 - CAN - INITIALIZATION - CAN reception thread started successfully

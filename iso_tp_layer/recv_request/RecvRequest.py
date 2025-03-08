@@ -49,6 +49,7 @@ class RecvRequest:
             message=f"[RecvRequest-{self._id}] Initialized with address {self._address}, block_size={self._max_block_size}, timeout={self._timeout}ms"
         )
 
+
     def set_flow_status(self, status: FlowStatus):
         self._flow_status = status
         self.logger.log_message(

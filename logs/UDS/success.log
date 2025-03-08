@@ -1,0 +1,261 @@
+2025-03-08 16:21:19 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 16:21:19 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 16:21:19 - UDS - ACKNOWLEDGMENT - Message b'P\x03\x00U\x01U' received successfully
+2025-03-08 16:21:20 - UDS - INFO - Created Erase_Memory operation for Diagnostic address 51. Message: ['0x31', '0x1', '0xff', '0x0', '0x21', '0x22', '0x10', '0x3', '0x0']
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - ERASE memory for diagnostic address 51send successfully with messaage: [49, 1, 255, 0, 33, 34, 16, 3, 0]
+2025-03-08 16:21:20 - UDS - INFO - Request download function for 51 is being processing and preparing message
+2025-03-08 16:21:20 - UDS - INFO - Created REQUEST_DOWNLOAD operation for Diagnostic address 51. Message: ['0x34', '0x0', '0x21', '0x22', '0x10', '0x3']
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message [52, 0, 33, 34, 16, 3] sent successfully
+2025-03-08 16:21:20 - UDS - INFO - Request download respond for 51 received with message : ['0x74', '0x1', '0x2']
+2025-03-08 16:21:20 - UDS - INFO - Request download respond for 51 is positive
+2025-03-08 16:21:20 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 16:21:20 - UDS - INFO - Created TRANSFER_DATA message. Block: 1, Iteration: 1, Actual Position: 0, Data size: 2
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message [54, 1, 82, 85] sent successfully
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x36', '0x1', '0x52', '0x55']
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message b't\x01\x02' received successfully
+2025-03-08 16:21:20 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x1']
+2025-03-08 16:21:20 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 16:21:20 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 16:21:20 - UDS - INFO - Created TRANSFER_DATA message. Block: 2, Iteration: 1, Actual Position: 2, Data size: 1
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Transfer Exit request for 51 sended with message : ['0x36', '0x2', '0x32']
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message [54, 2, 50] sent successfully
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message b'v\x01' received successfully
+2025-03-08 16:21:20 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x2']
+2025-03-08 16:21:20 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 16:21:20 - UDS - INFO - Transfer Exit request function for 51 is being processing and preparing message
+2025-03-08 16:21:20 - UDS - INFO - Created REQUEST_TRANSFER_EXIT message. Checksum: CheckSumMethod.CRC_16
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message [55] sent successfully
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x37']
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message b'v\x02' received successfully
+2025-03-08 16:21:20 - UDS - INFO - Transfer Exit respond for 51 received with message : ['0x77']
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message [49, 1, 255, 1, 1, 215, 245] sent successfully
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Check Memory subroutine service for 51 sended with message : ['0x31', '0x1', '0xff', '0x1', '0x1', '0xd7', '0xf5']
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Transfer completed successfully for ECU with diagnostic address : 51
+2025-03-08 16:21:20 - UDS - ACKNOWLEDGMENT - Message b'q\x01\xff\x01\x00' received successfully
+2025-03-08 16:22:37 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 16:22:37 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 16:22:37 - UDS - ACKNOWLEDGMENT - Message b'P\x03\x00U\x01U' received successfully
+2025-03-08 16:22:38 - UDS - INFO - Created Erase_Memory operation for Diagnostic address 51. Message: ['0x31', '0x1', '0xff', '0x0', '0x21', '0x22', '0x10', '0x3', '0x0']
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - ERASE memory for diagnostic address 51send successfully with messaage: [49, 1, 255, 0, 33, 34, 16, 3, 0]
+2025-03-08 16:22:38 - UDS - INFO - Request download function for 51 is being processing and preparing message
+2025-03-08 16:22:38 - UDS - INFO - Created REQUEST_DOWNLOAD operation for Diagnostic address 51. Message: ['0x34', '0x0', '0x21', '0x22', '0x10', '0x3']
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message [52, 0, 33, 34, 16, 3] sent successfully
+2025-03-08 16:22:38 - UDS - INFO - Request download respond for 51 received with message : ['0x74', '0x1', '0x2']
+2025-03-08 16:22:38 - UDS - INFO - Request download respond for 51 is positive
+2025-03-08 16:22:38 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 16:22:38 - UDS - INFO - Created TRANSFER_DATA message. Block: 1, Iteration: 1, Actual Position: 0, Data size: 2
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message [54, 1, 82, 85] sent successfully
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x36', '0x1', '0x52', '0x55']
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message b't\x01\x02' received successfully
+2025-03-08 16:22:38 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x1']
+2025-03-08 16:22:38 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 16:22:38 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 16:22:38 - UDS - INFO - Created TRANSFER_DATA message. Block: 2, Iteration: 1, Actual Position: 2, Data size: 1
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Transfer Exit request for 51 sended with message : ['0x36', '0x2', '0x32']
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message [54, 2, 50] sent successfully
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message b'v\x01' received successfully
+2025-03-08 16:22:38 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x2']
+2025-03-08 16:22:38 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 16:22:38 - UDS - INFO - Transfer Exit request function for 51 is being processing and preparing message
+2025-03-08 16:22:38 - UDS - INFO - Created REQUEST_TRANSFER_EXIT message. Checksum: CheckSumMethod.CRC_16
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message [55] sent successfully
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x37']
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message b'v\x02' received successfully
+2025-03-08 16:22:38 - UDS - INFO - Transfer Exit respond for 51 received with message : ['0x77']
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message [49, 1, 255, 1, 1, 215, 245] sent successfully
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Check Memory subroutine service for 51 sended with message : ['0x31', '0x1', '0xff', '0x1', '0x1', '0xd7', '0xf5']
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Transfer completed successfully for ECU with diagnostic address : 51
+2025-03-08 16:22:38 - UDS - ACKNOWLEDGMENT - Message b'q\x01\xff\x01\x00' received successfully
+2025-03-08 22:56:20 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 22:56:20 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 22:58:33 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 22:58:33 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 22:59:22 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 22:59:22 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:03:58 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:03:58 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:04:29 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:04:29 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:06:21 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:06:21 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:07:17 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:07:17 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:08:17 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:08:17 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:09:14 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:09:14 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:10:08 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:10:08 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:10:08 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:17:06 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:17:06 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:17:06 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:17:43 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:17:43 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:17:43 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:28:05 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:28:05 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:28:05 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:28:48 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:28:48 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:28:49 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:37:02 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:37:02 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:37:02 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:37:39 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:37:39 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:37:39 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:41:40 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:41:40 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:41:40 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:43:43 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:43:43 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:43:43 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:44:10 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:44:10 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:44:10 - UDS - ACKNOWLEDGMENT - Message b'P\x03\x00U\x01U' received successfully
+2025-03-08 23:44:11 - UDS - INFO - Created Erase_Memory operation for Diagnostic address 51. Message: ['0x31', '0x1', '0xff', '0x0', '0x21', '0x22', '0x10', '0x3', '0x0']
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - ERASE memory for diagnostic address 51send successfully with messaage: [49, 1, 255, 0, 33, 34, 16, 3, 0]
+2025-03-08 23:44:11 - UDS - INFO - Request download function for 51 is being processing and preparing message
+2025-03-08 23:44:11 - UDS - INFO - Created REQUEST_DOWNLOAD operation for Diagnostic address 51. Message: ['0x34', '0x0', '0x21', '0x22', '0x10', '0x3']
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message [52, 0, 33, 34, 16, 3] sent successfully
+2025-03-08 23:44:11 - UDS - INFO - Request download respond for 51 received with message : ['0x74', '0x1', '0x2']
+2025-03-08 23:44:11 - UDS - INFO - Request download respond for 51 is positive
+2025-03-08 23:44:11 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:44:11 - UDS - INFO - Created TRANSFER_DATA message. Block: 1, Iteration: 1, Actual Position: 0, Data size: 2
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message [54, 1, 82, 85] sent successfully
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x36', '0x1', '0x52', '0x55']
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message b't\x01\x02' received successfully
+2025-03-08 23:44:11 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x1']
+2025-03-08 23:44:11 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:44:11 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:44:11 - UDS - INFO - Created TRANSFER_DATA message. Block: 2, Iteration: 1, Actual Position: 2, Data size: 1
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Transfer Exit request for 51 sended with message : ['0x36', '0x2', '0x32']
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message [54, 2, 50] sent successfully
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message b'v\x01' received successfully
+2025-03-08 23:44:11 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x2']
+2025-03-08 23:44:11 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:44:11 - UDS - INFO - Transfer Exit request function for 51 is being processing and preparing message
+2025-03-08 23:44:11 - UDS - INFO - Created REQUEST_TRANSFER_EXIT message. Checksum: CheckSumMethod.CRC_16
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message [55] sent successfully
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x37']
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message b'v\x02' received successfully
+2025-03-08 23:44:11 - UDS - INFO - Transfer Exit respond for 51 received with message : ['0x77']
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message [49, 1, 255, 1, 1, 215, 245] sent successfully
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Check Memory subroutine service for 51 sended with message : ['0x31', '0x1', '0xff', '0x1', '0x1', '0xd7', '0xf5']
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Transfer completed successfully for ECU with diagnostic address : 51
+2025-03-08 23:44:11 - UDS - ACKNOWLEDGMENT - Message b'q\x01\xff\x01\x00' received successfully
+2025-03-08 23:44:57 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:44:57 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:44:58 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:50:55 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:50:55 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:50:55 - UDS - ACKNOWLEDGMENT - Message b'P\x03\x00U\x01U' received successfully
+2025-03-08 23:50:56 - UDS - INFO - Created Erase_Memory operation for Diagnostic address 51. Message: ['0x31', '0x1', '0xff', '0x0', '0x21', '0x22', '0x10', '0x3', '0x0']
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - ERASE memory for diagnostic address 51send successfully with messaage: [49, 1, 255, 0, 33, 34, 16, 3, 0]
+2025-03-08 23:50:56 - UDS - INFO - Request download function for 51 is being processing and preparing message
+2025-03-08 23:50:56 - UDS - INFO - Created REQUEST_DOWNLOAD operation for Diagnostic address 51. Message: ['0x34', '0x0', '0x21', '0x22', '0x10', '0x3']
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message [52, 0, 33, 34, 16, 3] sent successfully
+2025-03-08 23:50:56 - UDS - INFO - Request download respond for 51 received with message : ['0x74', '0x1', '0x2']
+2025-03-08 23:50:56 - UDS - INFO - Request download respond for 51 is positive
+2025-03-08 23:50:56 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:50:56 - UDS - INFO - Created TRANSFER_DATA message. Block: 1, Iteration: 1, Actual Position: 0, Data size: 2
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message [54, 1, 82, 85] sent successfully
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x36', '0x1', '0x52', '0x55']
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message b't\x01\x02' received successfully
+2025-03-08 23:50:56 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x1']
+2025-03-08 23:50:56 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:50:56 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:50:56 - UDS - INFO - Created TRANSFER_DATA message. Block: 2, Iteration: 1, Actual Position: 2, Data size: 1
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Transfer Exit request for 51 sended with message : ['0x36', '0x2', '0x32']
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message [54, 2, 50] sent successfully
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message b'v\x01' received successfully
+2025-03-08 23:50:56 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x2']
+2025-03-08 23:50:56 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:50:56 - UDS - INFO - Transfer Exit request function for 51 is being processing and preparing message
+2025-03-08 23:50:56 - UDS - INFO - Created REQUEST_TRANSFER_EXIT message. Checksum: CheckSumMethod.CRC_16
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message [55] sent successfully
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x37']
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message b'v\x02' received successfully
+2025-03-08 23:50:56 - UDS - INFO - Transfer Exit respond for 51 received with message : ['0x77']
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message [49, 1, 255, 1, 1, 215, 245] sent successfully
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Check Memory subroutine service for 51 sended with message : ['0x31', '0x1', '0xff', '0x1', '0x1', '0xd7', '0xf5']
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Transfer completed successfully for ECU with diagnostic address : 51
+2025-03-08 23:50:56 - UDS - ACKNOWLEDGMENT - Message b'q\x01\xff\x01\x00' received successfully
+2025-03-08 23:52:19 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:52:19 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:52:20 - UDS - ACKNOWLEDGMENT - Message b'P\x03\x00U\x01U' received successfully
+2025-03-08 23:52:21 - UDS - INFO - Created Erase_Memory operation for Diagnostic address 51. Message: ['0x31', '0x1', '0xff', '0x0', '0x21', '0x22', '0x10', '0x3', '0x0']
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - ERASE memory for diagnostic address 51send successfully with messaage: [49, 1, 255, 0, 33, 34, 16, 3, 0]
+2025-03-08 23:52:21 - UDS - INFO - Request download function for 51 is being processing and preparing message
+2025-03-08 23:52:21 - UDS - INFO - Created REQUEST_DOWNLOAD operation for Diagnostic address 51. Message: ['0x34', '0x0', '0x21', '0x22', '0x10', '0x3']
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message [52, 0, 33, 34, 16, 3] sent successfully
+2025-03-08 23:52:21 - UDS - INFO - Request download respond for 51 received with message : ['0x74', '0x1', '0x2']
+2025-03-08 23:52:21 - UDS - INFO - Request download respond for 51 is positive
+2025-03-08 23:52:21 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:52:21 - UDS - INFO - Created TRANSFER_DATA message. Block: 1, Iteration: 1, Actual Position: 0, Data size: 2
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message [54, 1, 82, 85] sent successfully
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x36', '0x1', '0x52', '0x55']
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message b't\x01\x02' received successfully
+2025-03-08 23:52:21 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x1']
+2025-03-08 23:52:21 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:52:21 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:52:21 - UDS - INFO - Created TRANSFER_DATA message. Block: 2, Iteration: 1, Actual Position: 2, Data size: 1
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Transfer Exit request for 51 sended with message : ['0x36', '0x2', '0x32']
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message [54, 2, 50] sent successfully
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message b'v\x01' received successfully
+2025-03-08 23:52:21 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x2']
+2025-03-08 23:52:21 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:52:21 - UDS - INFO - Transfer Exit request function for 51 is being processing and preparing message
+2025-03-08 23:52:21 - UDS - INFO - Created REQUEST_TRANSFER_EXIT message. Checksum: CheckSumMethod.CRC_16
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message [55] sent successfully
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x37']
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message b'v\x02' received successfully
+2025-03-08 23:52:21 - UDS - INFO - Transfer Exit respond for 51 received with message : ['0x77']
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message [49, 1, 255, 1, 1, 215, 245] sent successfully
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Check Memory subroutine service for 51 sended with message : ['0x31', '0x1', '0xff', '0x1', '0x1', '0xd7', '0xf5']
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Transfer completed successfully for ECU with diagnostic address : 51
+2025-03-08 23:52:21 - UDS - ACKNOWLEDGMENT - Message b'q\x01\xff\x01\x00' received successfully
+2025-03-08 23:53:05 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:53:05 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:53:05 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:58:08 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:58:08 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:58:08 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully
+2025-03-08 23:58:41 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-08 23:58:41 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-08 23:58:41 - UDS - ACKNOWLEDGMENT - Message b'P\x03\x00U\x01U' received successfully
+2025-03-08 23:58:42 - UDS - INFO - Created Erase_Memory operation for Diagnostic address 51. Message: ['0x31', '0x1', '0xff', '0x0', '0x21', '0x22', '0x10', '0x3', '0x0']
+2025-03-08 23:58:42 - UDS - ACKNOWLEDGMENT - ERASE memory for diagnostic address 51send successfully with messaage: [49, 1, 255, 0, 33, 34, 16, 3, 0]
+2025-03-08 23:58:43 - UDS - INFO - Request download function for 51 is being processing and preparing message
+2025-03-08 23:58:43 - UDS - INFO - Created REQUEST_DOWNLOAD operation for Diagnostic address 51. Message: ['0x34', '0x0', '0x21', '0x22', '0x10', '0x3']
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message [52, 0, 33, 34, 16, 3] sent successfully
+2025-03-08 23:58:43 - UDS - INFO - Request download respond for 51 received with message : ['0x74', '0x1', '0x2']
+2025-03-08 23:58:43 - UDS - INFO - Request download respond for 51 is positive
+2025-03-08 23:58:43 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:58:43 - UDS - INFO - Created TRANSFER_DATA message. Block: 1, Iteration: 1, Actual Position: 0, Data size: 2
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message [54, 1, 82, 85] sent successfully
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x36', '0x1', '0x52', '0x55']
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message b't\x01\x02' received successfully
+2025-03-08 23:58:43 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x1']
+2025-03-08 23:58:43 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:58:43 - UDS - INFO - Transfer data function for 51 is being processing and preparing message
+2025-03-08 23:58:43 - UDS - INFO - Created TRANSFER_DATA message. Block: 2, Iteration: 1, Actual Position: 2, Data size: 1
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Transfer Exit request for 51 sended with message : ['0x36', '0x2', '0x32']
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message [54, 2, 50] sent successfully
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message b'v\x01' received successfully
+2025-03-08 23:58:43 - UDS - INFO - Transfer data respond for 51 received with message : ['0x76', '0x2']
+2025-03-08 23:58:43 - UDS - INFO - Request download respond for 51 is postitive
+2025-03-08 23:58:43 - UDS - INFO - Transfer Exit request function for 51 is being processing and preparing message
+2025-03-08 23:58:43 - UDS - INFO - Created REQUEST_TRANSFER_EXIT message. Checksum: CheckSumMethod.CRC_16
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message [55] sent successfully
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Transfer data request for 51 sended with message : ['0x37']
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message b'v\x02' received successfully
+2025-03-08 23:58:43 - UDS - INFO - Transfer Exit respond for 51 received with message : ['0x77']
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message [49, 1, 255, 1, 1, 215, 245] sent successfully
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Check Memory subroutine service for 51 sended with message : ['0x31', '0x1', '0xff', '0x1', '0x1', '0xd7', '0xf5']
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Transfer completed successfully for ECU with diagnostic address : 51
+2025-03-08 23:58:43 - UDS - ACKNOWLEDGMENT - Message b'q\x01\xff\x01\x00' received successfully
+2025-03-09 00:04:33 - UDS - ACKNOWLEDGMENT - Message bytearray(b'\x10\x03') sent successfully
+2025-03-09 00:04:33 - UDS - ACKNOWLEDGMENT - Server 51 Added successfully
+2025-03-09 00:04:33 - UDS - ACKNOWLEDGMENT - Message b'\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x01\x00\x01\x00\x01\x00\x01' received successfully

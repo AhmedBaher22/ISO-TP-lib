@@ -57,38 +57,38 @@ address = Address(txid=0x123, rxid=0x456)
 def can_messages():
     """Function to simulate sending CAN messages to the IsoTp layer."""
 
-    # # 1. **Test Single Frame Message**
-    # print("\n--- Test: Single Frame ---")
-    # message_data = bitarray('1010101011100001')  # Example data (16 bits)
-    # single_frame = SingleFrameMessage(dataLength=len(message_data) // 8, data=message_data)
-    #
+    # # # 1. **Test Single Frame Message**
+    print("\n--- Test: Single Frame ---")
+    message_data = bitarray('1010101011100001')  # Example data (16 bits)
+    single_frame = SingleFrameMessage(dataLength=len(message_data) // 8, data=message_data)
+
     # # Create a CAN message
-    # can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(single_frame).tobytes(), is_extended_id=False)
-    # iso_tp.recv_can_message(can_msg)
-    #
-    # # 2. **Test First Frame Message**
-    print("\n--- Test: First Frame ---")
-    first_frame_data = bitarray('101010101110000110101010111000011010101011100001')  # 48 bits -> 6 bytes
-    first_frame = FirstFrameMessage(dataLength=8, data=first_frame_data)
-
-    can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(first_frame).tobytes(), is_extended_id=False)
+    can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(single_frame).tobytes(), is_extended_id=False)
     iso_tp.recv_can_message(can_msg)
+    # #
+    # # # 2. **Test First Frame Message**
+    # print("\n--- Test: First Frame ---")
+    # first_frame_data = bitarray('101010101110000110101010111000011010101011100001')  # 48 bits -> 6 bytes
+    # first_frame = FirstFrameMessage(dataLength=8, data=first_frame_data)
+    #
+    # can_msg = can.Message(arbitration_id=0x123, data=message_to_bitarray(first_frame).tobytes(), is_extended_id=False)
+    # iso_tp.recv_can_message(can_msg)
 
-    # # 3. **Test Consecutive Frames (Correct Order)**
-    print("\n--- Test: Consecutive Frames in Order ---")
-    consecutive_frame_1 = ConsecutiveFrameMessage(sequenceNumber=1, data=bitarray('11110000'))  # 8 bits -> 1 byte
-    consecutive_frame_2 = ConsecutiveFrameMessage(sequenceNumber=2, data=bitarray('00001111'))  # 8 bits -> 1 byte
-
-    can_msg1 = can.Message(arbitration_id=0x123, data=message_to_bitarray(consecutive_frame_1).tobytes(),
-                           is_extended_id=False)
-    time.sleep(1)
-    can_msg2 = can.Message(arbitration_id=0x123, data=message_to_bitarray(consecutive_frame_2).tobytes(),
-                           is_extended_id=False)
-
-    iso_tp.recv_can_message(can_msg1)
-    iso_tp.recv_can_message(can_msg2)
-
-    time.sleep(1)
+    # # # 3. **Test Consecutive Frames (Correct Order)**
+    # print("\n--- Test: Consecutive Frames in Order ---")
+    # consecutive_frame_1 = ConsecutiveFrameMessage(sequenceNumber=1, data=bitarray('11110000'))  # 8 bits -> 1 byte
+    # consecutive_frame_2 = ConsecutiveFrameMessage(sequenceNumber=2, data=bitarray('00001111'))  # 8 bits -> 1 byte
+    #
+    # can_msg1 = can.Message(arbitration_id=0x123, data=message_to_bitarray(consecutive_frame_1).tobytes(),
+    #                        is_extended_id=False)
+    # time.sleep(1)
+    # can_msg2 = can.Message(arbitration_id=0x123, data=message_to_bitarray(consecutive_frame_2).tobytes(),
+    #                        is_extended_id=False)
+    #
+    # iso_tp.recv_can_message(can_msg1)
+    # iso_tp.recv_can_message(can_msg2)
+    #
+    # time.sleep(1)
 
     # 4. **Test Consecutive Frame Out of Sequence**
     # print("\n--- Test: Consecutive Frame Out of Sequence ---")
