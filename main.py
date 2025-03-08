@@ -38,13 +38,14 @@ def main():
     client.Flash_ECU(datas,recv_DA=servers[0].can_id,
                                     encryption_method=EncryptionMethod.NO_ENCRYPTION,
                                     compression_method=CompressionMethod.NO_COMPRESSION,
-                                    checksum_required=CheckSumMethod.CRC_16)
+                                    checksum_required=CheckSumMethod.CRC_16,
+                                    )
     
-    client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],
-                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,
-                                    compression_method=CompressionMethod.NO_COMPRESSION,
-                                    memory_address=[0x22, 0x10],
-                                    checksum_required=CheckSumMethod.CRC_16)
+    # client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],
+    #                                 encryption_method=EncryptionMethod.NO_ENCRYPTION,
+    #                                 compression_method=CompressionMethod.NO_COMPRESSION,
+    #                                 memory_address=[0x22, 0x10],
+    #                                 checksum_required=CheckSumMethod.CRC_16)
     # #sending read data by identifier request
     # message=servers[0].read_data_by_identifier(vin=[0x01,0x90])
     # client.send_message(servers[0].can_id,message)

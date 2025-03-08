@@ -28,6 +28,10 @@ class UdsClient:
         self._pending_servers: List[Server] = []
         self._isotp_send: Callable = None
         self._logger = Logger(ProtocolType.UDS)
+        self._logger.log_message(
+            log_type=LogType.INITIALIZATION,
+            message="UDS client Tool has been initialized successfully"
+        )
 
     def set_isotp_send(self, e: Callable):
         self._isotp_send = e
@@ -51,9 +55,15 @@ class UdsClient:
         self._pending_servers.append(server)
         self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
-            message=f"Server {address._rxid} Added successfully")
+            message=f"[REQ-{server.current_req_id}] to add Server with DA: {hex(address._rxid)} and open session control : {session_type.name} send successfully with message:{[hex(x) for x in message]}")
 
     def process_message(self, address: Address, data: bytearray):
+        
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"message recievid: {[hex(x) for x in data]} is being proccessed ..."
+        )
+        
         # diagnostic_address,data=self.extract_diagnostic_address(data=data)
         diagnostic_address=address._txid
         service_id = data[0]
@@ -138,8 +148,7 @@ class UdsClient:
         elif service_id == 0x71:  # Positive response to Erase Memory
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
-                print("da5l ydwr")
-                print(data[3])
+
                 if data[3]==0x00:
                     server.on_erase_memory_respond(data) 
                 elif data[3]==0x01:
@@ -184,7 +193,13 @@ class UdsClient:
                     server.on_ecu_reset_respond(0x51, data[1:], reset_type)
 
         elif service_id == 0x50:  # Positive response to Session Control
+            
             server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)
+            self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"[Positive response to session control received with message:{[hex(x) for x in data]}, processing is done to determine the server...")     
+               
+            server:Server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)
             if server:
                 server.session = SessionType(data[1])
                 # Set timing parameters
@@ -193,8 +208,15 @@ class UdsClient:
                     server.p2_star_timing = (data[4] << 8) | data[5]  # Combine fifth and sixth bytes
                 self._servers.append(server)
                 self._pending_servers.remove(server)
-                print("Gained control session ",server.session," with timings:: ", "P2 timing", server.p2_timing, "P2 star timing", server.p2_star_timing )
-
+                
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=f"[REQ-{server.current_req_id}] Server with DA: {hex(server.can_id)} Gained  session control :{server.session.name}, with timings:: P2 timing: {server.p2_timing}, P2 star timing: {server.p2_star_timing}")
+                
+            else:
+                self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=f"NO server found was requesting session control")   
 
 
     def _find_server_by_can_id(self, can_id: [int], server_list: List[Server]) -> Optional[Server]:
@@ -216,15 +238,15 @@ class UdsClient:
         self.process_message(address, data)
         self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
-            message=f"Message {data} received successfully")
+            message=f"Message {hex(data)} received successfully")
 
     def send_message(self, server_can_id: int, message: List[int]):
         address = Address(addressing_mode=0, txid=self._client_id, rxid=server_can_id)
 
         if len(message) <= 4095:
-            print(message)
+            
             # message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
-            print(message)
+            
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
             # Split message into chunks of 4095 bytes
@@ -267,7 +289,8 @@ class UdsClient:
                                 compression_method: CompressionMethod,
                                 memory_address: bytearray,
                                 checksum_required: CheckSumMethod,
-                                is_multiple_segments:bool=False) -> None:
+                                is_multiple_segments:bool=False,
+                                flashing_ECU_req:FlashingECU=None) -> None:
         # Create TransferRequest object
         transfer_request = TransferRequest(
             recv_DA=recv_DA,
@@ -276,7 +299,8 @@ class UdsClient:
             compression_method=compression_method,
             memory_address=memory_address,
             checksum_required=checksum_required,
-            is_multiple_segments=is_multiple_segments
+            is_multiple_segments=is_multiple_segments,
+            flashing_ECU_REQ=flashing_ECU_req
 
         )
 
@@ -293,14 +317,16 @@ class UdsClient:
 
                 self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"ERASE memory for diagnostic address {recv_DA}send successfully with messaage: {message}"
+                    message=f"{transfer_request.get_req()} ERASE memory for diagnostic address {hex(recv_DA)}send successfully with messaage: {[hex(x) for x in message]}"
                 )
 
         else:
+            transfer_request.status=TransferStatus.REJECTED
+            flashing_ECU_req.status=FlashingECUStatus.REJECTED
             self._logger.log_message(
                 log_type=LogType.ERROR,
-                message=f"Error: No server found to send request download  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control"
-            )            
+                message=f"{transfer_request.get_req()} Error: No server found to send ERASE MEMORY  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control"
+            )
 
     def Flash_ECU(self,segments:List[DataRecord], recv_DA: int,
                                 encryption_method: EncryptionMethod,
@@ -311,7 +337,7 @@ class UdsClient:
         newFlashingECUrequest.status=FlashingECUStatus.CREATED
         self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"[REQUEST-{newFlashingECUrequest.ID}]NEW Flashing ECU REQUEST HAS BEEN CREATED to ECU with DA:{hex(newFlashingECUrequest.recv_DA) }  -STATUS:{newFlashingECUrequest.status}"
+                    message=f"[FLASH_REQUEST-{newFlashingECUrequest.ID}] NEW Flashing ECU REQUEST HAS BEEN CREATED to ECU with DA:{hex(newFlashingECUrequest.recv_DA) }  -STATUS:{newFlashingECUrequest.status.name}"
                 )
         # Find server with matching CAN ID
         server = next((s for s in self._servers if s.can_id == recv_DA), None)
@@ -320,7 +346,7 @@ class UdsClient:
             newFlashingECUrequest.status=FlashingECUStatus.SENDING_FIRST_SEGMENT
             self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"[REQUEST-{newFlashingECUrequest.ID}]Flashing ECU REQUEST is being processing sending segment number :{newFlashingECUrequest.current_number_of_segments_send+1} to ECU with DA:{hex( newFlashingECUrequest.recv_DA)}  -STATUS:{newFlashingECUrequest.status}"
+                    message=f"[FLASH_REQUEST-{newFlashingECUrequest.ID}] Flashing ECU REQUEST is being processing sending segment number :{newFlashingECUrequest.current_number_of_segments_send+1} to ECU with DA:{hex( newFlashingECUrequest.recv_DA)}  -STATUS:{newFlashingECUrequest.status.name}"
                 )
             self.transfer_NEW_data_to_ecu(recv_DA=newFlashingECUrequest.recv_DA,
                                         data=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].data,
@@ -328,11 +354,13 @@ class UdsClient:
                                         checksum_required=newFlashingECUrequest.checksum_required,
                                         encryption_method=newFlashingECUrequest.encryption_method,
                                         compression_method=newFlashingECUrequest.compression_method,
-                                        is_multiple_segments=True
+                                        is_multiple_segments=True,
+                                        flashing_ECU_req=newFlashingECUrequest
                                         )
 
         else:
+            newFlashingECUrequest.status = FlashingECUStatus.REJECTED
             self._logger.log_message(
                 log_type=LogType.ERROR,
-                message=f"Error: No server found to Flash ECU  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control"
-            )          
+                message=f"[FLASH_REQUEST-{newFlashingECUrequest.ID}] Error: No server found to Flash ECU  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control - STATUS {newFlashingECUrequest.status.name}"
+            ) 

@@ -23,3 +23,6 @@ class FlashingECU:
         self.ID=FlashingECU.Flashing_Request_ID+1
         FlashingECU.Flashing_Request_ID+=1
 
+    def get_req(self)->str:
+        msg= f"[FLASH_REQUEST-{self.ID}]-FLASH STAUTS:{self.status.name} "
+        return msg
