@@ -251,6 +251,16 @@ class Server:
                 print(success_msg)
                 self.add_log(success_msg)
                 operation.status = OperationStatus.COMPLETED
+
+                transfer_request = next((req for req in self.Flash_ECU_Segments_Request 
+                        if req.status == FlashingECUStatus.CLOSED_SUCCESSFULLY), None)
+                if transfer_request:
+
+                    transfer_request.status=FlashingECUStatus.RESET
+                    success_msg = f"ECU with diagnostic address : {self.can_id} reset successfully after flashing"
+                    self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg)
             
             elif operation_status == 0x7F:  # Negative response
                 nrc = message[0]
@@ -1006,10 +1016,10 @@ class Server:
 
     def on_finalize_programming_respond(self, message: List[int]):
         # Find transfer request with CHECKING_CRC status
-        transfer_request = next((req for req in self.Flash_ECU_Segments_Request 
+        flashing_ecu_req = next((req for req in self.Flash_ECU_Segments_Request 
                                if req.status == FlashingECUStatus.VALIDATING_ENCRYP), None)
         
-        if not transfer_request:
+        if not flashing_ecu_req:
             error_msg = "No flashing ECU in validating encryption state"
             print(error_msg)
             self.add_log(error_msg)
@@ -1020,7 +1030,7 @@ class Server:
                 message[2] == 0xFF and 
                 message[3] == 0x02):  # Validate routine identifier
                 
-                transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
+                flashing_ecu_req.status = FlashingECUStatus.CLOSED_SUCCESSFULLY
                 success_msg = (f"Finalize programming Success - Flashing verified ")
                 
                 print(success_msg)
@@ -1030,11 +1040,17 @@ class Server:
                 log_type=LogType.ACKNOWLEDGMENT,
                 message=success_msg)
                 self.add_log(success_msg)
-                self.ecu_reset(reset_type=0X01)
+                message=self.ecu_reset(reset_type=0X01)
+                if message !=0x0:
+                    self.clientSend(message=message,server_can_id=self.can_id)
+                    success_msg = f"HARD RESET SERVICE for ECU with diagnostic address : {self.can_id} send successfully"
+                    self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg)                
                 
         elif message[0] == 0x7F:  # Negative response
-            transfer_request.status = TransferStatus.REJECTED
-            transfer_request.NRC = message[2]
+            flashing_ecu_req.status = TransferStatus.REJECTED
+            flashing_ecu_req.NRC = message[2]
             
             nrc_descriptions = {
             0x10: "General Reject", # 0x10
@@ -1050,8 +1066,8 @@ class Server:
             0x72: "General Programming Failure" # 0x72 (covers generic flash/verification fail)
             }
             
-            error_msg = (f"Memory Check Failed - NRC: {hex(transfer_request.NRC)} - "
-                        f"{nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}")
+            error_msg = (f"Memory Check Failed - NRC: {hex(flashing_ecu_req.NRC)} - "
+                        f"{nrc_descriptions.get(flashing_ecu_req.NRC, 'Unknown Error')}")
             print(error_msg)
             self.add_log(error_msg)
 
