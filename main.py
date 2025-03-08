@@ -36,7 +36,7 @@ def main():
     datas.append(data1)
     datas.append(data2)
     client.Flash_ECU(datas,recv_DA=servers[0].can_id,
-                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,
+                                    encryption_method=EncryptionMethod.SEC_P_256_R1,
                                     compression_method=CompressionMethod.NO_COMPRESSION,
                                     checksum_required=CheckSumMethod.CRC_16)
     

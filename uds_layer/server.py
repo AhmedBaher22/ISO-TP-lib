@@ -14,6 +14,7 @@ import zlib  # For CRC32 calculation
 from crccheck.crc import Crc16
 from hex_parser.SRecordParser import DataRecord
 from uds_layer.FlashingECU import FlashingECU
+from ECDSA_handler.ECDSA import ECDSAConstants, ECDSAManager
 class Server:
     def __init__(self, can_id: [int],client_send:Callable,client_Segment_send:Callable):
         self._can_id = can_id
@@ -885,6 +886,15 @@ class Server:
                         self._logger.log_message(
                         log_type=LogType.ACKNOWLEDGMENT,
                         message=f"[REQUEST-{flashing_ECU_Request.ID}]Flashing ECU REQUEST had sent all segments successfully")
+                        validationMessage=self.finalize_programming(flashing_ECU_Request=flashing_ECU_Request)
+                        print("reg3 mnha")
+                        if validationMessage != [0x00]:
+                            self.clientSend(message=validationMessage,server_can_id=self.can_id)
+                            print("3aml send ll message")
+                            self._logger.log_message(
+                            log_type=LogType.ACKNOWLEDGMENT,
+                            message=f"[REQUEST-{flashing_ECU_Request.ID}]Flashing ECU REQUEST had sent routine control finalize programming with message {[hex(x) for x in validationMessage]}")
+                            flashing_ECU_Request.status=FlashingECUStatus.VALIDATING_ENCRYP
                         #make authenticity
                         #reset the ECU
                     elif flashing_ECU_Request.current_number_of_segments_send < flashing_ECU_Request.number_of_segments:
@@ -900,7 +910,151 @@ class Server:
                                         compression_method=flashing_ECU_Request.compression_method,
                                         is_multiple_segments=True)
                                                 
-                    
+    def finalize_programming(self,flashing_ECU_Request:FlashingECU ) -> List[int]:
+        self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message="RoutineControl – Finalize Programming message begin preparing"
+        )
+
+        if flashing_ECU_Request.status != FlashingECUStatus.COMPLETED:
+            error_msg = f"Invalid flashing status for finalize_programming: {flashing_ECU_Request.status}"
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
+            return [0x00]
+        
+        print("hena")
+        # Prepare base message
+        message = [0x31, 0x01, 0xFF, 0x02,flashing_ECU_Request.encryption_method.value]
+        print("5argggg mnha")
+        print(message)
+
+        # Calculate and add checksum based on method
+        if flashing_ECU_Request.encryption_method == EncryptionMethod.SEC_P_256_R1:
+            alldata = bytearray()
+            for x in flashing_ECU_Request.segments:
+                alldata.extend(x.data)
+            print(alldata)
+            print(type(alldata))
+            # Create ECDSA manager instance
+            ecdsa = ECDSAManager()
+            
+            
+            
+            
+            # 4. Sign the message
+            print("\n4. Signature Generation:")
+            print("-"*50)
+            signature, status = ecdsa.sign_message(bytearray(alldata))
+            if status != 0:
+                error_msg=f"ERROR: Signing failed with status: {status}"
+                self._logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=error_msg
+                )
+                return [0x00]
+        
+            msg=f"Signature Type:     {type(signature)}"
+            self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=msg
+                )
+            msg=f"Signature Length:   {len(signature)} bytes"
+            self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=msg
+                )
+            msg=f"Signature (hex):    {signature.hex()}"
+            self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=msg
+                )        
+            msg=f"  First 32 bytes (r):  {signature[:32].hex()}"
+            self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=msg
+                )        
+            msg=f"  Last 32 bytes (s):   {signature[32:].hex()}"
+            self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=msg
+                )
+            
+            message.extend(signature)
+        elif flashing_ECU_Request.encryption_method == EncryptionMethod.NO_ENCRYPTION:
+            print("da5ll")
+            message.append(0x00)
+            print(message)        
+        else:
+            log_msg = "Invalid Encryption method specified "
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=log_msg
+            )
+
+
+
+        log_msg = f"Created finalize programming Routine control. Message: {[hex(x) for x in message]}"
+
+        self._logger.log_message(
+        log_type=LogType.ACKNOWLEDGMENT,
+        message=log_msg)
+
+    
+        return message
+
+    def on_finalize_programming_respond(self, message: List[int]):
+        # Find transfer request with CHECKING_CRC status
+        transfer_request = next((req for req in self.Flash_ECU_Segments_Request 
+                               if req.status == FlashingECUStatus.VALIDATING_ENCRYP), None)
+        
+        if not transfer_request:
+            error_msg = "No flashing ECU in validating encryption state"
+            print(error_msg)
+            self.add_log(error_msg)
+            return
+
+        if message[0] == 0x71:  # Positive response
+            if (message[1] == 0x01 and 
+                message[2] == 0xFF and 
+                message[3] == 0x02):  # Validate routine identifier
+                
+                transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
+                success_msg = (f"Finalize programming Success - Flashing verified ")
+                
+                print(success_msg)
+                self.add_log(success_msg)
+                success_msg = f"Flashing completed successfully for ECU with diagnostic address : {self.can_id}"
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=success_msg)
+                self.add_log(success_msg)
+                self.ecu_reset(reset_type=0X01)
+                
+        elif message[0] == 0x7F:  # Negative response
+            transfer_request.status = TransferStatus.REJECTED
+            transfer_request.NRC = message[2]
+            
+            nrc_descriptions = {
+            0x10: "General Reject", # 0x10
+            0x11: "Service Not Supported", # 0x11
+            0x12: "Sub-Function Not Supported", # 0x12
+            0x13: "Incorrect Message Length / Format", # 0x13
+            0x22: "Conditions Not Correct", # 0x22 (e.g., voltage, session, etc.)
+            0x24: "Request Sequence Error", # 0x24
+            0x31: "Request Out Of Range", # 0x31 (e.g., invalid routine ID, bad parameters)
+            0x33: "Security Access Denied", # 0x33 (not unlocked at correct security level)
+            0x36: "Exceed Number Of Attempts", # 0x36 (e.g., too many wrong signatures)
+            0x37: "Required Time Delay Not Expired", # 0x37
+            0x72: "General Programming Failure" # 0x72 (covers generic flash/verification fail)
+            }
+            
+            error_msg = (f"Memory Check Failed - NRC: {hex(transfer_request.NRC)} - "
+                        f"{nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}")
+            print(error_msg)
+            self.add_log(error_msg)
+
 # def calculate_crc32(data: bytearray) -> bytearray:
 #     crc = zlib.crc32(data) & 0xFFFFFFFF
 #     return crc.to_bytes(4, byteorder='big')

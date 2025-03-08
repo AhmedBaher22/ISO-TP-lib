@@ -2,9 +2,9 @@ from enum import Enum
 
 class EncryptionMethod(Enum):
     NO_ENCRYPTION = 0x0
-    AES_128 = 0x1
-    AES_256 = 0x2
-    RSA_2048 = 0x3
+    SEC_P_256_R1 = 0x40
+
+
 
 class CompressionMethod(Enum):
     NO_COMPRESSION = 0x0
@@ -30,7 +30,8 @@ class FlashingECUStatus(Enum):
     CREATED = "created"
     SENDING_FIRST_SEGMENT="sending first segment"
     SENDING_CONSECUTIVE_SEGMENTS = "Sending Consecutive segments"
-    COMPLETED = "completed"
+    COMPLETED = "completed sending segments"
+    VALIDATING_ENCRYP="seding finalize programming"
     CLOSED_SUCCESSFULLY = "closed Successfully with ensuring checks"
     RESET="RESET"
     REJECTED = "rejected"
