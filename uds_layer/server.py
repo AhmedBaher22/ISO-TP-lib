@@ -8,13 +8,16 @@ sys.path.append(package_dir)
 from uds_layer.uds_enums import CommunicationControlSubFunction, CommunicationControlType, SessionType, OperationType, OperationStatus
 from uds_layer.operation import Operation
 from uds_layer.transfer_request import TransferRequest
-from uds_layer.transfer_enums import CheckSumMethod, TransferStatus, EncryptionMethod, CompressionMethod
+from uds_layer.transfer_enums import CheckSumMethod, TransferStatus, EncryptionMethod, CompressionMethod, FlashingECUStatus
 from logger import Logger, LogType, ProtocolType
 import zlib  # For CRC32 calculation
 from crccheck.crc import Crc16
-
+from hex_parser.SRecordParser import DataRecord
+from uds_layer.FlashingECU import FlashingECU
+from ECDSA_handler.ECDSA import ECDSAConstants, ECDSAManager
 class Server:
-    def __init__(self, can_id: [int],client_send:Callable):
+    server_request=1
+    def __init__(self, can_id: [int],client_send:Callable,client_Segment_send:Callable):
         self._can_id = can_id
         self._session = SessionType.NONE
         self._pending_operations: List[Operation] = []
@@ -23,9 +26,21 @@ class Server:
         self._p2_timing = 0
         self._p2_star_timing = 0
         self.transfer_requests: List[TransferRequest] = []
+        self.Flash_ECU_Segments_Request: List[FlashingECU] = []
         self._logger = Logger(ProtocolType.UDS)
         self.clientSend:Callable=client_send
+        self.client_Segment_send:Callable=client_Segment_send
+        self._ID=Server.server_request+1000
+        Server.server_request+=1000
+        self._current_req_offset=0
+        self._current_req_id=self._current_req_offset+self._ID
     # Getters and setters
+    @property
+    def current_req_id(self) -> int:
+        self._current_req_id=self._current_req_offset+self._ID
+        self._current_req_offset+=1
+        return self._current_req_id
+    
     @property
     def can_id(self) -> [int]:
         return self._can_id
@@ -94,7 +109,7 @@ class Server:
     def read_data_by_identifier(self, vin: List[int]) -> List[int]:
         if not self.check_access_required(OperationType.READ_DATA_BY_IDENTIFIER):
             error_msg = f"Error: Insufficient session level for READ_DATA_BY_IDENTIFIER. Current session: {self._session}"
-            print(error_msg)
+            
             self.add_log(error_msg)
             return [0x00]
 
@@ -113,7 +128,7 @@ class Server:
         if operation_status == 0x62:  # Positive response
             data_str = ' '.join([hex(x) for x in message])
             response_msg = f"Read Data Success - Data: {data_str}, VIN: {vin}"
-            print(response_msg)
+            
             self.add_log(response_msg)
         elif operation_status == 0x7F:  # Negative response
             nrc = message[0]
@@ -131,13 +146,13 @@ class Server:
                 
             }
             error_msg = f"Read Data Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-            print(error_msg)
+            
             self.add_log(error_msg)
 
     def write_data_by_identifier(self, vin: List[int], data: List[int]) -> List[int]:
         if not self.check_access_required(OperationType.WRITE_DATA_BY_IDENTIFIER):
             error_msg = f"Error: Insufficient session level for WRITE_DATA_BY_IDENTIFIER. Current session: {self._session}"
-            print(error_msg)
+            
             self.add_log(error_msg)
             return [0x00]
 
@@ -166,7 +181,7 @@ class Server:
                 operation.status = OperationStatus.COMPLETED
 
                 success_msg = f"Write Data Success - VIN: {vin} has been successfully updated"
-                print(success_msg)
+                
                 self.add_log(success_msg)
                 operation.status = OperationStatus.COMPLETED
             
@@ -188,7 +203,7 @@ class Server:
                 operation.status = OperationStatus.REJECTED
 
                 error_msg = f"Write Data Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-                print(error_msg)
+                
                 self.add_log(error_msg)
                 operation.status = OperationStatus.REJECTED
 
@@ -200,7 +215,7 @@ class Server:
     def ecu_reset(self, reset_type: int) -> List[int]:
         if not self.check_access_required(OperationType.ECU_RESET):
             error_msg = f"Error: Insufficient session level for ECU_RESET. Current session: {self._session}"
-            print(error_msg)
+            
             self.add_log(error_msg)
             return [0x00]
 
@@ -244,9 +259,20 @@ class Server:
                 if len(message) > 0:  # If there's additional power down time information
                     success_msg += f", Power Down Time: {message[0]} seconds"
                 
-                print(success_msg)
+                
                 self.add_log(success_msg)
                 operation.status = OperationStatus.COMPLETED
+
+                transfer_request = next((req for req in self.Flash_ECU_Segments_Request 
+                        if req.status == FlashingECUStatus.CLOSED_SUCCESSFULLY), None)
+                
+                if transfer_request != None:
+
+                    transfer_request.status=FlashingECUStatus.RESET
+                    success_msg = f"{transfer_request.get_req()}ECU with diagnostic address : {self.can_id} reset successfully after flashing. the ECU is running with the new updates successfully"
+                    self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg)
             
             elif operation_status == 0x7F:  # Negative response
                 nrc = message[0]
@@ -265,7 +291,7 @@ class Server:
                     # Add more NRC codes as needed
                 }
                 error_msg = f"ECU Reset Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-                print(error_msg)
+                #print(error_msg)
                 self.add_log(error_msg)
                 operation.status = OperationStatus.REJECTED
 
@@ -273,18 +299,17 @@ class Server:
             self.remove_pending_operation(operation)
             self.add_completed_operation(operation)
 
-    def transfer_data(self):
-        pass
+
 
     def request_download(self, transfer_request: TransferRequest) -> List[int]:
         self._logger.log_message(
-            log_type=LogType.INFO,
-            message=f"Request download function for {transfer_request.recv_DA} is being processing and preparing message"
+            log_type=LogType.DEBUG,
+            message=f"{transfer_request.get_req()}Request download service message for {transfer_request.recv_DA} begin preparing"
             )
                 
         if not self.check_access_required(OperationType.REQUEST_DOWNLOAD):
             error_msg = f"Error: Insufficient session level for REQUEST_DOWNLOAD. Current session: {self._session}"
-            # print(error_msg)
+            # #print(error_msg)
             self._logger.log_message(
             log_type=LogType.ERROR,
             message=error_msg)
@@ -314,7 +339,7 @@ class Server:
         transfer_request.status = TransferStatus.MEMORY_ERASED
         self.transfer_requests.append(transfer_request)
 
-        log_msg = f"Created REQUEST_DOWNLOAD operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
+        log_msg = f"{transfer_request.get_req()}Created REQUEST_DOWNLOAD operation for Diagnostic address {hex(transfer_request.recv_DA)}. Message: {[hex(x) for x in message]}"
         self._logger.log_message(
             log_type=LogType.INFO,
             message=log_msg)        
@@ -338,13 +363,13 @@ class Server:
             return
         
         self._logger.log_message(
-            log_type=LogType.INFO,
-            message=f"Request download respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"{transfer_request.get_req()}Request download respond for {hex(transfer_request.recv_DA)} received with message : {[hex(x) for x in message]}")
         
         if message[0] == 0x74:  # Positive response
             self._logger.log_message(
-            log_type=LogType.INFO,
-            message=f"Request download respond for {transfer_request.recv_DA} is positive")
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"{transfer_request.get_req()}Request download respond for {hex(transfer_request.recv_DA)} is positive")
 
             length_format_identifier = message[1]
             block_length_bytes = message[2:2+length_format_identifier]
@@ -367,7 +392,7 @@ class Server:
             self.clientSend(message=message,server_can_id=self.can_id)
             self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
-            message=f"Transfer data request for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}")
+            message=f"{transfer_request.get_req()}Transfer data request for {hex(transfer_request.recv_DA)} sended with message : {[hex(x) for x in message]}")
 
         elif message[0] == 0x7F and message[1] == 0x34:  # Negative response
             self._logger.log_message(
@@ -398,8 +423,9 @@ class Server:
 
     def transfer_data(self, transfer_request: TransferRequest) -> List[int]:
         self._logger.log_message(
-            log_type=LogType.INFO,
-            message=f"Transfer data function for {transfer_request.recv_DA} is being processing and preparing message")
+            log_type=LogType.DEBUG,
+            message=f"{transfer_request.get_req()}  Transfer data service message for {hex(transfer_request.recv_DA)} begin preparing"
+        )
                         
         if transfer_request.status != TransferStatus.SENDING_BLOCKS_IN_PROGRESS:
             error_msg = f"Invalid transfer status for TRANSFER_DATA: {transfer_request.status}"
@@ -435,7 +461,7 @@ class Server:
         # Increment counter with modulus to stay within byte range
         transfer_request.current_number_of_steps = (transfer_request.current_number_of_steps + 1) % 0xFF
 
-        log_msg = (f"Created TRANSFER_DATA message. Block: {block_sequence_counter}, "
+        log_msg = (f"{transfer_request.get_req()} Created TRANSFER_DATA message. Block: {block_sequence_counter}, "
                 f"Iteration: {transfer_request.iteration}, "
                 f"Actual Position: {actual_position}, "
                 f"Data size: {len(data_record)}")
@@ -463,21 +489,22 @@ class Server:
         
         self._logger.log_message(
             log_type=LogType.INFO,
-            message=f"Transfer data respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
+            message=f"{transfer_request.get_req()} Transfer data respond for {hex(transfer_request.recv_DA)} received with message : {[hex(x) for x in message]}")
         
         if message[0] == 0x76:  # Positive response
             self._logger.log_message(
-            log_type=LogType.INFO,
-            message=f"Request download respond for {transfer_request.recv_DA} is postitive")
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"{transfer_request.get_req()}Request download respond for {hex(transfer_request.recv_DA)} is postitive")
                     
             block_sequence_counter = message[1]
             
             if block_sequence_counter != transfer_request.current_number_of_steps:
                 transfer_request.status = TransferStatus.REJECTED
+                transfer_request.flashing_ECU_REQ.status = FlashingECUStatus.REJECTED
                 transfer_request.NRC = 0x73  # Wrong Block Sequence Counter
-                error_msg = "Wrong Block Sequence Counter"
+                error_msg = f"{transfer_request.get_req() }Wrong Block Sequence Counter"
                 self._logger.log_message(
-                log_type=LogType.INFO,
+                log_type=LogType.ERROR,
                  message=error_msg)
         
                 self.add_log(error_msg)
@@ -490,12 +517,12 @@ class Server:
                 self.clientSend(message=message,server_can_id=self.can_id)
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
-                message=f"Transfer data request for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}")                
+                message=f"{transfer_request.get_req()} Transfer data request for {hex(transfer_request.recv_DA)} sended with message : {[hex(x) for x in message]}")                
             else:
                 message= self.transfer_data(transfer_request)
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
-                message=f"Transfer Exit request for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}")                
+                message=f"{transfer_request.get_req()} Transfer Exit request for {hex(transfer_request.recv_DA)} sended with message : {[hex(x) for x in message]}")                
                 self.clientSend(message=message,server_can_id=self.can_id)
 
         elif message[0] == 0x7F:  # Negative response
@@ -509,8 +536,9 @@ class Server:
 
     def request_transfer_exit(self, transfer_request: TransferRequest) -> List[int]:
         self._logger.log_message(
-            log_type=LogType.INFO,
-            message=f"Transfer Exit request function for {transfer_request.recv_DA} is being processing and preparing message")
+            log_type=LogType.DEBUG,
+            message=f"{transfer_request.get_req()}  Request transfer Exit service message for {hex(transfer_request.recv_DA)} begin preparing"
+        )
                                
         if transfer_request.status != TransferStatus.COMPLETED:
             error_msg = f"Invalid transfer status for REQUEST_TRANSFER_EXIT: {transfer_request.status}"
@@ -524,13 +552,13 @@ class Server:
         # if transfer_request.checksum_required:
         #     crc = self.calculate_crc32(transfer_request.data)
         #     message = [0x37]
-        #     print(f"crc: {crc}")
+        #     #print(f"crc: {crc}")
         #     message.append(crc)
         #     # message.append(crc)
         # else:
         message = [0x37]
 
-        log_msg = f"Created REQUEST_TRANSFER_EXIT message. Checksum: {transfer_request.checksum_required}"
+        log_msg = f"{transfer_request.get_req()} Created REQUEST_TRANSFER_EXIT message. Checksum: {transfer_request.checksum_required}"
         self.add_log(log_msg)
         self._logger.log_message(
             log_type=LogType.INFO,
@@ -545,31 +573,31 @@ class Server:
         
         if not transfer_request:
             error_msg = "No completed transfer request found"
-            print(error_msg)
+            #print(error_msg)
             self.add_log(error_msg)
             return
         self._logger.log_message(
             log_type=LogType.INFO,
-            message=f"Transfer Exit respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
+            message=f"{transfer_request.get_req()} Transfer Exit respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
         
         if message[0] == 0x77:  # Positive response
             transfer_request.status = TransferStatus.CHECKING_CRC
             if  transfer_request.checksum_required == CheckSumMethod.NO_CHECKSUM:
                 transfer_request.status = TransferStatus.CLOSED_SUCCESSFULLY
-                success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
+                success_msg = f"{transfer_request.get_req()} Transfer completed successfully for ECU with diagnostic address : {hex(self.can_id)}"
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
                 message=success_msg)
                 self.add_log(success_msg)
                 return
             else:
-                print("da5l hett check memory")
+                
                 message=self.check_memory(transfer_request)
-                print("reg3 mn check memory")
+                
                 self.clientSend(message=message,server_can_id=self.can_id)
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
-                message=f"Check Memory subroutine service for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}") 
+                message=f"{transfer_request.get_req()}Check Memory subroutine service for {transfer_request.recv_DA} sended with message : {[hex(x) for x in message]}") 
 
             self.add_log(success_msg)
         
@@ -586,7 +614,7 @@ class Server:
                             control_type: CommunicationControlType) -> List[int]:
         if not self.check_access_required(OperationType.COMMUNICATION_CONTROL):
             error_msg = f"Error: Insufficient session level for COMMUNICATION_CONTROL. Current session: {self._session}"
-            print(error_msg)
+            #print(error_msg)
             self.add_log(error_msg)
             return [0x00]
 
@@ -623,7 +651,7 @@ class Server:
                 success_msg = (f"Communication Control Success - "
                              f"SubFunction: {sub_function.name}, "
                              f"ControlType: {control_type.name}")
-                print(success_msg)
+                #print(success_msg)
                 self.add_log(success_msg)
 
         elif message[0] == 0x7F and message[1] == 0x28:  # Negative response
@@ -649,17 +677,28 @@ class Server:
                 }
                 
                 error_msg = f"Communication Control Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-                print(error_msg)
+                #print(error_msg)
                 self.add_log(error_msg)
 
     def erase_memory(self, transfer_request: TransferRequest) -> List[int]:
 
 
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"{transfer_request.get_req()}  ERASE MEMORY service message for {hex(transfer_request.recv_DA)} begin preparing"
+        )
         
         if not self.check_access_required(OperationType.ERASE_MEMORY):
+            transfer_request.status=TransferStatus.REJECTED
+
+            if transfer_request.is_multiple_segments == True:
+                transfer_request.flashing_ECU_REQ.status=FlashingECUStatus.REJECTED
+
             error_msg = f"Error: Insufficient session level for ERASE_MEMORY. Current session: {self._session}"
-            print(error_msg)
-            self.add_log(error_msg)
+            self._logger.log_message(
+                log_type=LogType.DEBUG,
+                message=f"{transfer_request.get_req()} {error_msg}"
+            )
             return [0x00]
         
         memory_address=transfer_request.memory_address
@@ -692,8 +731,11 @@ class Server:
                   f"Address: {[hex(x) for x in memory_address]}, "
                   f"Size: { memory_size}")
         self.add_log(log_msg)
-        
-        log_msg = f"Created Erase_Memory operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=log_msg)        
+                
+        log_msg = f"{transfer_request.get_req()} Created Erase_Memory operation for Diagnostic address {transfer_request.recv_DA}. Message: {[hex(x) for x in message]}"
         self._logger.log_message(
             log_type=LogType.INFO,
             message=log_msg)        
@@ -701,7 +743,10 @@ class Server:
         return message
 
     def on_erase_memory_respond(self, message: List[int]):
-
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"the message received is erase memory respond . messgae:{[hex(x) for x in message]} "
+        )
         if message[0] == 0x71:  # Positive response
             # Find matching operation based on routine identifier bytes
             operation = next((op for op in self._pending_operations 
@@ -716,21 +761,25 @@ class Server:
                 self.remove_pending_operation(operation)
                 self.add_completed_operation(operation)
 
-                success_msg = f"Memory Erase Operation Completed Successfully for server with DA:: {self.can_id}"
-                print(success_msg)
-                self.add_log(success_msg)
+
                 transfer_request = next((req for req in self.transfer_requests 
                                if req.status == TransferStatus.CREATED), None)
             
                 if  transfer_request:
+                    
                     transfer_request.status=TransferStatus.MEMORY_ERASED
+                    success_msg = f"{transfer_request.get_req()} Memory Erase Operation Completed Successfully for server with DA:: {self.can_id}"
+                    self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg
+                    )
                     message = self.request_download(transfer_request)
                     if message != [0x00]:  # Check if request was successful
                 # Create address object for ISO-TP
                         self.clientSend(message=message,server_can_id=self.can_id)
                         self._logger.log_message(
                             log_type=LogType.ACKNOWLEDGMENT,
-                            message=f"REQUEST download for diagnostic address {recv_DA}send successfully with messaage: {message}"
+                            message=f"{transfer_request.get_req()}REQUEST download for diagnostic address {hex(self.can_id)}send successfully with messaage: {[hex(x) for x in message]}"
                         )
 
                       
@@ -757,14 +806,18 @@ class Server:
                 }
                 
                 error_msg = f"Memory Erase Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
-                print(error_msg)
+                #print(error_msg)
                 self.add_log(error_msg)
 
 
     def check_memory(self, transfer_request: TransferRequest) -> List[int]:
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"{transfer_request.get_req()}  CHECK MEMORY service message for {hex(transfer_request.recv_DA)} begin preparing"
+        )
         if transfer_request.status != TransferStatus.CHECKING_CRC:
             error_msg = f"Invalid transfer status for CHECK_MEMORY: {transfer_request.status}"
-            print(error_msg)
+            #print(error_msg)
             self.add_log(error_msg)
             return [0x00]
 
@@ -773,39 +826,54 @@ class Server:
 
         # Calculate and add checksum based on method
         if transfer_request.checksum_required == CheckSumMethod.CRC_16:
-            print("da5l condition l crc16")
+            
             checksum = self.calculate_crc16(transfer_request.data)
-            print("rg3 mn crc 16")
+            
             message.extend(checksum)
-            print("m3rf4 y3ml extend")
-            log_msg = f"Using CRC-16 checksum: {[hex(x) for x in checksum]}"
+            
+            log_msg = f"{transfer_request.get_req()}Using CRC-16 checksum: {[hex(x) for x in checksum]}"
         elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
             try:
-                print("da5l condition l crc32")
+                
                 checksum = self.calculate_crc32(transfer_request.data)
-                print(f"reg3 w hasb l crc32={checksum}")
+                
                 message.extend(checksum)
-                print("lmessage al gdeda",message)
-                log_msg = f"Using CRC-32 checksum: {[hex(x) for x in checksum]}"
+                
+                log_msg = f"{transfer_request.get_req()} Using CRC-32 checksum: {[hex(x) for x in checksum]}"
             except Exception as e:
-                print(e)                
+                self._logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=e
+                )               
         else:
             log_msg = "No checksum required"
+            self._logger.log_message(
+                log_type=LogType.DEBUG,
+                message=log_msg
+            )
 
         self.add_log(log_msg)
-        log_msg = f"Created CHECK_MEMORY operation. Message: {[hex(x) for x in message]}"
+        log_msg = f"{transfer_request.get_req()}Created CHECK_MEMORY operation. Message: {[hex(x) for x in message]}"
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=log_msg
+        )
         self.add_log(log_msg)
         
         return message
 
     def on_check_memory_respond(self, message: List[int]):
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"the message received is check memory respond . messgae:{[hex(x) for x in message]} "
+        )
         # Find transfer request with CHECKING_CRC status
         transfer_request = next((req for req in self.transfer_requests 
                                if req.status == TransferStatus.CHECKING_CRC), None)
         
         if not transfer_request:
             error_msg = "No transfer request in CRC checking state"
-            print(error_msg)
+            #print(error_msg)
             self.add_log(error_msg)
             return
 
@@ -818,13 +886,15 @@ class Server:
                 success_msg = (f"Memory Check Success - Checksum verified using "
                              f"{transfer_request.checksum_required.name}")
                 
-                print(success_msg)
+                #print(success_msg)
                 self.add_log(success_msg)
-                success_msg = f"Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
+                success_msg = f"{transfer_request.get_req()} Transfer completed successfully for ECU with diagnostic address : {self.can_id}"
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
                 message=success_msg)
-                self.add_log(success_msg)                
+                self.add_log(success_msg)
+                if transfer_request.is_multiple_segments == True :
+                    self.handle_flashing_segments(transfer_request)
                 
             
         elif message[0] == 0x7F:  # Negative response
@@ -847,7 +917,7 @@ class Server:
             
             error_msg = (f"Memory Check Failed - NRC: {hex(transfer_request.NRC)} - "
                         f"{nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}")
-            print(error_msg)
+            #print(error_msg)
             self.add_log(error_msg)
             
     def get_pending_operations(self):
@@ -867,13 +937,207 @@ class Server:
         crc = zlib.crc32(data) & 0xFFFFFFFF
         return crc.to_bytes(4, byteorder='big')
     
+    def handle_flashing_segments(self,transfer_request:TransferRequest):
+        if transfer_request.status == TransferStatus.CLOSED_SUCCESSFULLY:
+            flashing_ECU_Request = next((req for req in self.Flash_ECU_Segments_Request
+            if req.status != FlashingECUStatus.REJECTED or req.status == FlashingECUStatus.RESET), None)
+
+            if flashing_ECU_Request:
+                if flashing_ECU_Request.status == FlashingECUStatus.SENDING_FIRST_SEGMENT or flashing_ECU_Request.status ==FlashingECUStatus.SENDING_CONSECUTIVE_SEGMENTS:
+                    flashing_ECU_Request.current_number_of_segments_send+=1
+                    if flashing_ECU_Request.current_number_of_segments_send == flashing_ECU_Request.number_of_segments:
+                        flashing_ECU_Request.status=FlashingECUStatus.COMPLETED
+                        self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=f"{flashing_ECU_Request.get_req()} Flashing ECU REQUEST had sent all segments successfully")
+                        validationMessage=self.finalize_programming(flashing_ECU_Request=flashing_ECU_Request)
+                        #print("reg3 mnha")
+                        if validationMessage != [0x00]:
+                            self.clientSend(message=validationMessage,server_can_id=self.can_id)
+                            #print("3aml send ll message")
+                            self._logger.log_message(
+                            log_type=LogType.ACKNOWLEDGMENT,
+                            message=f"{flashing_ECU_Request.get_req()} Flashing ECU REQUEST had sent routine control finalize programming with message {[hex(x) for x in validationMessage]}")
+                            flashing_ECU_Request.status=FlashingECUStatus.VALIDATING_ENCRYP
+                        #make authenticity
+                        #reset the ECU
+                    elif flashing_ECU_Request.current_number_of_segments_send < flashing_ECU_Request.number_of_segments:
+                        flashing_ECU_Request.status=FlashingECUStatus.SENDING_CONSECUTIVE_SEGMENTS
+                        self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=f"{flashing_ECU_Request.get_req()} Flashing ECU REQUEST had sent Segment number: {flashing_ECU_Request.current_number_of_segments_send} successfully")
+                        self.client_Segment_send(recv_DA=flashing_ECU_Request.recv_DA,
+                                        data=flashing_ECU_Request.segments[flashing_ECU_Request.current_number_of_segments_send].data,
+                                        memory_address=flashing_ECU_Request.segments[flashing_ECU_Request.current_number_of_segments_send].address,
+                                        checksum_required=flashing_ECU_Request.checksum_required,
+                                        encryption_method=flashing_ECU_Request.encryption_method,
+                                        compression_method=flashing_ECU_Request.compression_method,
+                                        is_multiple_segments=True,
+                                        flashing_ECU_req=flashing_ECU_Request
+                                        )
+                                                
+    def finalize_programming(self,flashing_ECU_Request:FlashingECU ) -> List[int]:
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"{flashing_ECU_Request.get_req()}  Finalize programming routine control message for {hex(flashing_ECU_Request.recv_DA)} begin preparing"
+        )
+
+        if flashing_ECU_Request.status != FlashingECUStatus.COMPLETED:
+            error_msg = f"Invalid flashing status for finalize_programming: {flashing_ECU_Request.status}"
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
+            return [0x00]
+        
+        
+        # Prepare base message
+        message = [0x31, 0x01, 0xFF, 0x02,flashing_ECU_Request.encryption_method.value]
+
+
+        # Calculate and add checksum based on method
+        if flashing_ECU_Request.encryption_method == EncryptionMethod.SEC_P_256_R1:
+            alldata = bytearray()
+            for x in flashing_ECU_Request.segments:
+                alldata.extend(x.data)
+            #print(alldata)
+            #print(type(alldata))
+            # Create ECDSA manager instance
+            ecdsa = ECDSAManager()
+            
+            
+            
+            
+
+            signature, status = ecdsa.sign_message(bytearray(alldata))
+            if status != 0:
+                error_msg=f"{flashing_ECU_Request.get_req()} ERROR: Signing failed with status: {status}"
+                self._logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=error_msg
+                )
+                return [0x00]
+        
+            msg=f"Signature Type:     {type(signature)}"
+            self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=msg
+                )
+            msg=f"Signature Length:   {len(signature)} bytes"
+            self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=msg
+                )
+            msg=f"Signature (hex):    {signature.hex()}"
+            self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=msg
+                )        
+            msg=f"  First 32 bytes (r):  {signature[:32].hex()}"
+            self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=msg
+                )        
+            msg=f"  Last 32 bytes (s):   {signature[32:].hex()}"
+            self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=msg
+                )
+            
+            message.extend(signature)
+        elif flashing_ECU_Request.encryption_method == EncryptionMethod.NO_ENCRYPTION:
+            
+            message.append(0x00)
+            #print(message)        
+        else:
+            log_msg = "Invalid Encryption method specified "
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=log_msg
+            )
+
+
+
+        log_msg = f"{flashing_ECU_Request.get_req()} Created finalize programming Routine control for ECU with DA:{hex(flashing_ECU_Request.recv_DA)}. Message: {[hex(x) for x in message]}"
+
+        self._logger.log_message(
+        log_type=LogType.ACKNOWLEDGMENT,
+        message=log_msg)
+
+    
+        return message
+
+    def on_finalize_programming_respond(self, message: List[int]):
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"the message received is finalize programming routine control respond . messgae:{[hex(x) for x in message]} "
+        )
+        # Find transfer request with CHECKING_CRC status
+        flashing_ecu_req = next((req for req in self.Flash_ECU_Segments_Request 
+                               if req.status == FlashingECUStatus.VALIDATING_ENCRYP), None)
+        
+        if not flashing_ecu_req:
+            error_msg = "No flashing ECU in validating encryption state"
+            #print(error_msg)
+            self.add_log(error_msg)
+            return
+
+        if message[0] == 0x71:  # Positive response
+            if (message[1] == 0x01 and 
+                message[2] == 0xFF and 
+                message[3] == 0x02):  # Validate routine identifier
+                
+                flashing_ecu_req.status = FlashingECUStatus.CLOSED_SUCCESSFULLY
+                success_msg = (f"{flashing_ecu_req.get_req()}Finalize programming Success - Flashing verified ")
+                self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg
+                )
+                #print(success_msg)
+                self.add_log(success_msg)
+                success_msg = f"{flashing_ecu_req.get_req()} Flashing completed successfully for ECU with diagnostic address : {self.can_id}"
+                self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=success_msg)
+                self.add_log(success_msg)
+                message=self.ecu_reset(reset_type=0X01)
+                if message !=0x0:
+                    self.clientSend(message=message,server_can_id=self.can_id)
+                    success_msg = f"{flashing_ecu_req.get_req()} HARD RESET SERVICE for ECU with diagnostic address : {self.can_id} send successfully"
+                    self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg)                
+                
+        elif message[0] == 0x7F:  # Negative response
+            flashing_ecu_req.status = TransferStatus.REJECTED
+            flashing_ecu_req.NRC = message[2]
+            
+            nrc_descriptions = {
+            0x10: "General Reject", # 0x10
+            0x11: "Service Not Supported", # 0x11
+            0x12: "Sub-Function Not Supported", # 0x12
+            0x13: "Incorrect Message Length / Format", # 0x13
+            0x22: "Conditions Not Correct", # 0x22 (e.g., voltage, session, etc.)
+            0x24: "Request Sequence Error", # 0x24
+            0x31: "Request Out Of Range", # 0x31 (e.g., invalid routine ID, bad parameters)
+            0x33: "Security Access Denied", # 0x33 (not unlocked at correct security level)
+            0x36: "Exceed Number Of Attempts", # 0x36 (e.g., too many wrong signatures)
+            0x37: "Required Time Delay Not Expired", # 0x37
+            0x72: "General Programming Failure" # 0x72 (covers generic flash/verification fail)
+            }
+            
+            error_msg = (f"Memory Check Failed - NRC: {hex(flashing_ecu_req.NRC)} - "
+                        f"{nrc_descriptions.get(flashing_ecu_req.NRC, 'Unknown Error')}")
+            #print(error_msg)
+            self.add_log(error_msg)
+
 # def calculate_crc32(data: bytearray) -> bytearray:
 #     crc = zlib.crc32(data) & 0xFFFFFFFF
 #     return crc.to_bytes(4, byteorder='big')
 # data=[0x52, 0x55, 0x32]
 # data=bytearray(data)
-# print(data)
+# #print(data)
 # checksu=calculate_crc32(data=data)  
-# print(checksu)
+# #print(checksu)
 # data.extend(checksu)
-# print(data)
+# #print(data)

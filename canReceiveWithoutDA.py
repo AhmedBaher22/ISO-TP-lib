@@ -93,7 +93,7 @@ try:
                     ack_msg = can.Message(arbitration_id=0x33, data=[0x04,0x62,0x01,0x90,0x55], is_extended_id=extended_flag,is_fd=fd_flag)
                     time -= 1
                 elif msg.data[1] == 0x11:
-                    ack_msg = can.Message(arbitration_id=0x33, data=[0x03,0x7F,0x11,0x12], is_extended_id=extended_flag,is_fd=fd_flag)
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x02,0X51,0x01], is_extended_id=extended_flag,is_fd=fd_flag)
                     time -= 1
                 # write data by indetifier
                 elif msg.data[1] == 0x2E:
@@ -139,6 +139,14 @@ try:
                                 memoryAddress, memorySize)
 
                     ack_msg = can.Message(arbitration_id=0x33, data=[0x05, 0x71, 0x01, 0xFF, 0x01, 0x00],
+                                          is_extended_id=extended_flag, is_fd=fd_flag)
+                    time -= 1
+                    flg = True
+
+                elif msg.data[1]==0x31 and msg.data[4]==0x02:
+
+
+                    ack_msg = can.Message(arbitration_id=0x33, data=[0x05, 0x71, 0x01, 0xFF, 0x02, 0x00],
                                           is_extended_id=extended_flag, is_fd=fd_flag)
                     time -= 1
                     flg = True
