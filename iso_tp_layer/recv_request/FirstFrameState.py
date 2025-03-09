@@ -35,7 +35,8 @@ class FirstFrameState(RequestState):
                         #  f"Message received larger than expected! Expected size is {expected_size}, received {received_size}"
                         # raise MessageSizeExceededException(request.get_data_length(),
                         #                                    request.get_current_data_length() + message_length)
-                        request.append_bits(message.data[:request.get_current_data_length() + message_length - request.get_data_length() + 1])
+                        request.append_bits(message.data[
+                                            :request.get_current_data_length() + message_length - request.get_data_length() + 1])
                         # request.set_data_length(message.dataLength)
                     else:
                         request.append_bits(message.data)
