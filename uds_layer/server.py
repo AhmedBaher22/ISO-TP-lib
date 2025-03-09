@@ -522,7 +522,7 @@ class Server:
                 message= self.transfer_data(transfer_request)
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
-                message=f"{transfer_request.get_req()} Transfer Exit request for {hex(transfer_request.recv_DA)} sended with message : {[hex(x) for x in message]}")                
+                message=f"{transfer_request.get_req()} Transfer data request for {hex(transfer_request.recv_DA)} sended with message : {[hex(x) for x in message]}")                
                 self.clientSend(message=message,server_can_id=self.can_id)
 
         elif message[0] == 0x7F:  # Negative response
