@@ -151,12 +151,9 @@ class FlashPage(QWidget):
         # Pre-convert each firmware segment's address from str to bytearray.
         converted_segments = []
         for seg in self.firmware_segments:
-            try:
-                conv_addr = bytearray.fromhex(seg.address)
-            except Exception as e:
-                QMessageBox.critical(
-                    self, "Error", f"Invalid segment address '{seg.address}': {e}")
-                return
+            # Use the address directly since it is already a bytearray.
+            conv_addr = seg.address if isinstance(
+                seg.address, (bytearray, bytes)) else bytearray.fromhex(seg.address)
             new_seg = DataRecord(record_type=seg.record_type, address=conv_addr,
                                  data=seg.data, data_length=seg.data_length)
             converted_segments.append(new_seg)
