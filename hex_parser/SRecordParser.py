@@ -209,12 +209,61 @@ class SRecordParser:
                                      message=f"{e}")
 
 
+    # def _merge_consecutive_records(self, block_size: int = 4096):
+    #     """
+    #     Merges consecutive records whose addresses are sequential while ensuring
+    #     that the total data length does not exceed max_length.
+    #
+    #     :param block_size: The maximum allowed data length (in bytes) per merged record.
+    #     """
+    #     if not self._records:
+    #         return
+    #
+    #     self._sort_records()  # Ensure records are sorted by address
+    #     merged_records = []
+    #
+    #     # Create a deep copy of the records so the original remains unchanged
+    #     records_copy = deepcopy(self._records)
+    #
+    #     temp_record = records_copy[0]
+    #
+    #     for next_record in records_copy[1:]:
+    #         current_address = int.from_bytes(temp_record.address, byteorder='big')
+    #         next_address = int.from_bytes(next_record.address, byteorder='big')
+    #
+    #         # Check if the next record is consecutive
+    #         if next_address == current_address + temp_record.data_length:
+    #             # Check if adding the next record exceeds max_length
+    #             if temp_record.data_length + next_record.data_length > block_size:
+    #                 # Store the current merged record and start a new one
+    #                 merged_records.append(temp_record)
+    #                 temp_record = deepcopy(next_record)  # Use a new copy
+    #             else:
+    #                 # Merge the record by creating a new object instead of modifying existing ones
+    #                 new_data = temp_record.data + next_record.data
+    #                 temp_record = DataRecord(
+    #                     record_type=temp_record.record_type,
+    #                     address=temp_record.address,
+    #                     data=new_data,
+    #                     data_length=temp_record.data_length + next_record.data_length
+    #                 )
+    #         else:
+    #             # Store the current merged record and start a new one
+    #             merged_records.append(temp_record)
+    #             temp_record = deepcopy(next_record)
+    #
+    #     # Append the last record
+    #     merged_records.append(temp_record)
+    #
+    #     self._merged_records = merged_records  # Store the merged records separately without modifying original
+
     def _merge_consecutive_records(self, block_size: int = 4096):
         """
-        Merges consecutive records whose addresses are sequential while ensuring
-        that the total data length does not exceed max_length.
+        Merges consecutive records while ensuring alignment with block_size.
+        If a record is not aligned, it adds padding (0xFF) before the address.
+        Records are merged as long as they fit within the block size; otherwise, padding is added.
 
-        :param block_size: The maximum allowed data length (in bytes) per merged record.
+        :param block_size: The block size (in bytes) for alignment.
         """
         if not self._records:
             return
@@ -222,40 +271,70 @@ class SRecordParser:
         self._sort_records()  # Ensure records are sorted by address
         merged_records = []
 
-        # Create a deep copy of the records so the original remains unchanged
         records_copy = deepcopy(self._records)
-
         temp_record = records_copy[0]
+        current_address = int.from_bytes(temp_record.address, byteorder='big')
+
+        # Align the first record
+        aligned_address = (current_address // block_size) * block_size
+        if current_address % block_size != 0:
+            # Add padding before the address to align it
+            padding_size = current_address - aligned_address
+            temp_record.data = b'\xFF' * padding_size + temp_record.data
+            temp_record.data_length += padding_size  # Update data length
+            current_address = aligned_address
+            temp_record.address = current_address.to_bytes(len(temp_record.address), byteorder='big')
 
         for next_record in records_copy[1:]:
-            current_address = int.from_bytes(temp_record.address, byteorder='big')
             next_address = int.from_bytes(next_record.address, byteorder='big')
 
-            # Check if the next record is consecutive
-            if next_address == current_address + temp_record.data_length:
-                # Check if adding the next record exceeds max_length
-                if temp_record.data_length + next_record.data_length > block_size:
-                    # Store the current merged record and start a new one
-                    merged_records.append(temp_record)
-                    temp_record = deepcopy(next_record)  # Use a new copy
+            # Check if the next record fits within the same block
+            if next_address < (aligned_address + block_size):
+                # Merge if it does not exceed the block size
+                if (len(temp_record.data) + len(next_record.data)) <= block_size:
+                    temp_record.data += next_record.data
+                    temp_record.data_length += len(next_record.data)  # Update data length
                 else:
-                    # Merge the record by creating a new object instead of modifying existing ones
-                    new_data = temp_record.data + next_record.data
-                    temp_record = DataRecord(
-                        record_type=temp_record.record_type,
-                        address=temp_record.address,
-                        data=new_data,
-                        data_length=temp_record.data_length + next_record.data_length
-                    )
-            else:
-                # Store the current merged record and start a new one
-                merged_records.append(temp_record)
-                temp_record = deepcopy(next_record)
+                    # Add padding to reach the block boundary
+                    padding_size = (aligned_address + block_size) - (current_address + len(temp_record.data))
+                    temp_record.data += b'\xFF' * padding_size
+                    temp_record.data_length += padding_size  # Update data length
+                    merged_records.append(temp_record)
 
-        # Append the last record
+                    # Start a new record
+                    temp_record = deepcopy(next_record)
+                    current_address = next_address
+                    aligned_address = (current_address // block_size) * block_size
+            else:
+                # Add padding to fill the remaining block before moving to the next
+                padding_size = (aligned_address + block_size) - (current_address + len(temp_record.data))
+                temp_record.data += b'\xFF' * padding_size
+                temp_record.data_length += padding_size  # Update data length
+                merged_records.append(temp_record)
+
+                # Start new block-aligned record
+                temp_record = deepcopy(next_record)
+                current_address = next_address
+                aligned_address = (current_address // block_size) * block_size
+
+                if current_address % block_size != 0:
+                    # Add padding before the address to align it
+                    padding_size = current_address - aligned_address
+                    temp_record.data = b'\xFF' * padding_size + temp_record.data
+                    temp_record.data_length += padding_size  # Update data length
+                    current_address = aligned_address
+                    temp_record.address = current_address.to_bytes(len(temp_record.address), byteorder='big')
+
+        # Ensure the last record is padded to block size before appending
+        padding_size = (aligned_address + block_size) - (current_address + len(temp_record.data))
+        if padding_size > 0:
+            temp_record.data += b'\xFF' * padding_size
+            temp_record.data_length += padding_size  # Update data length
+
         merged_records.append(temp_record)
 
-        self._merged_records = merged_records  # Store the merged records separately without modifying original
+        self._merged_records = merged_records  # Store the merged records separately
+
 
     def send_file(self):
         data1 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
