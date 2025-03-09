@@ -61,7 +61,7 @@ class UdsClient:
         
         self._logger.log_message(
             log_type=LogType.DEBUG,
-            message=f"message recievid: {[hex(x) for x in data]} is being proccessed ..."
+            message=f"message receivid: {[hex(x) for x in data]} is being proccessed ..."
         )
         
         # diagnostic_address,data=self.extract_diagnostic_address(data=data)
@@ -333,7 +333,7 @@ class UdsClient:
                                 compression_method: CompressionMethod,
                                 checksum_required: CheckSumMethod) -> None:
         newFlashingECUrequest=FlashingECU(segments=segments,recv_DA=recv_DA,checksum_required=checksum_required,encryption_method=encryption_method,compression_method=compression_method)
-        newFlashingECUrequest.current_number_of_segments_send=1
+        newFlashingECUrequest.current_number_of_segments_send=0
         newFlashingECUrequest.status=FlashingECUStatus.CREATED
         self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
@@ -346,7 +346,7 @@ class UdsClient:
             newFlashingECUrequest.status=FlashingECUStatus.SENDING_FIRST_SEGMENT
             self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"[FLASH_REQUEST-{newFlashingECUrequest.ID}] Flashing ECU REQUEST is being processing sending segment number :{newFlashingECUrequest.current_number_of_segments_send+1} to ECU with DA:{hex( newFlashingECUrequest.recv_DA)}  -STATUS:{newFlashingECUrequest.status.name}"
+                    message=f"[FLASH_REQUEST-{newFlashingECUrequest.ID}] Flashing ECU REQUEST is being processing sending segment number :{newFlashingECUrequest.current_number_of_segments_send} to ECU with DA:{hex( newFlashingECUrequest.recv_DA)}  -STATUS:{newFlashingECUrequest.status.name}"
                 )
             self.transfer_NEW_data_to_ecu(recv_DA=newFlashingECUrequest.recv_DA,
                                         data=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].data,
