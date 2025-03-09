@@ -53,37 +53,37 @@ def on_success(msg: bitarray, address: Address):
         time -= 1
         flg = True
 
-    elif msg[0] == 0x10:
+    elif msg[2] == 0x10:
         ack_msg = [0x50, 0x03, 0x00, 0x55, 0x01, 0x55]
         time -= 1
 
     #  read data by identifier
-    elif msg[0] == 0x22:
+    elif msg[2] == 0x22:
         ack_msg = [0x62, 0x01, 0x90, 0x55]
         time -= 1
 
-    elif msg[0] == 0x11:
+    elif msg[2] == 0x11:
         ack_msg = [0X51, 0x01]
         time -= 1
 
     # write data by indetifier
-    elif msg[0] == 0x2E:
+    elif msg[2] == 0x2E:
         ack_msg = [0x6E, 0x01, 0x90]
         time -= 1
 
-    elif msg[0] == 0x34:
+    elif msg[2] == 0x34:
         ack_msg = [0x74, 0x01, 0x02]
         flg = True
         time -= 1
 
-    elif msg[0] == 0x36 and msg[1] == 0x01:
+    elif msg[2] == 0x36 and msg[3] == 0x01:
         message.append(msg[2])
         message.append(msg[3])
         ack_msg = [0x76, 0x01]
         time -= 1
         flg = True
 
-    elif msg[0] == 0x36 and msg[1] == 0x02:
+    elif msg[2] == 0x36 and msg[3] == 0x02:
         message.append(msg[2])
         # message.append(msg[3])
         ack_msg = [0x76, 0x02]
@@ -91,30 +91,30 @@ def on_success(msg: bitarray, address: Address):
         flg = True
 
 
-    elif msg[0] == 0x37:
+    elif msg[2] == 0x37:
         ack_msg = [0x77]
         time -= 1
         flg = True
 
-    elif msg[0] == 0x31 and msg[3] == 0x01:
+    elif msg[2] == 0x31 and msg[5] == 0x01:
         ack_msg = [0x71, 0x01, 0xFF, 0x01, 0x00]
         time -= 1
         flg = True
 
 
-    elif msg[0] == 0x31 and msg[3] == 0x00:
+    elif msg[2] == 0x31 and msg[5] == 0x00:
         ack_msg = [0x71, 0x01, 0xFF, 0x00, 0x00]
         time -= 1
         flg = True
 
-    elif msg[1] == 0x31 and msg[4] == 0x00:
+    elif msg[3] == 0x31 and msg[6] == 0x00:
         byte_arr = bytearray([0x30, 0x00, 0x00])
         iso_tp._config.send_fn(arbitration_id=address._txid, data=byte_arr)
         time -= 1
         flg = True
         ack_flag = True
 
-    elif msg[0] == 0x31 and msg[3] == 0x02:
+    elif msg[2] == 0x31 and msg[5] == 0x02:
         ack_msg = [0x71, 0x01, 0xFF, 0x02, 0x00]
         time -= 1
         flg = True
@@ -123,10 +123,12 @@ def on_success(msg: bitarray, address: Address):
 
     # Send acknowledgment
     try:
-        print(f"ack_msg: {ack_msg}")
-        iso_tp.send(ack_msg, address, sample_fn, sample_fn)
-        print("ack message", ack_msg)
-        global_ack_msg.append(ack_msg)
+        da_msg=[0x00,0x33]
+        da_msg.extend(ack_msg)
+        print(f"ack_msg: {da_msg}")
+        iso_tp.send(da_msg, address, sample_fn, sample_fn)
+        print("ack message", da_msg)
+        global_ack_msg.append(da_msg)
 
     except can.CanError as e:
         # ErrorLogger.error("Error: CanError while sending acknowledgment: %s", e)
@@ -148,9 +150,9 @@ def init_isotp_client(
         # Step 2: Configure ISO-TP layer
         if not isotp_config:
             isotp_config = IsoTpConfig(
-                max_block_size=8,
+                max_block_size=0,
                 timeout=1000,
-                stmin=10,
+                stmin=0,
                 on_recv_success=on_success,
                 on_recv_error=on_error,
                 recv_id=client_id

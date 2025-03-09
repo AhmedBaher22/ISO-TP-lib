@@ -40,9 +40,9 @@ def init_uds_client(
         # Step 2: Configure ISO-TP layer
         if not isotp_config:
             isotp_config = IsoTpConfig(
-                max_block_size=8,
+                max_block_size=0,
                 timeout=1000,
-                stmin=10,
+                stmin=0,
                 on_recv_success=client.receive_message,
                 on_recv_error=client.on_fail_receive,
                 recv_id=client.get_client_id
