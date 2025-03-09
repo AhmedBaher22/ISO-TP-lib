@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3b777175-2304-4ebc-8270-202c0825e21a" name="Changes" comment="updated logging in can">
+      <change afterPath="$PROJECT_DIR$/test-file.s19" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex_parser/SRecordParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/hex_parser/SRecordParser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/final_init_function" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="ECDSA_IMPLEMENTATION_and_routinecontrol_finaluzeProgramming" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2qIjTYNCvjrQDwBWTjW29eo3UF0" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Git.Branch.Popup.ShowAllRemotes&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Spring 25/Grad/Code/CAN_TP_LIB&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;D:/Spring 25/Grad/Code/CAN_TP_LIB/hex_parser/hello_world_mpc5748g.srec&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Spring 25\Grad\Code\CAN_TP_LIB\hex_parser" />
+      <recent name="D:\Fall 24\Grad 1\Code\CAN_TP_LIB\hex_parser" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Spring 25\Grad\Code\CAN_TP_LIB" />
+      <recent name="D:\Fall 24\Grad 1\Code\CAN_TP_LIB\uds_layer" />
+      <recent name="D:\Fall 24\Grad 1\Code\CAN_TP_LIB\iso_tp_layer\recv_request" />
+      <recent name="D:\Fall 24\Grad 1\Code\CAN_TP_LIB\iso_tp_layer\send_request" />
+      <recent name="D:\Fall 24\Grad 1\Code\CAN_TP_LIB\iso_tp_layer\frames" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CAN_TP_LIB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/can_layer/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/can_layer/src/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CAN_TP_LIB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CAN_TP_LIB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Request" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Request/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test (2)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CAN_TP_LIB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/request" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/request/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in D:/Spring 25/Grad/Code/CAN_TP_LIB/send_request/newTest.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="CAN_TP_LIB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/iso_tp_layer/frames" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/send_request/newTest.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.Python tests in D:/Spring 25/Grad/Code/CAN_TP_LIB/send_request/newTest.py" />
+        <item itemvalue="Python.test (2)" />
+        <item itemvalue="Python.test (1)" />
+        <item itemvalue="Python.main (1)" />
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3b777175-2304-4ebc-8270-202c0825e21a" name="Changes" comment="" />
+      <created>1734356992446</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734356992446</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Implemented the recv functions">
+      <created>1734361024736</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1734361024736</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Send Abort CF if sequence out of order">
+      <created>1734361885111</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1734361885111</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add Frame classes and Request classes">
+      <created>1737687972069</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1737687972069</updated>
+    </task>
+    <task id="LOCAL-00004" summary="State Design Pattern v1">
+      <created>1737689451956</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1737689451956</updated>
+    </task>
+    <task id="LOCAL-00005" summary="implementing Request States v2">
+      <created>1737733421164</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1737733421164</updated>
+    </task>
+    <task id="LOCAL-00006" summary="implementing Request States v3">
+      <created>1737735935605</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1737735935605</updated>
+    </task>
+    <task id="LOCAL-00007" summary="implementing Send in ISO-TP">
+      <created>1737747417048</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1737747417048</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Send implemented without timeout">
+      <created>1737811155183</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1737811155183</updated>
+    </task>
+    <task id="LOCAL-00009" summary="refactoring">
+      <created>1737826008728</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1737826008728</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Create IsoTp class that uses SendRequest &amp; RecvRequest">
+      <created>1737851745347</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1737851745347</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Refactoring IsoTp class">
+      <created>1737901949377</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1737901949377</updated>
+    </task>
+    <task id="LOCAL-00012" summary="refactoring files structure">
+      <created>1737939179904</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1737939179904</updated>
+    </task>
+    <task id="LOCAL-00013" summary="bug fix in IspTp.py">
+      <created>1737940026242</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1737940026242</updated>
+    </task>
+    <task id="LOCAL-00014" summary="refactoring files">
+      <created>1737946295314</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1737946295314</updated>
+    </task>
+    <task id="LOCAL-00015" summary="add __init__.py">
+      <created>1737946520219</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1737946520219</updated>
+    </task>
+    <task id="LOCAL-00016" summary="fixed bug in iso_tp_layer">
+      <created>1737947067764</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1737947067764</updated>
+    </task>
+    <task id="LOCAL-00017" summary="added logger to iso-tp-layer">
+      <created>1737977878022</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1737977878022</updated>
+    </task>
+    <task id="LOCAL-00018" summary="adding some test cases for iso-tp">
+      <created>1737980542731</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1737980542731</updated>
+    </task>
+    <task id="LOCAL-00019" summary="added logger to UDS">
+      <created>1737983563580</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1737983563580</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Processed CAN messages asynchronously using threading">
+      <created>1738369936453</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1738369936453</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Refactored the logger class">
+      <created>1738514205595</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1738514205595</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Refactored the logger class">
+      <created>1738591279855</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1738591279856</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Using logger class in ISO-TP layer">
+      <created>1738595416142</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1738595416142</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Using logger class in ISO-TP layer">
+      <created>1738602159967</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1738602159967</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Using logger class in CAN layer">
+      <created>1738603693269</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1738603693269</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Using logger class in CAN layer">
+      <created>1738632104711</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1738632104711</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Integrating UDS and ISO-TP">
+      <created>1738632386757</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1738632386757</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Adding logger to uds">
+      <created>1738633775096</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1738633775096</updated>
+    </task>
+    <task id="LOCAL-00029" summary="testing">
+      <created>1738674623877</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1738674623877</updated>
+    </task>
+    <task id="LOCAL-00030" summary="refactor ISO-TP">
+      <created>1738975898226</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1738975898226</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Updated the logger">
+      <created>1738980015917</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1738980015917</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Exception Isolation is ISO-TP">
+      <created>1738980318849</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1738980318849</updated>
+    </task>
+    <task id="LOCAL-00033" summary="reading hex file">
+      <created>1738995893023</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1738995893023</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Edited log message in iso-tp">
+      <created>1739246819580</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1739246819580</updated>
+    </task>
+    <task id="LOCAL-00035" summary="added padding">
+      <created>1739284848767</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1739284848767</updated>
+    </task>
+    <task id="LOCAL-00036" summary="merged records">
+      <created>1739302292690</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1739302292690</updated>
+    </task>
+    <task id="LOCAL-00037" summary="merged records">
+      <created>1739316986043</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1739316986043</updated>
+    </task>
+    <task id="LOCAL-00038" summary="refactoring parser">
+      <created>1739406398857</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1739406398857</updated>
+    </task>
+    <task id="LOCAL-00039" summary="added progress in ISO-TP">
+      <created>1739408686596</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1739408686596</updated>
+    </task>
+    <task id="LOCAL-00040" summary="added progress in ISO-TP">
+      <created>1739409114485</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1739409114485</updated>
+    </task>
+    <task id="LOCAL-00041" summary="updated start address in hex parser">
+      <created>1739409666589</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1739409666589</updated>
+    </task>
+    <task id="LOCAL-00042" summary="handling all the possible extensions in hec parser">
+      <created>1739412347148</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1739412347148</updated>
+    </task>
+    <task id="LOCAL-00043" summary="updated timeout in iso-tp">
+      <created>1739497349371</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1739497349371</updated>
+    </task>
+    <task id="LOCAL-00044" summary="updated logging in iso-tp">
+      <created>1740511461561</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1740511461561</updated>
+    </task>
+    <task id="LOCAL-00045" summary="updated logging in iso-tp">
+      <created>1740534197812</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1740534197812</updated>
+    </task>
+    <task id="LOCAL-00046" summary="updated logging in can">
+      <created>1740534672733</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1740534672733</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fixed bug in iso_tp_layer" />
+    <MESSAGE value="added logger to iso-tp-layer" />
+    <MESSAGE value="adding some test cases for iso-tp" />
+    <MESSAGE value="added logger to UDS" />
+    <MESSAGE value="Processed CAN messages asynchronously using threading" />
+    <MESSAGE value="Refactored the logger class" />
+    <MESSAGE value="Using logger class in ISO-TP layer" />
+    <MESSAGE value="Using logger class in CAN layer" />
+    <MESSAGE value="Integrating UDS and ISO-TP" />
+    <MESSAGE value="Adding logger to uds" />
+    <MESSAGE value="testing" />
+    <MESSAGE value="refactor ISO-TP" />
+    <MESSAGE value="Updated the logger" />
+    <MESSAGE value="Exception Isolation is ISO-TP" />
+    <MESSAGE value="reading hex file" />
+    <MESSAGE value="Edited log message in iso-tp" />
+    <MESSAGE value="added padding" />
+    <MESSAGE value="merged records" />
+    <MESSAGE value="refactoring parser" />
+    <MESSAGE value="added progress in ISO-TP" />
+    <MESSAGE value="updated start address in hex parser" />
+    <MESSAGE value="handling all the possible extensions in hec parser" />
+    <MESSAGE value="updated timeout in iso-tp" />
+    <MESSAGE value="updated logging in iso-tp" />
+    <MESSAGE value="updated logging in can" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated logging in can" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

@@ -18,9 +18,13 @@ from uds_layer.server import Server
 from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckSumMethod
 from app_initialization import init_uds_client
-from hex_parser.SRecordParser import DataRecord
+from hex_parser.SRecordParser import DataRecord, SRecordParser
 
 def main():
+    parser = SRecordParser()
+    parser.parse_file(filename="test-file.s19")
+    print(parser._merged_records)
+    print(parser._records)
     client = init_uds_client()
 
     # opening session control
@@ -30,12 +34,16 @@ def main():
     client.add_server(ecu_address, SessionType.PROGRAMMING)
     servers: List[Server] = client.get_servers()
     sleep(1)
+
+
+
+
     data1=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
     data2=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
     datas:List[DataRecord]=[]
     datas.append(data1)
     datas.append(data2)
-    client.Flash_ECU(datas,recv_DA=servers[0].can_id,
+    client.Flash_ECU(segments=parser.send_file() ,recv_DA=servers[0].can_id,
                                     encryption_method=EncryptionMethod.NO_ENCRYPTION,
                                     compression_method=CompressionMethod.NO_COMPRESSION,
                                     checksum_required=CheckSumMethod.CRC_16,

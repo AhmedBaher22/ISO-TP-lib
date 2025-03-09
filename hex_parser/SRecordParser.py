@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from copy import deepcopy
 import os
 import sys
+from typing import List
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(package_dir)
@@ -83,6 +85,7 @@ class SRecordParser:
 
         address = record[address_start_index:address_end_index]
         data_hex_str = record[address_end_index:data_end_index]
+
         check_sum = int(record[data_end_index:data_end_index + 2], 16)
 
         if not SRecordParser._verify_checksum(record, check_sum):
@@ -253,5 +256,9 @@ class SRecordParser:
         self._merged_records = merged_records  # Store the merged records separately without modifying original
 
     def send_file(self):
-        if not self._records:
-            return
+        data1 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
+        data2 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
+        datas: List[DataRecord] = []
+        datas.append(data1)
+        datas.append(data2)
+        return datas
