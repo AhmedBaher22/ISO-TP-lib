@@ -21,31 +21,39 @@ class LiveLogPage(QWidget):
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
 
-        # Search Bar, Navigation Buttons & Filter Dropdown in one row
+        # Row for search bar, navigation buttons, and filters.
         search_layout = QHBoxLayout()
-        self.search_bar = QLineEdit()
-        self.search_bar.setPlaceholderText("Search logs...")
-        self.search_bar.textChanged.connect(self.filter_logs)
 
+        # Search bar for highlighting (e.g., showing matches)
+        self.search_bar = QLineEdit()
+        self.search_bar.setPlaceholderText("Search logs for highlighting...")
+        self.search_bar.textChanged.connect(self.filter_logs)
+        search_layout.addWidget(self.search_bar)
+
+        # Navigation buttons for cycling through search matches.
         self.prev_button = QPushButton("◀")
         self.prev_button.clicked.connect(self.jump_to_previous_match)
+        search_layout.addWidget(self.prev_button)
+
+        self.match_label = QLabel("")  # Label to show "Match X/Y"
+        search_layout.addWidget(self.match_label)
 
         self.next_button = QPushButton("▶")
         self.next_button.clicked.connect(self.jump_to_next_match)
-
-        self.match_label = QLabel("")  # Label to show "Match X/Y"
-
-        self.filter_dropdown = QComboBox()
-        self.filter_dropdown.addItems(
-            ["All", "RECEIVE", "ACKNOWLEDGMENT", "INFO", "WARNING"]
-        )
-        self.filter_dropdown.currentTextChanged.connect(self.filter_logs)
-
-        search_layout.addWidget(self.search_bar)
-        search_layout.addWidget(self.prev_button)
-        search_layout.addWidget(self.match_label)
         search_layout.addWidget(self.next_button)
+
+        # Dropdown filter (e.g., to filter on predefined types)
+        self.filter_dropdown = QComboBox()
+        self.filter_dropdown.addItems(["All", "CAN", "ISO-TP", "UDS"])
+        self.filter_dropdown.currentTextChanged.connect(self.filter_logs)
         search_layout.addWidget(self.filter_dropdown)
+
+        # New custom filter field for filtering by any word.
+        self.custom_filter_bar = QLineEdit()
+        self.custom_filter_bar.setPlaceholderText(
+            "Enter custom filter word...")
+        self.custom_filter_bar.textChanged.connect(self.filter_logs)
+        search_layout.addWidget(self.custom_filter_bar)
 
         layout.addLayout(search_layout)
 
@@ -56,9 +64,6 @@ class LiveLogPage(QWidget):
         layout.addWidget(self.log_text)
 
         self.setLayout(layout)
-
-        # Load last cleared position from persistent storage.
-        self.load_last_cleared_position()
 
         # File watcher for live updates
         self.watcher = QFileSystemWatcher(self)
@@ -137,43 +142,54 @@ class LiveLogPage(QWidget):
 
     def filter_logs(self):
         """
-        Applies both the dropdown filter and the search term filtering/highlighting.
+        Applies filtering based on both the dropdown selection and the custom filter word.
+        Also applies search term highlighting.
         """
-        # If we haven't loaded anything yet, just return.
         if not self.full_log_content:
             return
 
-        # 1) Filter lines by the selected dropdown option
-        filtered_lines = self.filter_lines_by_dropdown(self.full_log_content)
+        # Retrieve filter values.
+        dropdown_filter = self.filter_dropdown.currentText()
+        custom_filter = self.custom_filter_bar.text().strip().lower()
 
-        # 2) Temporarily set the QTextEdit to only the filtered lines (no highlights yet)
+        # Filter lines by combining both dropdown criteria and custom filter.
+        def line_matches(line: str) -> bool:
+            lower_line = line.lower()
+            # Exception: if the dropdown is "CAN", exclude lines with "can's" or "can bus".
+            if dropdown_filter.upper() == "CAN" and "iso-tp" in lower_line:
+                return False
+
+            # Exception: if dropdown is "ISO-TP", exclude lines containing "parsing"
+            if dropdown_filter.upper() == "ISO-TP" and "parsing" in lower_line:
+                return False
+
+            # Exception: if dropdown is "UDS", exclude lines containing "parsing"
+            if dropdown_filter.upper() == "UDS" and "iso-tp" in lower_line:
+                return False
+
+            matches_dropdown = (dropdown_filter == "All") or (
+                dropdown_filter.lower() in lower_line)
+            matches_custom = (custom_filter == "") or (
+                custom_filter in lower_line)
+            return matches_dropdown and matches_custom
+
+        filtered_lines = [
+            line for line in self.full_log_content if line_matches(line)]
         self.log_text.setPlainText("".join(filtered_lines))
 
-        # Reset matches and highlighting before applying new search
+        # Reset search highlighting and match positions.
         self.reset_highlighting()
         self.match_positions = []
         self.current_match_index = -1
 
-        # 3) Retrieve the search term
+        # Retrieve the search term from the search bar.
         search_term = self.search_bar.text().strip()
-
-        # If there is no search term, return after resetting highlights
-        if not search_term:
-            self.update_match_label()  # Will show "No matches"
-            return
-
-        # 4) Highlight occurrences of the search term in the filtered text
-        self.highlight_search_term(search_term)
-
-        # 5) Find all matches in the filtered text
-        self.find_all_matches(search_term)
-
-        # If we have matches, jump to the first match
-        if self.match_positions:
-            self.current_match_index = 0
-            self.jump_to_match(self.current_match_index)
-
-        # 6) Update the match label (e.g., "Match 1/5" or "No matches")
+        if search_term:
+            self.highlight_search_term(search_term)
+            self.find_all_matches(search_term)
+            if self.match_positions:
+                self.current_match_index = 0
+                self.jump_to_match(self.current_match_index)
         self.update_match_label()
 
     def filter_lines_by_dropdown(self, lines):
