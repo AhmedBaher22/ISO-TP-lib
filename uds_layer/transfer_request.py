@@ -45,7 +45,7 @@ class TransferRequest:
     def get_req(self) -> str:
         msg:str
         if self.flashing_ECU_REQ != None:
-            msg=f"[FLASH_REQUEST-{self.flashing_ECU_REQ.ID}]-[segment-{self.flashing_ECU_REQ.current_number_of_segments_send}]-[transfer step-{self.current_trans_ind}]-FLASH STAUTS:{self.flashing_ECU_REQ.status.name} "
+            msg=f"[FLASH_REQUEST-{self.flashing_ECU_REQ.ID}]-[segment-{self.flashing_ECU_REQ.current_number_of_segments_send}]-[transfer step-{int(self.current_trans_ind/2)}]-FLASH STAUTS:{self.flashing_ECU_REQ.status.name} "
             self.current_trans_ind+=1
         else:
             msg=f"[transfer step-{self.current_trans_ind}]"

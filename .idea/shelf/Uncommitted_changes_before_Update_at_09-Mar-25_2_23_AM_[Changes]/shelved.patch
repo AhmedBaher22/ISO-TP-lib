@@ -1,0 +1,421 @@
+Index: app_initialization.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from typing import Optional, List, Dict\r\nimport sys\r\nimport os\r\nfrom time import sleep\r\nfrom typing import List\r\ncurrent_dir = os.path.dirname(os.path.abspath(__file__))\r\npackage_dir = os.path.abspath(os.path.join(current_dir, \"..\"))\r\nsys.path.append(package_dir)\r\nfrom iso_tp_layer.IsoTpConfig import IsoTpConfig\r\nfrom iso_tp_layer.IsoTp import IsoTp\r\nfrom uds_layer.uds_client import UdsClient\r\nfrom iso_tp_layer.Address import Address\r\nfrom can_layer.can_communication import CANCommunication, CANConfiguration\r\nfrom can_layer.enums import CANInterface\r\nfrom can_layer.CanExceptions import CANError\r\nfrom uds_layer.uds_enums import SessionType\r\nfrom uds_layer.server import Server\r\n\r\ndef init_uds_client(\r\n    client_id: int = 0x33,\r\n    can_config: Optional[CANConfiguration] = None,\r\n    isotp_config: Optional[IsoTpConfig] = None,\r\n    filters: Optional[List[Dict]] = None\r\n) -> Optional[UdsClient]:\r\n    \"\"\"\r\n    Initializes the UDS client, ISO-TP layer, and CAN communication layers.\r\n    Allows optional customization of client_id, CANConfiguration, IsoTpConfig, and filters.\r\n    Returns the UdsClient object.\r\n\r\n    Args:\r\n        client_id: Optional ID for the UdsClient. Default is 0x33.\r\n        can_config: Optional CANConfiguration object for CAN settings.\r\n        isotp_config: Optional IsoTpConfig object for ISO-TP layer configuration.\r\n        filters: Optional list of CAN filters.\r\n    \"\"\"\r\n    try:\r\n        # Step 1: Initialize UDS Client\r\n        client = UdsClient(client_id=client_id)\r\n\r\n        # Step 2: Configure ISO-TP layer\r\n        if not isotp_config:\r\n            isotp_config = IsoTpConfig(\r\n                max_block_size=8,\r\n                timeout=1000,\r\n                stmin=10,\r\n                on_recv_success=client.receive_message,\r\n                on_recv_error=client.on_fail_receive,\r\n                recv_id=client.get_client_id\r\n            )\r\n        isotp_layer = IsoTp(isotp_config)\r\n        client.set_isotp_send(isotp_layer.send)\r\n\r\n        # Step 3: Configure CAN communication\r\n        if not can_config:\r\n            can_config = CANConfiguration(\r\n                interface=CANInterface.VECTOR,\r\n                serial_number=100,\r\n                channel=0,\r\n                app_name=\"UDS\",\r\n                fd_flag=False,\r\n                extended_flag=False,\r\n                recv_callback=isotp_layer.recv_can_message\r\n            )\r\n        can_comm = CANCommunication(can_config)\r\n\r\n        # Step 4: Set CAN filters\r\n        if not filters:\r\n            filters = [{\"can_id\": client_id, \"can_mask\": 0x7FF, \"extended\": False}]\r\n        can_comm.set_filters(filters)\r\n\r\n        # Step 5: Start receiving CAN messages\r\n        can_comm.start_receiving()\r\n\r\n        # Step 6: Set send function for ISO-TP layer\r\n        isotp_layer.set_send_fn(can_comm.send_message)\r\n\r\n        # Return the initialized UDS client\r\n        return client\r\n\r\n    except CANError as e:\r\n        print(f\"CAN operation failed: {e.message}\")\r\n        return None\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app_initialization.py b/app_initialization.py
+--- a/app_initialization.py	(revision ea06c6df56abd0d96fd1bcbb2f9b8a910892310d)
++++ b/app_initialization.py	(date 1741477888461)
+@@ -45,7 +45,7 @@
+                 stmin=10,
+                 on_recv_success=client.receive_message,
+                 on_recv_error=client.on_fail_receive,
+-                recv_id=client.get_client_id
++                recv_id=client.get_client_id()
+             )
+         isotp_layer = IsoTp(isotp_config)
+         client.set_isotp_send(isotp_layer.send)
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sys\r\nimport os\r\nfrom time import sleep\r\nfrom typing import List\r\n\r\ncurrent_dir = os.path.dirname(os.path.abspath(__file__))\r\npackage_dir = os.path.abspath(os.path.join(current_dir, \"..\"))\r\nsys.path.append(package_dir)\r\nfrom iso_tp_layer.IsoTpConfig import IsoTpConfig\r\nfrom iso_tp_layer.IsoTp import IsoTp\r\nfrom uds_layer.uds_client import UdsClient\r\nfrom iso_tp_layer.Address import Address\r\nfrom can_layer.can_communication import CANCommunication, CANConfiguration\r\nfrom can_layer.enums import CANInterface\r\nfrom can_layer.CanExceptions import CANError\r\nfrom uds_layer.uds_enums import SessionType\r\nfrom uds_layer.server import Server\r\nfrom uds_layer.transfer_request import TransferRequest\r\nfrom uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckSumMethod\r\nfrom app_initialization import init_uds_client\r\nfrom hex_parser.SRecordParser import DataRecord\r\n\r\ndef main():\r\n    client = init_uds_client()\r\n\r\n    # opening session control\r\n    # Initialize communication with an ECU\r\n    print(\"\\n=== Initializing Communication with ECU ===\")\r\n    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)\r\n    client.add_server(ecu_address, SessionType.PROGRAMMING)\r\n    servers: List[Server] = client.get_servers()\r\n    sleep(1)\r\n    data1=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)\r\n    data2=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)\r\n    datas:List[DataRecord]=[]\r\n    datas.append(data1)\r\n    datas.append(data2)\r\n    client.Flash_ECU(datas,recv_DA=servers[0].can_id,\r\n                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,\r\n                                    compression_method=CompressionMethod.NO_COMPRESSION,\r\n                                    checksum_required=CheckSumMethod.CRC_16)\r\n    \r\n    client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],\r\n                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,\r\n                                    compression_method=CompressionMethod.NO_COMPRESSION,\r\n                                    memory_address=[0x22, 0x10],\r\n                                    checksum_required=CheckSumMethod.CRC_16)\r\n    # #sending read data by identifier request\r\n    # message=servers[0].read_data_by_identifier(vin=[0x01,0x90])\r\n    # client.send_message(servers[0].can_id,message)\r\n\r\n    # #sending ecu reset request\r\n    # message=servers[0].ecu_reset(reset_type=0x01)\r\n    # client.send_message(servers[0].can_id,message)\r\n\r\n    # #sending write data by intentifier request\r\n    # message=servers[0].write_data_by_identifier(vin=[0x01,0x90],data=[0x55,0x26])\r\n    # client.send_message(servers[0].can_id,message)\r\n\r\n    while True:\r\n        sleep(1)\r\n\r\n\r\nif __name__ == \"__main__\":\r\n    main()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision ea06c6df56abd0d96fd1bcbb2f9b8a910892310d)
++++ b/main.py	(date 1741479262779)
+@@ -21,17 +21,17 @@
+ from hex_parser.SRecordParser import DataRecord
+ 
+ def main():
+-    client = init_uds_client()
++    client = init_uds_client(0x55)
+ 
+     # opening session control
+     # Initialize communication with an ECU
+     print("\n=== Initializing Communication with ECU ===")
+-    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
++    ecu_address = Address(addressing_mode=0, txid=0x55, rxid=0x33)
+     client.add_server(ecu_address, SessionType.PROGRAMMING)
+     servers: List[Server] = client.get_servers()
+     sleep(1)
+     data1=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
+-    data2=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
++    data2=DataRecord(address=[0x22, 0x10],data=[0x20, 0x56, 0x52],record_type=0,data_length=0)
+     datas:List[DataRecord]=[]
+     datas.append(data1)
+     datas.append(data2)
+@@ -40,11 +40,11 @@
+                                     compression_method=CompressionMethod.NO_COMPRESSION,
+                                     checksum_required=CheckSumMethod.CRC_16)
+     
+-    client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],
+-                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,
+-                                    compression_method=CompressionMethod.NO_COMPRESSION,
+-                                    memory_address=[0x22, 0x10],
+-                                    checksum_required=CheckSumMethod.CRC_16)
++    # client.transfer_NEW_data_to_ecu(recv_DA=servers[0].can_id, data=[0x52, 0x55, 0x32],
++    #                                 encryption_method=EncryptionMethod.NO_ENCRYPTION,
++    #                                 compression_method=CompressionMethod.NO_COMPRESSION,
++    #                                 memory_address=[0x22, 0x10],
++    #                                 checksum_required=CheckSumMethod.CRC_16)
+     # #sending read data by identifier request
+     # message=servers[0].read_data_by_identifier(vin=[0x01,0x90])
+     # client.send_message(servers[0].can_id,message)
+Index: uds_layer/uds_client.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from bitarray import bitarray\r\nfrom typing import Callable, List, Optional, Tuple\r\nimport sys\r\nimport os\r\nfrom uds_layer.transfer_enums import TransferStatus, EncryptionMethod, CompressionMethod, CheckSumMethod, FlashingECUStatus\r\nfrom uds_layer.transfer_request import TransferRequest\r\ncurrent_dir = os.path.dirname(os.path.abspath(__file__))\r\npackage_dir = os.path.abspath(os.path.join(current_dir, \"..\"))\r\nsys.path.append(package_dir)\r\nfrom uds_layer.server import Server\r\nfrom uds_layer.operation import Operation\r\nfrom uds_layer.uds_enums import SessionType, OperationStatus, OperationType\r\nfrom logger import Logger, LogType, ProtocolType\r\nfrom iso_tp_layer.Address import Address\r\nfrom uds_layer.FlashingECU import FlashingECU\r\nfrom hex_parser.SRecordParser import DataRecord\r\n# class Address:\r\n#     def __init__(self, addressing_mode: int = 0, txid: Optional[int] = None, rxid: Optional[int] = None):\r\n#         self.addressing_mode = addressing_mode\r\n#         self._txid = txid\r\n#         self._rxid = rxid\r\n\r\n\r\nclass UdsClient:\r\n    def __init__(self, client_id: int):\r\n        self._client_id = client_id\r\n        self._servers: List[Server] = []\r\n        self._pending_servers: List[Server] = []\r\n        self._isotp_send: Callable = None\r\n        self._logger = Logger(ProtocolType.UDS)\r\n\r\n    def set_isotp_send(self, e: Callable):\r\n        self._isotp_send = e\r\n\r\n    def get_servers(self):\r\n        return self._servers\r\n\r\n    def get_pending_servers(self):\r\n        return self._pending_servers\r\n\r\n    def add_server(self, address: Address, session_type: SessionType):\r\n        # Prepare Diagnostic Session Control message (0x10)\r\n        message = bytearray([0x10, session_type.value])\r\n\r\n        # Send via ISO-TP\r\n        self.send_message(address._txid, message)\r\n\r\n        # Create new server and add to pending\r\n        server = Server(address._rxid,client_send=self.send_message,client_Segment_send=self.transfer_NEW_data_to_ecu)\r\n\r\n        self._pending_servers.append(server)\r\n        self._logger.log_message(\r\n            log_type=LogType.ACKNOWLEDGMENT,\r\n            message=f\"Server {address._rxid} Added successfully\")\r\n\r\n    def process_message(self, address: Address, data: bytearray):\r\n        # diagnostic_address,data=self.extract_diagnostic_address(data=data)\r\n        diagnostic_address=address._txid\r\n        service_id = data[0]\r\n\r\n        if service_id == 0x7F:  # Negative response\r\n            requested_service = data[1]\r\n\r\n            if requested_service == 0x10:  # Session Control\r\n                server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)\r\n                if server:\r\n                    server.add_log(f\"Session Control Negative response: {hex(data[2])}\")\r\n                    server.session = SessionType.NONE\r\n                    self._servers.append(server)\r\n                    self._pending_servers.remove(server)\r\n            elif requested_service == 0x31:  # Erase Memory\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    if data[3] == 0x00:\r\n                        server.on_erase_memory_respond(data)\r\n                    elif data[3]==0x01:\r\n                        server.on_check_memory_respond(data)\r\n                    elif data[3]==0x02:\r\n                        server.on_finalize_programming_respond(data)            \r\n            elif requested_service == 0x28:  # Communication Control\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    server.on_communication_control_respond(data)\r\n            elif requested_service == 0x34:  # Negative response to Request Download\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    server.on_request_download_respond(data)\r\n\r\n            elif requested_service == 0x36:  # Transfer Data\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    server.on_transfer_data_respond(data)\r\n                    \r\n            elif requested_service == 0x37:  # Request Transfer Exit\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    server.on_request_transfer_exit_respond(data)\r\n\r\n            elif requested_service == 0x22:  # Read Data By Identifier\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    operation = server.get_pending_operation_by_type(OperationType.READ_DATA_BY_IDENTIFIER)\r\n                    if operation:\r\n                        operation.status = OperationStatus.REJECTED\r\n                        server.remove_pending_operation(operation)\r\n                        server.add_completed_operation(operation)\r\n                        server.on_read_data_by_identifier_respond(0x7F, [data[2]])\r\n\r\n            elif requested_service == 0x2E:  # Write Data By Identifier\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    server.on_write_data_by_identifier_respond(0x7F, [data[2]], None)\r\n\r\n            elif requested_service == 0x11:  # ECU Reset\r\n                server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n                if server:\r\n                    server.on_ecu_reset_respond(0x7F, [data[2]], None)\r\n        elif service_id == 0x74:  # Positive response to Request Download\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                server.on_request_download_respond(data)\r\n                \r\n        elif service_id == 0x76:  # Positive response to Transfer Data\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                server.on_transfer_data_respond(data)\r\n\r\n        elif service_id == 0x68:  # Positive response to Communication Control\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                server.on_communication_control_respond(data)    \r\n\r\n        elif service_id == 0x77:  # Positive response to Request Transfer Exit\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                server.on_request_transfer_exit_respond(data)\r\n                \r\n        elif service_id == 0x71:  # Positive response to Erase Memory\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                print(\"da5l ydwr\")\r\n                print(data[3])\r\n                if data[3]==0x00:\r\n                    server.on_erase_memory_respond(data) \r\n                elif data[3]==0x01:\r\n                    server.on_check_memory_respond(data)  \r\n                elif data[3]==0x02:\r\n                    server.on_finalize_programming_respond(data)                                     \r\n        elif service_id == 0x74:  # Positive response to Request Download\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                server.on_request_download_respond(data)\r\n        elif service_id == 0x62:  # Positive response to Read Data By Identifier\r\n\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n\r\n                operation = server.get_pending_operation_by_type(OperationType.READ_DATA_BY_IDENTIFIER)\r\n                if operation:\r\n\r\n                    # operation.status = OperationStatus.COMPLETED\r\n                    # server.remove_pending_operation(operation)\r\n                    # server.add_completed_operation(operation)\r\n                    response_data = data[3:]\r\n                    server.on_read_data_by_identifier_respond(0x62, response_data, data[1:3])\r\n\r\n        elif service_id == 0x6E:  # Positive response to Write Data By Identifier\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                operation = server.get_pending_operation_by_type(OperationType.WRITE_DATA_BY_IDENTIFIER)\r\n                if operation:\r\n                    # Extract VIN from the original write request (assuming it's stored in operation.message)\r\n                    vin = operation.message[1:3]  # Skip service ID and identifier\r\n                    server.on_write_data_by_identifier_respond(0x6E, data[1:3], vin)\r\n\r\n        elif service_id == 0x51:  # Positive response to ECU Reset\r\n            server = self._find_server_by_can_id(diagnostic_address, self._servers)\r\n            if server:\r\n                operation = server.get_pending_operation_by_type(OperationType.ECU_RESET)\r\n                if operation:\r\n                    # Extract reset type from the original request\r\n                    reset_type = operation.message[1]\r\n                    # Pass any additional data (like power down time) in the message\r\n                    server.on_ecu_reset_respond(0x51, data[1:], reset_type)\r\n\r\n        elif service_id == 0x50:  # Positive response to Session Control\r\n            server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)\r\n            if server:\r\n                server.session = SessionType(data[1])\r\n                # Set timing parameters\r\n                if len(data) >= 6:  # Ensure we have enough bytes for timing parameters\r\n                    server.p2_timing = (data[2] << 8) | data[3]  # Combine third and fourth bytes\r\n                    server.p2_star_timing = (data[4] << 8) | data[5]  # Combine fifth and sixth bytes\r\n                self._servers.append(server)\r\n                self._pending_servers.remove(server)\r\n                print(\"Gained control session \",server.session,\" with timings:: \", \"P2 timing\", server.p2_timing, \"P2 star timing\", server.p2_star_timing )\r\n\r\n\r\n\r\n    def _find_server_by_can_id(self, can_id: [int], server_list: List[Server]) -> Optional[Server]:\r\n        for server in server_list:\r\n            if server.can_id == can_id:\r\n                return server\r\n        return None\r\n\r\n    def _find_pending_operation(self, server: Server, service_id: int) -> Optional[Operation]:\r\n        # Implementation depends on how you want to match service IDs to operations\r\n        pass\r\n\r\n    def bitarray_to_bytearray(self, bits: bitarray) -> bytearray:\r\n        # Convert the bitarray to bytes and then to bytearray\r\n        return bytearray(bits.tobytes())\r\n\r\n    def receive_message(self, data: bitarray, address: Address):\r\n        data = data.tobytes()\r\n        self.process_message(address, data)\r\n        self._logger.log_message(\r\n            log_type=LogType.ACKNOWLEDGMENT,\r\n            message=f\"Message {data} received successfully\")\r\n\r\n    def send_message(self, server_can_id: int, message: List[int]):\r\n        address = Address(addressing_mode=0, txid=self._client_id, rxid=server_can_id)\r\n\r\n        if len(message) <= 4095:\r\n            print(message)\r\n            # message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)\r\n            print(message)\r\n            self._isotp_send(message, address, self.on_success_send, self.on_fail_send)\r\n        else:\r\n            # Split message into chunks of 4095 bytes\r\n            for i in range(0, len(message), 4095):\r\n                chunk = message[i:i + 4095]\r\n                # chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)\r\n                self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)\r\n\r\n        self._logger.log_message(\r\n            log_type=LogType.ACKNOWLEDGMENT,\r\n            message=f\"Message {message} sent successfully\")\r\n\r\n    def append_diagnostic_address(self, server_can_id: int, message: bytearray) -> bytearray:\r\n        return bytearray([server_can_id >> 8, server_can_id & 0xFF]) + message\r\n\r\n    def extract_diagnostic_address(self, data: bytearray) -> Tuple[int, bytearray]:\r\n        if len(data) < 2:\r\n            raise ValueError(\"Input bytearray must be at least 2 bytes long\")\r\n\r\n        server_can_id = (data[0] << 8) | data[1]  # Combine the first two bytes into an integer\r\n        remaining_data = data[2:]  # Slice to remove the first two bytes\r\n\r\n        return server_can_id, remaining_data     \r\n\r\n    def on_success_send(self, progress: float):\r\n        print(f\"Progress: {progress}\")\r\n\r\n\r\n    def on_fail_send(self, e: Exception):\r\n        pass\r\n\r\n    def on_fail_receive(self, e: Exception):\r\n        print(e)\r\n\r\n    def get_client_id(self):\r\n        return self._client_id\r\n    \r\n    def transfer_NEW_data_to_ecu(self, recv_DA: int, data: bytearray, \r\n                                encryption_method: EncryptionMethod,\r\n                                compression_method: CompressionMethod,\r\n                                memory_address: bytearray,\r\n                                checksum_required: CheckSumMethod,\r\n                                is_multiple_segments:bool=False) -> None:\r\n        # Create TransferRequest object\r\n        transfer_request = TransferRequest(\r\n            recv_DA=recv_DA,\r\n            data=data,\r\n            encryption_method=encryption_method,\r\n            compression_method=compression_method,\r\n            memory_address=memory_address,\r\n            checksum_required=checksum_required,\r\n            is_multiple_segments=is_multiple_segments\r\n\r\n        )\r\n\r\n        # Find server with matching CAN ID\r\n        server = next((s for s in self._servers if s.can_id == recv_DA), None)\r\n        if server:\r\n            # Get request download message\r\n            message = server.erase_memory(transfer_request)\r\n            if message != [0x00]:  # Check if request was successful\r\n                # Create address object for ISO-TP\r\n                address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)\r\n                # Send message using ISO-TP\r\n                self._isotp_send(message, address,self.on_success_send,self.on_fail_send)\r\n\r\n                self._logger.log_message(\r\n                    log_type=LogType.ACKNOWLEDGMENT,\r\n                    message=f\"ERASE memory for diagnostic address {recv_DA}send successfully with messaage: {message}\"\r\n                )\r\n\r\n        else:\r\n            self._logger.log_message(\r\n                log_type=LogType.ERROR,\r\n                message=f\"Error: No server found to send request download  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control\"\r\n            )            \r\n\r\n    def Flash_ECU(self,segments:List[DataRecord], recv_DA: int,\r\n                                encryption_method: EncryptionMethod,\r\n                                compression_method: CompressionMethod,\r\n                                checksum_required: CheckSumMethod) -> None:\r\n        newFlashingECUrequest=FlashingECU(segments=segments,recv_DA=recv_DA,checksum_required=checksum_required,encryption_method=encryption_method,compression_method=compression_method)\r\n        newFlashingECUrequest.current_number_of_segments_send=1\r\n        newFlashingECUrequest.status=FlashingECUStatus.CREATED\r\n        self._logger.log_message(\r\n                    log_type=LogType.ACKNOWLEDGMENT,\r\n                    message=f\"[REQUEST-{newFlashingECUrequest.ID}]NEW Flashing ECU REQUEST HAS BEEN CREATED to ECU with DA:{hex(newFlashingECUrequest.recv_DA) }  -STATUS:{newFlashingECUrequest.status}\"\r\n                )\r\n        # Find server with matching CAN ID\r\n        server = next((s for s in self._servers if s.can_id == recv_DA), None)\r\n        if server:\r\n            server.Flash_ECU_Segments_Request.append(newFlashingECUrequest)\r\n            newFlashingECUrequest.status=FlashingECUStatus.SENDING_FIRST_SEGMENT\r\n            self._logger.log_message(\r\n                    log_type=LogType.ACKNOWLEDGMENT,\r\n                    message=f\"[REQUEST-{newFlashingECUrequest.ID}]Flashing ECU REQUEST is being processing sending segment number :{newFlashingECUrequest.current_number_of_segments_send+1} to ECU with DA:{hex( newFlashingECUrequest.recv_DA)}  -STATUS:{newFlashingECUrequest.status}\"\r\n                )\r\n            self.transfer_NEW_data_to_ecu(recv_DA=newFlashingECUrequest.recv_DA,\r\n                                        data=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].data,\r\n                                        memory_address=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].address,\r\n                                        checksum_required=newFlashingECUrequest.checksum_required,\r\n                                        encryption_method=newFlashingECUrequest.encryption_method,\r\n                                        compression_method=newFlashingECUrequest.compression_method,\r\n                                        is_multiple_segments=True\r\n                                        )\r\n\r\n        else:\r\n            self._logger.log_message(\r\n                log_type=LogType.ERROR,\r\n                message=f\"Error: No server found to Flash ECU  with CAN ID: {hex(recv_DA)} , please add server and open to it required session control\"\r\n            )          
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/uds_layer/uds_client.py b/uds_layer/uds_client.py
+--- a/uds_layer/uds_client.py	(revision ea06c6df56abd0d96fd1bcbb2f9b8a910892310d)
++++ b/uds_layer/uds_client.py	(date 1741477512806)
+@@ -43,7 +43,7 @@
+         message = bytearray([0x10, session_type.value])
+ 
+         # Send via ISO-TP
+-        self.send_message(address._txid, message)
++        self.send_message(address._rxid, message)
+ 
+         # Create new server and add to pending
+         server = Server(address._rxid,client_send=self.send_message,client_Segment_send=self.transfer_NEW_data_to_ecu)
+Index: iso_tp_layer/recv_request/FirstFrameState.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from math import ceil\r\nimport sys\r\nimport os\r\ncurrent_dir = os.path.dirname(os.path.abspath(__file__))\r\npackage_dir = os.path.abspath(os.path.join(current_dir, \"..\"))\r\npackage_dir = os.path.abspath(os.path.join(package_dir, \"..\"))\r\nsys.path.append(package_dir)\r\nfrom iso_tp_layer.recv_request.RequestState import RequestState\r\nfrom iso_tp_layer.recv_request.FinalState import FinalState\r\nfrom iso_tp_layer.recv_request.ErrorState import ErrorState\r\nfrom iso_tp_layer.recv_request.ConsecutiveFrameState import ConsecutiveFrameState\r\nfrom iso_tp_layer.frames.FrameType import FrameType\r\nfrom iso_tp_layer.Exceptions import (\r\n    MessageSizeExceededException,\r\n    ConsecutiveFrameOutOfSequenceException,\r\n    UnexpectedFrameTypeException,\r\n)\r\nfrom logger import LogType\r\n\r\n\r\nclass FirstFrameState(RequestState):\r\n    def handle(self, request, message):\r\n        try:\r\n            if message.frameType == FrameType.ConsecutiveFrame:\r\n                request.logger.log_message(\r\n                    log_type=LogType.RECEIVE,\r\n                    message=f\"[RecvRequest-{request._id}] Received {message}\"\r\n                )\r\n                if message.sequenceNumber == request.get_expected_sequence_number():\r\n                    request.reset_timeout_timer()\r\n                    request.start_timeout_timer()\r\n                    request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)\r\n                    message_length = ceil(len(message.data) / 8)\r\n                    if (request.get_current_data_length() + message_length) > request.get_data_length():\r\n                        #  f\"Message received larger than expected! Expected size is {expected_size}, received {received_size}\"\r\n                        raise MessageSizeExceededException(request.get_data_length(),\r\n                                                           request.get_current_data_length() + message_length)\r\n\r\n                    request.append_bits(message.data)\r\n                    if request.get_current_data_length() == request.get_data_length():\r\n                        request.set_state(FinalState())\r\n                        try:\r\n                            request.on_success(request.get_message(), request.get_address())\r\n                        except Exception as e:\r\n                            pass\r\n                    else:\r\n                        request.set_state(ConsecutiveFrameState())\r\n\r\n                    # request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)\r\n                    # request.append_bits(message.data)\r\n                    # request.set_state(ConsecutiveFrameState())\r\n                    # request.reset_timeout_timer()\r\n                    # request.start_timeout_timer()\r\n                else:\r\n                    raise ConsecutiveFrameOutOfSequenceException(request.get_expected_sequence_number(),\r\n                                                                 message.sequenceNumber)\r\n\r\n            else:\r\n                # f\"Was expecting {expected_type} and received {received_type}\"\r\n                raise UnexpectedFrameTypeException(\"FrameType.ConsecutiveFrame\", message.frameType)\r\n\r\n\r\n        except Exception as e:\r\n            request.set_state(ErrorState())\r\n            request.send_error_frame(e)\r\n            request.on_error(e)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/iso_tp_layer/recv_request/FirstFrameState.py b/iso_tp_layer/recv_request/FirstFrameState.py
+--- a/iso_tp_layer/recv_request/FirstFrameState.py	(revision ea06c6df56abd0d96fd1bcbb2f9b8a910892310d)
++++ b/iso_tp_layer/recv_request/FirstFrameState.py	(date 1741476320713)
+@@ -31,13 +31,14 @@
+                     request.start_timeout_timer()
+                     request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)
+                     message_length = ceil(len(message.data) / 8)
+-                    if (request.get_current_data_length() + message_length) > request.get_data_length():
+-                        #  f"Message received larger than expected! Expected size is {expected_size}, received {received_size}"
+-                        raise MessageSizeExceededException(request.get_data_length(),
+-                                                           request.get_current_data_length() + message_length)
+-
++                    # if (request.get_current_data_length() + message_length) > request.get_data_length():
++                    #     #  f"Message received larger than expected! Expected size is {expected_size}, received {received_size}"
++                    #     request.append_bits(message.data[:request.get_data_length() - request.get_current_data_length()])
++                    #     # raise MessageSizeExceededException(request.get_data_length(),
++                    #     #                                    request.get_current_data_length() + message_length)
++                    # else:
+                     request.append_bits(message.data)
+-                    if request.get_current_data_length() == request.get_data_length():
++                    if request.get_current_data_length() >= request.get_data_length():
+                         request.set_state(FinalState())
+                         try:
+                             request.on_success(request.get_message(), request.get_address())
+Index: isoTp_stub.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/isoTp_stub.py b/isoTp_stub.py
+new file mode 100644
+--- /dev/null	(date 1741477142377)
++++ b/isoTp_stub.py	(date 1741477142377)
+@@ -0,0 +1,250 @@
++import time
++from bitarray import bitarray
++import sys
++import os
++import can
++from typing import Optional, List, Dict
++
++current_dir = os.path.dirname(os.path.abspath(__file__))
++package_dir = os.path.abspath(os.path.join(current_dir, ".."))
++sys.path.append(package_dir)
++
++from iso_tp_layer.frames.FirstFrameMessage import FirstFrameMessage
++from iso_tp_layer.frames.ConsecutiveFrameMessage import ConsecutiveFrameMessage
++from iso_tp_layer.frames.SingleFrameMessage import SingleFrameMessage
++from iso_tp_layer.IsoTp import message_to_bitarray
++from iso_tp_layer.IsoTpConfig import IsoTpConfig
++from iso_tp_layer.IsoTp import IsoTp
++from iso_tp_layer.Address import Address
++from can_layer.can_communication import CANCommunication, CANConfiguration
++from can_layer.enums import CANInterface
++from can_layer.CanExceptions import CANError
++
++
++# from logger import Logger, LogType, ProtocolType
++# logger = Logger(ProtocolType.ISO_TP)
++
++
++def sample_fn(X):
++    pass
++
++
++global_ack_msg: List[int] = []
++
++
++def on_success(msg: bitarray, address: Address):
++    global global_ack_msg
++    msg = msg.tobytes()
++
++    ack_msg_bytes = bytes(global_ack_msg)  # Convert list of ints to bytes
++
++    if msg == ack_msg_bytes:
++        print(msg)
++        print("HEHEHE\n\n\n\n")
++        return
++
++
++    print(f"UDS on_success:\naddress: {address}\ndata: {msg.hex()}")
++
++    iso_tp = init_isotp_client()
++
++    time = 5
++    message = bytearray()
++    flg = False
++    ack_flag = False
++    send_flag = False
++    ack_msg = None
++
++    if ack_flag:
++        print("Hello")
++        ack_flag = False
++        memory = msg[4]
++        memoryAddress = msg[5]
++        memorySize = msg[6]
++        # logger.info("Message address = 0x%X and memorySize= 0x%X",
++        #             memoryAddress, memorySize)
++
++        ack_msg = [0x71, 0x01, 0xff, 0x00, 0x00]
++        time -= 1
++        flg = True
++
++    elif msg[0] == 0x10:
++        ack_msg = [0x50, 0x03, 0x00, 0x55, 0x01, 0x55]
++        time -= 1
++
++    #  read data by identifier
++    elif msg[0] == 0x22:
++        ack_msg = [0x62, 0x01, 0x90, 0x55]
++        time -= 1
++
++    elif msg[0] == 0x11:
++        ack_msg = [0x7F, 0x11, 0x12]
++        time -= 1
++
++    # write data by indetifier
++    elif msg[0] == 0x2E:
++        ack_msg = [0x6E, 0x01, 0x90]
++        time -= 1
++
++    elif msg[0] == 0x34:
++        ack_msg = [0x74, 0x01, 0x02]
++        flg = True
++        time -= 1
++
++    elif msg[0] == 0x36 and msg[1] == 0x01:
++        message.append(msg[2])
++        message.append(msg[3])
++        ack_msg = [0x76, 0x01]
++        time -= 1
++        flg = True
++
++    elif msg[0] == 0x36 and msg[1] == 0x02:
++        message.append(msg[2])
++        message.append(msg[3])
++        # logger.info(f"Complete msg received: {message}")
++        ack_msg = [0x76, 0x02]
++        time -= 1
++        flg = True
++
++    elif msg[0] == 0x37:
++        ack_msg = [0x77]
++        time -= 1
++        flg = True
++
++    elif msg[0] == 0x31 and msg[3] == 0x01:
++        print("\n\n\n\n\nA3AAAAAAAAAAAAAA \n\n\n\n\n")
++        memory = msg[4]
++        memoryAddress = msg[5]
++        memorySize = msg[6]
++        # logger.info("Message address = 0x%X and memorySize= 0x%X",
++        #             memoryAddress, memorySize)
++        ack_msg = [0x71, 0x01, 0xFF, 0x01, 0x00]
++        time -= 1
++        flg = True
++
++
++    elif msg[0] == 0x31 and msg[3] == 0x00:
++        print("\n\n\n\n\nA3AAAAAAAAAAAAAA \n\n\n\n\n")
++
++        memory = msg[4]
++        memoryAddress = msg[5]
++        memorySize = msg[6]
++        # logger.info("Message address = 0x%X and memorySize= 0x%X",
++        #             memoryAddress, memorySize)
++
++        ack_msg = [0x71, 0x01, 0xFF, 0x00, 0x00]
++        print("LALALA\n\nLALALAL\n\nLALALA\n")
++
++        time -= 1
++        flg = True
++
++    elif msg[1] == 0x31 and msg[4] == 0x00:
++        print("\n\n\n\n\nA3AAAAAAAAAAAAAA \n\n\n\n\n")
++
++        memory = msg[4]
++        memoryAddress = msg[5]
++        memorySize = msg[6]
++        # logger.info("Message address = 0x%X and memorySize= 0x%X",
++        #             memoryAddress, memorySize)
++
++        # HEREEE!!
++        print("LALALA\n\nLALALAL\n\nLALALA\n")
++        byte_arr = bytearray([0x30, 0x00, 0x00])
++
++        iso_tp._config.send_fn(arbitration_id=address._txid, data=byte_arr)
++
++        time -= 1
++        flg = True
++        ack_flag = True
++
++    elif msg[0] == 0x31 and msg[3] == 0x02:
++        print("\n\n\n\n\nA3AAAAAAAAAAAAAA \n\n\n\n\n")
++
++        # logger.info("Message address = 0x%X and memorySize= 0x%X",
++        #             memoryAddress, memorySize)
++        ack_msg = [0x71, 0x01, 0xFF, 0x02, 0x00]
++        time -= 1
++        flg = True
++
++    # Send acknowledgment
++    try:
++        print(f"ack_msg: {ack_msg}")
++
++        # if (msg[0] == 0x03 or msg[0] == 0x02 or msg[1] == 0x11 or flg) and time > 0:
++        # bit_arr = bitarray()
++        # for byte in ack_msg:
++        #     bit_arr.extend(f"{byte:08b}")  # Convert to 8-bit binary and append
++
++        byte_arr = bytearray(ack_msg)
++
++        iso_tp.send(ack_msg, address, sample_fn, sample_fn)
++        print("ack message", ack_msg)
++        global_ack_msg = ack_msg
++        # logger.info("Acknowledgment sent for message arbitration_id=0x%X", msg.arbitration_id)
++
++    except can.CanError as e:
++        # ErrorLogger.error("Error: CanError while sending acknowledgment: %s", e)
++        print("Error: CanError while sending acknowledgment: %s", e)
++
++
++def on_error(error):
++    print(f"Error occurred: {error}")
++
++
++def init_isotp_client(
++        client_id: int = 0x55,
++        can_config: Optional[CANConfiguration] = None,
++        isotp_config: Optional[IsoTpConfig] = None,
++        filters: Optional[List[Dict]] = None
++) -> Optional[IsoTp]:
++    try:
++        # Step 2: Configure ISO-TP layer
++        if not isotp_config:
++            isotp_config = IsoTpConfig(
++                max_block_size=8,
++                timeout=1000,
++                stmin=10,
++                on_recv_success=on_success,
++                on_recv_error=on_error,
++                recv_id=client_id
++            )
++        isotp_layer = IsoTp(isotp_config)
++
++        # Step 3: Configure CAN communication
++        if not can_config:
++            can_config = CANConfiguration(
++                interface=CANInterface.VECTOR,
++                serial_number=100,
++                channel=0,
++                app_name="UDS",
++                fd_flag=False,
++                extended_flag=False,
++                recv_callback=isotp_layer.recv_can_message
++            )
++        can_comm = CANCommunication(can_config)
++
++        # Step 4: Set CAN filters
++        if not filters:
++            filters = [{"can_id": client_id, "can_mask": 0x7FF, "extended": False}]
++        can_comm.set_filters(filters)
++
++        # Step 5: Start receiving CAN messages
++        can_comm.start_receiving()
++
++        # Step 6: Set send function for ISO-TP layer
++        isotp_layer.set_send_fn(can_comm.send_message)
++
++        # Return the initialized UDS client
++        return isotp_layer
++
++    except CANError as e:
++        print(f"CAN operation failed: {e.message}")
++        return None
++
++
++# Define CAN address
++address = Address(txid=0x123, rxid=0x456)
++iso_tp = init_isotp_client()
++
++while True:
++    time.sleep(1)
+Index: hex_parser/test_hex.s19
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hex_parser/test_hex.s19 b/hex_parser/test_hex.s19
+new file mode 100644
+--- /dev/null	(date 1741479628500)
++++ b/hex_parser/test_hex.s19	(date 1741479628500)
+@@ -0,0 +1,3 @@
++S106221020565287
++S10692205255323E
++S9030000FC
+Index: iso_tp_layer/recv_request/ConsecutiveFrameState.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from math import ceil\r\nimport sys\r\nimport os\r\ncurrent_dir = os.path.dirname(os.path.abspath(__file__))\r\npackage_dir = os.path.abspath(os.path.join(current_dir, \"..\"))\r\npackage_dir = os.path.abspath(os.path.join(package_dir, \"..\"))\r\nsys.path.append(package_dir)\r\nfrom iso_tp_layer.recv_request.RequestState import RequestState\r\nfrom iso_tp_layer.recv_request.FinalState import FinalState\r\nfrom iso_tp_layer.recv_request.ErrorState import ErrorState\r\nfrom iso_tp_layer.frames.FrameType import FrameType\r\nfrom iso_tp_layer.Exceptions import (\r\n    ConsecutiveFrameBeforeFlowControlException,\r\n    MessageSizeExceededException,\r\n    ConsecutiveFrameOutOfSequenceException,\r\n    UnexpectedFrameTypeException,\r\n)\r\nfrom logger import LogType\r\n\r\n\r\n\r\nclass ConsecutiveFrameState(RequestState):\r\n    def handle(self, request, message):\r\n        try:\r\n            if message.frameType == FrameType.ConsecutiveFrame:\r\n                request.logger.log_message(\r\n                    log_type=LogType.RECEIVE,\r\n                    message=f\"[RecvRequest-{request._id}] Received {message}\"\r\n                )\r\n                if message.sequenceNumber == request.get_expected_sequence_number():\r\n                    max_block_size = request.get_max_block_size()\r\n                    current_block_size = request.get_current_block_size()\r\n                    if max_block_size > 0:\r\n                        if current_block_size < max_block_size:\r\n                            current_block_size = request.get_current_block_size()\r\n                            current_block_size += 1\r\n                            request.set_current_block_size(current_block_size)\r\n\r\n                            if current_block_size == max_block_size:\r\n                                request.send_flow_control_frame()\r\n\r\n                                request.set_current_block_size(0)\r\n                        else:\r\n                            # \"Received ConsecutiveFrame before sending the control flow\"\r\n                            raise ConsecutiveFrameBeforeFlowControlException()\r\n\r\n                    request.reset_timeout_timer()\r\n                    request.start_timeout_timer()\r\n                    request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)\r\n                    message_length = ceil(len(message.data) / 8)\r\n                    if (request.get_current_data_length() + message_length) > request.get_data_length():\r\n                        #  f\"Message received larger than expected! Expected size is {expected_size}, received {received_size}\"\r\n                        raise MessageSizeExceededException(request.get_data_length(),\r\n                                                           request.get_current_data_length() + message_length)\r\n\r\n                    request.append_bits(message.data)\r\n                    if request.get_current_data_length() == request.get_data_length():\r\n                        request.set_state(FinalState())\r\n                        try:\r\n                            request.on_success(request.get_message(), request.get_address())\r\n                        except Exception as e:\r\n                            pass\r\n                else:\r\n                    # f\"Consecutive message out of sequence! Expected sequence number {expected_seq} and received {received_seq}\"\r\n                    raise ConsecutiveFrameOutOfSequenceException(request.get_expected_sequence_number(),\r\n                                                                 message.sequenceNumber)\r\n            else:\r\n                # f\"Was expecting {expected_type} and received {received_type}\"\r\n                raise UnexpectedFrameTypeException(\"FrameType.ConsecutiveFrame\", message.frameType)\r\n\r\n        except Exception as e:\r\n            request.set_state(ErrorState())\r\n            request.send_error_frame(e)\r\n            request.on_error(e)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/iso_tp_layer/recv_request/ConsecutiveFrameState.py b/iso_tp_layer/recv_request/ConsecutiveFrameState.py
+--- a/iso_tp_layer/recv_request/ConsecutiveFrameState.py	(revision ea06c6df56abd0d96fd1bcbb2f9b8a910892310d)
++++ b/iso_tp_layer/recv_request/ConsecutiveFrameState.py	(date 1741476320736)
+@@ -48,13 +48,15 @@
+                     request.start_timeout_timer()
+                     request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)
+                     message_length = ceil(len(message.data) / 8)
+-                    if (request.get_current_data_length() + message_length) > request.get_data_length():
+-                        #  f"Message received larger than expected! Expected size is {expected_size}, received {received_size}"
+-                        raise MessageSizeExceededException(request.get_data_length(),
+-                                                           request.get_current_data_length() + message_length)
++                    # if (request.get_current_data_length() + message_length) > request.get_data_length():
++                    #     #  f"Message received larger than expected! Expected size is {expected_size}, received {received_size}"
++                    #     # raise MessageSizeExceededException(request.get_data_length(),
++                    #     #                                    request.get_current_data_length() + message_length)
++                    #     request.append_bits(message.data[:request.get_data_length() - request.get_current_data_length() + 1])
++
+ 
+                     request.append_bits(message.data)
+-                    if request.get_current_data_length() == request.get_data_length():
++                    if request.get_current_data_length() >= request.get_data_length():
+                         request.set_state(FinalState())
+                         try:
+                             request.on_success(request.get_message(), request.get_address())

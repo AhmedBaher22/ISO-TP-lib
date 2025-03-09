@@ -22,7 +22,15 @@ class FlashingECU:
         self.status = FlashingECUStatus.CREATED
         self.ID=FlashingECU.Flashing_Request_ID+1
         FlashingECU.Flashing_Request_ID+=1
+        self._flashing_Progress:float=0
 
     def get_req(self)->str:
         msg= f"[FLASH_REQUEST-{self.ID}]-FLASH STAUTS:{self.status.name} "
         return msg
+    def add_progress(self,r:float):
+        self._flashing_Progress+=r
+    def get_progress(self) -> float:
+        if self._flashing_Progress > 1:
+            return 1
+        else:
+            return  self._flashing_Progress
