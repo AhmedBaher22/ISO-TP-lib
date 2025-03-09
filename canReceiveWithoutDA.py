@@ -65,6 +65,7 @@ try:
             msg = bus.recv(timeout=None)  # Adjust timeout as needed
             flg = False
             if msg:
+
                 send_flag = False
                 logger.info("Message received with arbitration_id=0x%X and data=%s , and hole message = %s", msg.arbitration_id, msg.data, msg)
                 if ack_flag ==True:

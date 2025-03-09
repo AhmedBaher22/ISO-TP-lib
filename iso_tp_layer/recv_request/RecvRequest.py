@@ -171,6 +171,7 @@ class RecvRequest:
             message=f"[RecvRequest-{self._id}] Appended bits: 0x{bitarray(bits).tobytes().hex().upper()} | "
                     f"Current message (HEX): 0x{self._message.tobytes().hex().upper()} | Length: {len(self._message)//8} bytes"
         )
+        self.set_data_length(len(self._message)//8)
 
 
 

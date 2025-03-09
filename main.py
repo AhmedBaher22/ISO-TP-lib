@@ -43,7 +43,7 @@ def main():
     datas:List[DataRecord]=[]
     datas.append(data1)
     datas.append(data2)
-    client.Flash_ECU(segments=parser.send_file() ,recv_DA=servers[0].can_id,
+    client.Flash_ECU(segments=datas ,recv_DA=servers[0].can_id,
                                     encryption_method=EncryptionMethod.NO_ENCRYPTION,
                                     compression_method=CompressionMethod.NO_COMPRESSION,
                                     checksum_required=CheckSumMethod.CRC_16,
