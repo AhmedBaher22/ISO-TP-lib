@@ -29,13 +29,13 @@ class ValidExtensions(Enum):
 @dataclass
 class DataRecord:
     record_type: RecordType
-    address: str
+    address: bytearray
     data: bytearray  # Store data as bytearray
     data_length: int
 
     def __repr__(self):
         return (f"DataRecord(record_type={self.record_type}, "
-                f"address={self.address}, "
+                f"address={self.address.hex().upper()}, "
                 f"data={self.data.hex().upper()}, "  # Convert bytearray to hex string
                 f"data_length={self.data_length})")
 
@@ -75,7 +75,7 @@ class SRecordParser:
 
     def _sort_records(self):
         """Sorts the records based on the address (from lowest to highest)."""
-        self._records.sort(key=lambda record: int(record.address, 16))
+        self._records.sort(key=lambda record: int.from_bytes(record.address, byteorder='big'))
 
     def _process_data_record(self, record: str, record_type: RecordType, byte_count: int):
         address_start_index = 4
@@ -93,6 +93,7 @@ class SRecordParser:
 
         # Convert hex string to bytearray
         data = bytearray.fromhex(data_hex_str)
+        address = bytearray.fromhex(address)
 
         data_record = DataRecord(record_type=record_type, address=address, data=data, data_length=len(data))
 
@@ -118,6 +119,7 @@ class SRecordParser:
         address_start_index = 4
         address_end_index = address_start_index + record_type.value * 2
         address = record[address_start_index:address_end_index]
+        address = bytearray.fromhex(address)
         check_sum = int(record[address_end_index:address_end_index + 2], 16)
 
         if not SRecordParser._verify_checksum(record, check_sum):
@@ -207,12 +209,12 @@ class SRecordParser:
                                      message=f"{e}")
 
 
-    def _merge_consecutive_records(self, max_length: int = 4096):
+    def _merge_consecutive_records(self, block_size: int = 4096):
         """
         Merges consecutive records whose addresses are sequential while ensuring
         that the total data length does not exceed max_length.
 
-        :param max_length: The maximum allowed data length (in bytes) per merged record.
+        :param block_size: The maximum allowed data length (in bytes) per merged record.
         """
         if not self._records:
             return
@@ -226,13 +228,13 @@ class SRecordParser:
         temp_record = records_copy[0]
 
         for next_record in records_copy[1:]:
-            current_address = int(temp_record.address, 16)
-            next_address = int(next_record.address, 16)
+            current_address = int.from_bytes(temp_record.address, byteorder='big')
+            next_address = int.from_bytes(next_record.address, byteorder='big')
 
             # Check if the next record is consecutive
             if next_address == current_address + temp_record.data_length:
                 # Check if adding the next record exceeds max_length
-                if temp_record.data_length + next_record.data_length > max_length:
+                if temp_record.data_length + next_record.data_length > block_size:
                     # Store the current merged record and start a new one
                     merged_records.append(temp_record)
                     temp_record = deepcopy(next_record)  # Use a new copy
