@@ -279,9 +279,10 @@ class IsoTp:
 
         # Create a new thread and start it
         thread = threading.Thread(target=process_message, daemon=True, name="WorkerThread")
-        thread.start()
         self.logger.log_message(log_type=LogType.RECEIVE,
-                                message=f"Started new thread (ID: {thread.ident}). Main thread continues listening to CAN bus.")
+                                message=f"Started new thread. Main thread continues listening to CAN bus.")
+
+        thread.start()
 
     def set_recv_id(self, recv_id):
         self._config.recv_id = recv_id
