@@ -38,13 +38,8 @@ def main():
 
 
 
-    data1=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
-    data2=DataRecord(address=[0x22, 0x10],data=[0x52, 0x55, 0x32],record_type=0,data_length=0)
-    datas:List[DataRecord]=[]
-    datas.append(data1)
-    datas.append(data2)
     client.Flash_ECU(segments=parser.send_file() ,recv_DA=servers[0].can_id,
-                                    encryption_method=EncryptionMethod.NO_ENCRYPTION,
+                                    encryption_method=EncryptionMethod.SEC_P_256_R1,
                                     compression_method=CompressionMethod.NO_COMPRESSION,
                                     checksum_required=CheckSumMethod.CRC_16,
                                     )

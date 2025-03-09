@@ -494,7 +494,7 @@ class Server:
         if message[0] == 0x76:  # Positive response
             self._logger.log_message(
             log_type=LogType.ACKNOWLEDGMENT,
-            message=f"{transfer_request.get_req()}Request download respond for {hex(transfer_request.recv_DA)} is postitive")
+            message=f"{transfer_request.get_req()}Transfer data respond for {hex(transfer_request.recv_DA)} is postitive")
                     
             block_sequence_counter = message[1]
             
@@ -517,7 +517,7 @@ class Server:
                 self.clientSend(message=message,server_can_id=self.can_id)
                 self._logger.log_message(
                 log_type=LogType.ACKNOWLEDGMENT,
-                message=f"{transfer_request.get_req()} Transfer data request for {hex(transfer_request.recv_DA)} sended with message : {[hex(x) for x in message]}")                
+                message=f"{transfer_request.get_req()}  Request Transfer Exit for {hex(transfer_request.recv_DA)} sended with message : {[hex(x) for x in message]}")                
             else:
                 message= self.transfer_data(transfer_request)
                 self._logger.log_message(
@@ -578,7 +578,7 @@ class Server:
             return
         self._logger.log_message(
             log_type=LogType.INFO,
-            message=f"{transfer_request.get_req()} Transfer Exit respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
+            message=f"{transfer_request.get_req()} Request Transfer Exit respond for {transfer_request.recv_DA} received with message : {[hex(x) for x in message]}")
         
         if message[0] == 0x77:  # Positive response
             transfer_request.status = TransferStatus.CHECKING_CRC
@@ -965,7 +965,7 @@ class Server:
                         flashing_ECU_Request.status=FlashingECUStatus.SENDING_CONSECUTIVE_SEGMENTS
                         self._logger.log_message(
                         log_type=LogType.ACKNOWLEDGMENT,
-                        message=f"{flashing_ECU_Request.get_req()} Flashing ECU REQUEST had sent Segment number: {flashing_ECU_Request.current_number_of_segments_send} successfully")
+                        message=f"{flashing_ECU_Request.get_req()} Flashing ECU REQUEST had sent Segment number: {flashing_ECU_Request.current_number_of_segments_send-1} successfully")
                         self.client_Segment_send(recv_DA=flashing_ECU_Request.recv_DA,
                                         data=flashing_ECU_Request.segments[flashing_ECU_Request.current_number_of_segments_send].data,
                                         memory_address=flashing_ECU_Request.segments[flashing_ECU_Request.current_number_of_segments_send].address,
