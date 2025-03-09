@@ -2,7 +2,7 @@ import os
 from typing import Optional, List
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton,
-    QFileDialog, QMessageBox, QComboBox, QCheckBox, QProgressBar, QApplication
+    QFileDialog, QMessageBox, QComboBox, QProgressBar, QApplication
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from uds_layer.uds_client import UdsClient
@@ -35,6 +35,7 @@ class FlashPage(QWidget):
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
 
+        # File selection layout.
         file_layout = QHBoxLayout()
         self.file_line_edit = QLineEdit()
         self.file_line_edit.setPlaceholderText("Select firmware file...")
@@ -44,25 +45,33 @@ class FlashPage(QWidget):
         file_layout.addWidget(self.file_select_btn)
         layout.addLayout(file_layout)
 
+        # Encryption method combo.
         self.encryption_combo = QComboBox()
         for method in EncryptionMethod:
             self.encryption_combo.addItem(method.name, method)
         layout.addWidget(QLabel("Encryption Method:"))
         layout.addWidget(self.encryption_combo)
 
+        # Compression method combo.
         self.compression_combo = QComboBox()
         for method in CompressionMethod:
             self.compression_combo.addItem(method.name, method)
         layout.addWidget(QLabel("Compression Method:"))
         layout.addWidget(self.compression_combo)
 
-        self.checksum_checkbox = QCheckBox("Use CRC-16 Checksum")
-        layout.addWidget(self.checksum_checkbox)
+        # Checksum method combo from the CheckSumMethod enum.
+        self.checksum_combo = QComboBox()
+        for method in CheckSumMethod:
+            self.checksum_combo.addItem(method.name, method)
+        layout.addWidget(QLabel("Checksum Method:"))
+        layout.addWidget(self.checksum_combo)
 
+        # Flash button.
         self.flash_btn = QPushButton("Start Flash")
         self.flash_btn.clicked.connect(self.start_flash)
         layout.addWidget(self.flash_btn)
 
+        # Progress bar.
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
@@ -87,8 +96,6 @@ class FlashPage(QWidget):
 
     def update_progress(self, progress: float):
         # Called from a background thread: emit a signal with the progress percentage.
-        print("---------------------")
-        print(progress)
         progress_value = int(progress * 100)
         self.progressUpdated.emit(progress_value)
 
@@ -123,7 +130,9 @@ class FlashPage(QWidget):
                 self, "Error", f"Failed to parse server ID from the table: {e}")
             return
 
-        address_str = self.address_input.text().strip()
+        # Optional: read memory address from a field (assuming you have self.address_input).
+        address_str = getattr(self, "address_input",
+                              QLineEdit()).text().strip()
         if address_str and address_str.startswith("0x"):
             try:
                 memory_address = bytearray.fromhex(address_str[2:].strip())
@@ -136,8 +145,8 @@ class FlashPage(QWidget):
 
         encryption_method = self.encryption_combo.currentData()
         compression_method = self.compression_combo.currentData()
-        checksum_method = CheckSumMethod.CRC_16 if self.checksum_checkbox.isChecked(
-        ) else CheckSumMethod.NO_CHECKSUM
+        # Get the checksum method from the combo box.
+        checksum_method = self.checksum_combo.currentData()
 
         # Pre-convert each firmware segment's address from str to bytearray.
         converted_segments = []

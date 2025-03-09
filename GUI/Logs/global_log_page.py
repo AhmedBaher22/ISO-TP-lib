@@ -4,7 +4,7 @@ import os
 
 
 class GlobalLogPage(LiveLogPage):
-    def __init__(self, log_file="logs/uds/success.log", parent=None, update_interval=1000):
+    def __init__(self, log_file="logs/general_logs.log", parent=None, update_interval=1000):
         title = "Global Log for All Servers"
         placeholder_text = "Global logs will appear here..."
         super().__init__(title, log_file, placeholder_text, parent, update_interval)
