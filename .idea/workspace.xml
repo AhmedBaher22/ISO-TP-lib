@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b777175-2304-4ebc-8270-202c0825e21a" name="Changes" comment="updated logging in can">
-      <change afterPath="$PROJECT_DIR$/test-file.s19" afterDir="false" />
+    <list default="true" id="0776d9f4-874d-47ce-8a7f-8f4777033dea" name="Changes" comment="integrate iso-tp-stub">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_26-Jan-25_11_10_PM__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_26-Jan-25_11_10_PM__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09-Mar-25_2_23_AM__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09-Mar-25_2_23_AM__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hex_parser/SRecordParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/hex_parser/SRecordParser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -27,7 +29,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="ECDSA_IMPLEMENTATION_and_routinecontrol_finaluzeProgramming" />
+        <entry key="$PROJECT_DIR$" value="new-integrate-iso-tp-stub" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -175,7 +177,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3b777175-2304-4ebc-8270-202c0825e21a" name="Changes" comment="" />
+      <changelist id="0776d9f4-874d-47ce-8a7f-8f4777033dea" name="Changes" comment="integrate iso-tp-stub" />
       <created>1734356992446</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
