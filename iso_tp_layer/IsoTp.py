@@ -239,13 +239,13 @@ class IsoTp:
         message_in_bits = message_to_bitarray(frame)
         message_in_bytes = bitarray_to_bytearray(message_in_bits)
         self.logger.log_message(log_type=LogType.SEND, message=f"Sending frame {frame} to {address}")
-        self._config.send_fn(arbitration_id=address._txid, data=message_in_bytes)
+        self._config.send_fn(arbitration_id=address._rxid, data=message_in_bytes)
 
 
     def _send_to_can(self, address: Address, message):
         message = bytearray.fromhex(message)  # Convert frame to bytearray
         self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message=f"ISO-TP calls CAN's send function")
-        self._config.send_fn(arbitration_id=address._txid, data=message)
+        self._config.send_fn(arbitration_id=address._rxid, data=message)
 
 
     def recv_can_message(self, message: can.Message):

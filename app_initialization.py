@@ -17,7 +17,7 @@ from uds_layer.uds_enums import SessionType
 from uds_layer.server import Server
 
 def init_uds_client(
-    client_id: int = 0x33,
+    client_id: int = 0x55,
     can_config: Optional[CANConfiguration] = None,
     isotp_config: Optional[IsoTpConfig] = None,
     filters: Optional[List[Dict]] = None
@@ -45,7 +45,7 @@ def init_uds_client(
                 stmin=10,
                 on_recv_success=client.receive_message,
                 on_recv_error=client.on_fail_receive,
-                recv_id=client.get_client_id
+                recv_id=0x33
             )
         isotp_layer = IsoTp(isotp_config)
         client.set_isotp_send(isotp_layer.send)
