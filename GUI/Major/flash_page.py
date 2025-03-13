@@ -13,7 +13,7 @@ from hex_parser.SRecordParser import SRecordParser, DataRecord
 def parse_srec_file(filename: str) -> List[DataRecord]:
     parser = SRecordParser()
     parser.parse_file(filename)
-    return parser._merged_records
+    return parser.send_file()
 
 
 class FlashPage(QWidget):
@@ -149,19 +149,19 @@ class FlashPage(QWidget):
         checksum_method = self.checksum_combo.currentData()
 
         # Pre-convert each firmware segment's address from str to bytearray.
-        converted_segments = []
-        for seg in self.firmware_segments:
-            # Use the address directly since it is already a bytearray.
-            conv_addr = seg.address if isinstance(
-                seg.address, (bytearray, bytes)) else bytearray.fromhex(seg.address)
-            new_seg = DataRecord(record_type=seg.record_type, address=conv_addr,
-                                 data=seg.data, data_length=seg.data_length)
-            converted_segments.append(new_seg)
+        # converted_segments = []
+        # for seg in self.firmware_segments:
+        #     # Use the address directly since it is already a bytearray.
+        #     conv_addr = seg.address if isinstance(
+        #         seg.address, (bytearray, bytes)) else bytearray.fromhex(seg.address)
+        #     new_seg = DataRecord(record_type=seg.record_type, address=conv_addr,
+        #                          data=seg.data, data_length=seg.data_length)
+        #     converted_segments.append(new_seg)
 
         self.client.on_success_send = self.update_progress
         try:
             self.client.Flash_ECU(
-                segments=converted_segments,
+                segments=self.firmware_segments,
                 recv_DA=recv_DA,
                 encryption_method=encryption_method,
                 compression_method=compression_method,
