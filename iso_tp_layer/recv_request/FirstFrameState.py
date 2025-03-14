@@ -31,13 +31,11 @@ class FirstFrameState(RequestState):
                     request.start_timeout_timer()
                     request.set_expected_sequence_number((message.sequenceNumber + 1) % 16)
                     message_length = ceil(len(message.data) / 8)
+
                     if (request.get_current_data_length() + message_length) > request.get_data_length():
-                        #  f"Message received larger than expected! Expected size is {expected_size}, received {received_size}"
-                        # raise MessageSizeExceededException(request.get_data_length(),
-                        #                                    request.get_current_data_length() + message_length)
                         request.append_bits(message.data[
-                                            :request.get_current_data_length() + message_length - request.get_data_length() + 1])
-                        # request.set_data_length(message.dataLength)
+                                            :(request.get_data_length() - request.get_current_data_length())*8])
+
                     else:
                         request.append_bits(message.data)
                         # request.set_data_length(message.dataLength)

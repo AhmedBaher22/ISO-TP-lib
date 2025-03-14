@@ -227,25 +227,25 @@ class IsoTp:
         :return: The corresponding FlowControlFrameMessage if found, else None.
         """
         self.logger.log_message(log_type=LogType.DEBUG, message=f"Searching for control frame for address {address}")
-
-        for addr, control_frame in self._control_frames:
-            if addr._txid == address._txid:
-                self.logger.log_message(log_type=LogType.DEBUG, message=f"Found control frame for {address}")
-                return control_frame
-        self.logger.log_message(log_type=LogType.WARNING, message=f"No control frame found for address {address}")
+        with self.lock:
+            for addr, control_frame in self._control_frames:
+                if addr._txid == address._txid:
+                    self.logger.log_message(log_type=LogType.DEBUG, message=f"Found control frame for {address}")
+                    return control_frame
+            self.logger.log_message(log_type=LogType.WARNING, message=f"No control frame found for address {address}")
         return None
 
     def _send_frame(self, address: Address, frame: FrameMessage):
         message_in_bits = message_to_bitarray(frame)
         message_in_bytes = bitarray_to_bytearray(message_in_bits)
         self.logger.log_message(log_type=LogType.SEND, message=f"Sending frame {frame} to {address}")
-        self._config.send_fn(arbitration_id=address._txid, data=message_in_bytes)
+        self._config.send_fn(arbitration_id=address._rxid, data=message_in_bytes)
 
 
     def _send_to_can(self, address: Address, message):
         message = bytearray.fromhex(message)  # Convert frame to bytearray
         self.logger.log_message(log_type=LogType.ACKNOWLEDGMENT, message=f"ISO-TP calls CAN's send function")
-        self._config.send_fn(arbitration_id=address._txid, data=message)
+        self._config.send_fn(arbitration_id=address._rxid, data=message)
 
 
     def recv_can_message(self, message: can.Message):
