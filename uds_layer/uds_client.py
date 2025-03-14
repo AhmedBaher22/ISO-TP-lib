@@ -244,7 +244,7 @@ class UdsClient:
         address = Address(addressing_mode=0, txid=self._client_id, rxid=server_can_id)
 
         if len(message) <= 4095:
-            
+            message = bytearray(message)
             message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
 
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
@@ -252,6 +252,7 @@ class UdsClient:
             # Split message into chunks of 4095 bytes
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
+                message = bytearray(message)
                 chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
