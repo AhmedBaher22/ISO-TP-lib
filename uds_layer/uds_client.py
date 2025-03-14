@@ -246,7 +246,7 @@ class UdsClient:
         if len(message) <= 4095:
             
             message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
-            
+
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
             # Split message into chunks of 4095 bytes
@@ -313,7 +313,7 @@ class UdsClient:
                 # Create address object for ISO-TP
                 address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)
                 # Send message using ISO-TP
-                self._isotp_send(message, address,self.on_success_send,self.on_fail_send)
+                self.send_message(message=bytearray(message), server_can_id=recv_DA)
 
                 self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,

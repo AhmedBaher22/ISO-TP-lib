@@ -227,12 +227,12 @@ class IsoTp:
         :return: The corresponding FlowControlFrameMessage if found, else None.
         """
         self.logger.log_message(log_type=LogType.DEBUG, message=f"Searching for control frame for address {address}")
-
-        for addr, control_frame in self._control_frames:
-            if addr._txid == address._txid:
-                self.logger.log_message(log_type=LogType.DEBUG, message=f"Found control frame for {address}")
-                return control_frame
-        self.logger.log_message(log_type=LogType.WARNING, message=f"No control frame found for address {address}")
+        with self.lock:
+            for addr, control_frame in self._control_frames:
+                if addr._txid == address._txid:
+                    self.logger.log_message(log_type=LogType.DEBUG, message=f"Found control frame for {address}")
+                    return control_frame
+            self.logger.log_message(log_type=LogType.WARNING, message=f"No control frame found for address {address}")
         return None
 
     def _send_frame(self, address: Address, frame: FrameMessage):

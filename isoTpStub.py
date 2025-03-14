@@ -38,7 +38,7 @@ def on_success(msg: bitarray, address: Address):
 
     print(f"UDS on_success:\naddress: {address}\ndata: {msg.hex()}")
 
-    iso_tp = init_isotp_client(False)
+    # iso_tp = init_isotp_client(False)
 
     time = 5
     message = bytearray()

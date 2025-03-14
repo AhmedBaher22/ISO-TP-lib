@@ -339,7 +339,5 @@ class SRecordParser:
     def send_file(self):
         data1 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
         data2 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
-        datas: List[DataRecord] = []
-        datas.append(data1)
-        datas.append(data2)
+        datas: List[DataRecord] = [data1, data2]
         return datas
