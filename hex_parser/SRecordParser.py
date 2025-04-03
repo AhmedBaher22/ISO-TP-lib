@@ -150,28 +150,28 @@ class SRecordParser:
             raise ValueError(
                 f"Error in record {record} - Type S{record_type} is not allowed for {self._file_extension}")
 
-        match record_type:
-            case '0':
-                # print(f"Header {record}")
-                pass
-            case '1':
-                self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.TWO_BYTES)
-            case '2':
-                self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.THREE_BYTES)
-            case '3':
-                self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.FOUR_BYTES)
-            case '5':
-                self._process_count_record(record=record, record_type=RecordType.TWO_BYTES)
-            case '6':
-                self._process_count_record(record=record, record_type=RecordType.THREE_BYTES)
-            case '7':
-                self._process_start_address_record(record=record, record_type=RecordType.FOUR_BYTES)
-            case '8':
-                self._process_start_address_record(record=record, record_type=RecordType.THREE_BYTES)
-            case '9':
-                self._process_start_address_record(record=record, record_type=RecordType.TWO_BYTES)
-            case _:
-                raise ValueError(f"Error in record {record} - The type must be in this range [0 - 9] except 4")
+        if record_type == '0':
+            # print(f"Header {record}")
+            pass
+        elif record_type == '1':
+            self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.TWO_BYTES)
+        elif record_type == '2':
+            self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.THREE_BYTES)
+        elif record_type == '3':
+            self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.FOUR_BYTES)
+        elif record_type == '5':
+            self._process_count_record(record=record, record_type=RecordType.TWO_BYTES)
+        elif record_type == '6':
+            self._process_count_record(record=record, record_type=RecordType.THREE_BYTES)
+        elif record_type == '7':
+            self._process_start_address_record(record=record, record_type=RecordType.FOUR_BYTES)
+        elif record_type == '8':
+            self._process_start_address_record(record=record, record_type=RecordType.THREE_BYTES)
+        elif record_type == '9':
+            self._process_start_address_record(record=record, record_type=RecordType.TWO_BYTES)
+        else:
+            raise ValueError(f"Error in record {record} - The type must be in this range [0 - 9] except 4")
+
 
     def parse_file(self, filename: str):
         try:
@@ -257,87 +257,73 @@ class SRecordParser:
     #
     #     self._merged_records = merged_records  # Store the merged records separately without modifying original
 
-    def _merge_consecutive_records(self, block_size: int = 4096):
+    def _merge_consecutive_records(self, block_size: int = 4096, merge_threshold: int = 80):
         """
         Merges consecutive records while ensuring alignment with block_size.
+        Addresses are aligned to either (0x0, 0x4, 0x8, or 0xC).
         If a record is not aligned, it adds padding (0xFF) before the address.
-        Records are merged as long as they fit within the block size; otherwise, padding is added.
+        Records are merged if padding is below merge_threshold, but no record exceeds block_size.
 
-        :param block_size: The block size (in bytes) for alignment.
+        :param block_size: The maximum record size (in bytes).
+        :param merge_threshold: The maximum padding allowed to merge two records.
         """
         if not self._records:
             return
 
         self._sort_records()  # Ensure records are sorted by address
         merged_records = []
-
         records_copy = deepcopy(self._records)
+
         temp_record = records_copy[0]
         current_address = int.from_bytes(temp_record.address, byteorder='big')
 
-        # Align the first record
-        aligned_address = (current_address // block_size) * block_size
-        if current_address % block_size != 0:
-            # Add padding before the address to align it
+        # Align to 0x0, 0x4, 0x8, or 0xC
+        aligned_address = (current_address // 16) * 16 + (current_address % 16 & 0xC)
+
+        if current_address % 16 not in {0x0, 0x4, 0x8, 0xC}:
             padding_size = current_address - aligned_address
             temp_record.data = b'\xFF' * padding_size + temp_record.data
-            temp_record.data_length += padding_size  # Update data length
+            temp_record.data_length += padding_size
             current_address = aligned_address
             temp_record.address = current_address.to_bytes(len(temp_record.address), byteorder='big')
 
         for next_record in records_copy[1:]:
             next_address = int.from_bytes(next_record.address, byteorder='big')
+            next_aligned_address = (next_address // 16) * 16 + (next_address % 16 & 0xC)
 
-            # Check if the next record fits within the same block
-            if next_address < (aligned_address + block_size):
-                # Merge if it does not exceed the block size
-                if (len(temp_record.data) + len(next_record.data)) <= block_size:
-                    temp_record.data += next_record.data
-                    temp_record.data_length += len(next_record.data)  # Update data length
-                else:
-                    # Add padding to reach the block boundary
-                    padding_size = (aligned_address + block_size) - (current_address + len(temp_record.data))
-                    temp_record.data += b'\xFF' * padding_size
-                    temp_record.data_length += padding_size  # Update data length
-                    merged_records.append(temp_record)
+            if next_address % 16 not in {0x0, 0x4, 0x8, 0xC}:
+                padding_size = next_aligned_address - next_address
+                next_record.data = b'\xFF' * padding_size + next_record.data
+                next_record.data_length += padding_size
+                next_address = next_aligned_address
+                next_record.address = next_address.to_bytes(len(next_record.address), byteorder='big')
 
-                    # Start a new record
-                    temp_record = deepcopy(next_record)
-                    current_address = next_address
-                    aligned_address = (current_address // block_size) * block_size
+            # Check padding needed to merge
+            padding_needed = next_address - (current_address + len(temp_record.data))
+
+            if 0 <= padding_needed <= merge_threshold and (
+                    len(temp_record.data) + padding_needed + len(next_record.data)) <= block_size:
+                temp_record.data += b'\xFF' * padding_needed + next_record.data
+                temp_record.data_length += padding_needed + len(next_record.data)
             else:
-                # Add padding to fill the remaining block before moving to the next
-                padding_size = (aligned_address + block_size) - (current_address + len(temp_record.data))
-                temp_record.data += b'\xFF' * padding_size
-                temp_record.data_length += padding_size  # Update data length
                 merged_records.append(temp_record)
-
-                # Start new block-aligned record
                 temp_record = deepcopy(next_record)
                 current_address = next_address
-                aligned_address = (current_address // block_size) * block_size
 
-                if current_address % block_size != 0:
-                    # Add padding before the address to align it
-                    padding_size = current_address - aligned_address
-                    temp_record.data = b'\xFF' * padding_size + temp_record.data
-                    temp_record.data_length += padding_size  # Update data length
-                    current_address = aligned_address
-                    temp_record.address = current_address.to_bytes(len(temp_record.address), byteorder='big')
-
-        # Ensure the last record is padded to block size before appending
-        padding_size = (aligned_address + block_size) - (current_address + len(temp_record.data))
-        if padding_size > 0:
-            temp_record.data += b'\xFF' * padding_size
-            temp_record.data_length += padding_size  # Update data length
-
+        # Append the last record without forcing it to 4096 bytes
         merged_records.append(temp_record)
-
-        self._merged_records = merged_records  # Store the merged records separately
-
-
-    def send_file(self):
-        data1 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
-        data2 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
-        datas: List[DataRecord] = [data1, data2]
-        return datas
+        self._merged_records = merged_records  # Store merged records separately
+    #
+    # def send_file(self):
+    #     data1 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
+    #     data2 = DataRecord(address=[0x22, 0x10], data=[0x52, 0x55, 0x32], record_type=0, data_length=0)
+    #     datas: List[DataRecord] = [data1, data2]
+    #     return datas
+    #
+    #
+    # def get_record(self):
+    #     self._merged_records[0].data = bytearray.fromhex(
+    #         "7C000146700000007020000070400000706000007080000070A0000070C0000070E00000710000007120000071400000716000007180000071A0000071C0000071E00000720000007220000072400000726000007280000072A0000072C00000"
+    #     )
+    #     self._merged_records[0].data_length = 80
+    #     return self._merged_records

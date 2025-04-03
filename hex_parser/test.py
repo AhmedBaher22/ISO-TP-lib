@@ -3,8 +3,8 @@
 from SRecordParser import SRecordParser
 
 parser = SRecordParser()
-# parser.parse_file(filename="hello_world_mpc5748g.srec")
-parser.parse_file(filename="s19file.s19")
+parser.parse_file(filename="hello_world_mpc5748g.srec")
+# parser.parse_file(filename="s19file.s19")
 
 
 # print("\nParsed Records:")
