@@ -37,9 +37,9 @@ def main():
     while True:
         if len(servers) >0:
             client.Flash_ECU(segments=parser.get_record() ,recv_DA=servers[0].can_id,
-                                            encryption_method=EncryptionMethod.SEC_P_256_R1,
+                                            encryption_method=EncryptionMethod.NO_ENCRYPTION,
                                             compression_method=CompressionMethod.NO_COMPRESSION,
-                                            checksum_required=CheckSumMethod.CRC_16,
+                                            checksum_required=CheckSumMethod.CRC_32,
                                             )
             flag=False
         sleep(1)
