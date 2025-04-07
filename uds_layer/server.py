@@ -323,8 +323,8 @@ class Server:
         # Calculate AddressAndLengthFormatIdentifier
         address_length = len(transfer_request.memory_address)
         size_length = len(str(transfer_request.data_size))
-        address_length_format_identifier = (address_length << 4) | size_length
-
+        address_length_format_identifier = (size_length << 4) | address_length
+        
         # Prepare message
         message = [0x34, data_format_identifier, address_length_format_identifier]
         
@@ -710,7 +710,8 @@ class Server:
         # Calculate AddressAndLengthFormatIdentifier
         address_length = len(transfer_request.memory_address)
         size_length = len(str(transfer_request.data_size))
-        address_length_format_identifier = (address_length << 4) | size_length
+        address_length_format_identifier = (size_length << 4) | address_length
+        
         # Prepare message
         message = [0x31, 0x01, 0xFF, 0x00, address_length_format_identifier]
         # Add memory address
