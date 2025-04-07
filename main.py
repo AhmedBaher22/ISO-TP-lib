@@ -22,7 +22,7 @@ from hex_parser.SRecordParser import DataRecord, SRecordParser
 
 def main():
     parser = SRecordParser()
-    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/hex_parser/test.srec")
+    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/hex_parser/new_srec.srec")
     client = init_uds_client()
 
     # opening session control
