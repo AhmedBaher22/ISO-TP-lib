@@ -40,7 +40,18 @@ class ECUUpdateServer:
             logging.info(f"Server started on {self.host}:{self.port}")
             
             # Start accepting connections
-            self.receive_requests()
+            while self.running:
+                try:
+                    client_socket, (client_ip, client_port) = self.socket.accept()
+                    client_thread = threading.Thread(
+                        target=self.handle_client,
+                        args=(client_socket, client_ip, client_port)
+                    )
+                    client_thread.daemon = True
+                    client_thread.start()
+                except Exception as e:
+                    if self.running:
+                        logging.error(f"Error accepting connection: {str(e)}")
 
         except Exception as e:
             logging.error(f"Failed to start server: {str(e)}")
@@ -62,15 +73,29 @@ class ECUUpdateServer:
     def handle_client(self, client_socket: socket.socket, client_ip: str, client_port: int):
         """Handle individual client connection"""
         try:
+            client_socket.settimeout(30)  # Set timeout for client operations
+            
             # Receive initial message
             message = self.receive_message(client_socket)
-            if not message or message['type'] != Protocol.HANDSHAKE:
-                raise Exception("Invalid initial message")
+            if not message:
+                logging.error(f"No initial message received from {client_ip}:{client_port}")
+                return
+                
+            if message['type'] != Protocol.HANDSHAKE:
+                logging.error(f"Invalid initial message type from {client_ip}:{client_port}")
+                client_socket.send(Protocol.create_error_message(400, "Invalid initial message"))
+                return
 
             # Extract client information
             payload = message['payload']
-            car_type = payload['car_type']
-            car_id = payload['car_id']
+            car_type = payload.get('car_type')
+            car_id = payload.get('car_id')
+            
+            if not car_type or not car_id:
+                logging.error(f"Missing required information in handshake from {client_ip}:{client_port}")
+                client_socket.send(Protocol.create_error_message(400, "Missing required information"))
+                return
+
             service_type = ServiceType(payload['service_type'])
 
             # Create request object
@@ -87,16 +112,25 @@ class ECUUpdateServer:
 
             # Authenticate and process request
             if self.check_authentication(request):
+                client_socket.send(Protocol.create_message(Protocol.HANDSHAKE, {
+                    'status': 'authenticated',
+                    'message': 'Connection established'
+                }))
                 self.allocate_service(request, client_socket)
             else:
-                client_socket.send(Protocol.create_error_message(
-                    401, "Authentication failed"
-                ))
+                client_socket.send(Protocol.create_error_message(401, "Authentication failed"))
 
+        except socket.timeout:
+            logging.error(f"Connection timeout for {client_ip}:{client_port}")
+        except ConnectionError as e:
+            logging.error(f"Connection error for {client_ip}:{client_port}: {str(e)}")
         except Exception as e:
-            logging.error(f"Error handling client: {str(e)}")
+            logging.error(f"Error handling client {client_ip}:{client_port}: {str(e)}")
         finally:
-            client_socket.close()
+            try:
+                client_socket.close()
+            except:
+                pass
 
     def check_authentication(self, request: Request) -> bool:
         """Authenticate the car request"""
@@ -312,26 +346,38 @@ class ECUUpdateServer:
             offset += len(chunk)
             download_request.transferred_size += len(chunk)
 
-    def receive_message(self, client_socket: socket.socket) -> Dict:
-        """Receive and parse a message from the client"""
+    def receive_message(self) -> Optional[Dict]:
+        """Receive and parse a message from the server"""
         try:
             # First receive message length (10 bytes)
-            length_data = client_socket.recv(10)
-            if not length_data:
-                return None
+            length_data = b""
+            while len(length_data) < 10:
+                chunk = self.socket.recv(10 - len(length_data))
+                if not chunk:
+                    logging.error("Connection closed by peer while receiving message length")
+                    return None
+                length_data += chunk
             
             message_length = int(length_data.decode())
             
             # Receive the actual message
             message_data = b""
             while len(message_data) < message_length:
-                chunk = client_socket.recv(min(self.chunk_size, message_length - len(message_data)))
+                remaining = message_length - len(message_data)
+                chunk = self.socket.recv(min(self.chunk_size, remaining))
                 if not chunk:
+                    logging.error("Connection closed by peer while receiving message data")
                     return None
                 message_data += chunk
 
             return Protocol.parse_message(message_data)
 
+        except socket.timeout:
+            logging.error("Socket timeout while receiving message")
+            return None
+        except ConnectionError as e:
+            logging.error(f"Connection error while receiving message: {str(e)}")
+            return None
         except Exception as e:
             logging.error(f"Error receiving message: {str(e)}")
             return None

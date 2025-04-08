@@ -84,43 +84,53 @@ class ECUUpdateClient:
 
     def connect_to_server(self):
         """Connect to update server"""
-        try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.settimeout(self.connection_timeout)
-            self.socket.connect((self.server_host, self.server_port))
+        retry_count = 0
+        while retry_count < self.retry_limit and self.running:
+            try:
+                if self.socket:
+                    self.cleanup_connection()
 
-            # Send handshake
-            handshake_message = Protocol.create_message(Protocol.HANDSHAKE, {
-                'car_type': self.car_info.car_type,
-                'car_id': self.car_info.car_id,
-                'service_type': ServiceType.CHECK_FOR_UPDATE.value,
-                'metadata': {
-                    'ecu_versions': self.car_info.ecu_versions
-                }
-            })
-            self.socket.send(handshake_message)
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.socket.settimeout(self.connection_timeout)
+                self.socket.connect((self.server_host, self.server_port))
 
-            # Process handshake response
-            response = self.receive_message()
-            if not response:
-                raise Exception("No response from server")
+                # Send handshake
+                handshake_message = Protocol.create_message(Protocol.HANDSHAKE, {
+                    'car_type': self.car_info.car_type,
+                    'car_id': self.car_info.car_id,
+                    'service_type': ServiceType.CHECK_FOR_UPDATE.value,
+                    'metadata': {
+                        'ecu_versions': self.car_info.ecu_versions
+                    }
+                })
+                self.socket.send(handshake_message)
 
-            if response['type'] == Protocol.ERROR:
-                raise Exception(f"Server error: {response['payload']['message']}")
+                # Process handshake response
+                response = self.receive_message()
+                if not response:
+                    raise Exception("No response from server")
 
-            self.last_login = datetime.now()
-            self.status = ClientStatus.CHECK_FOR_UPDATES
-            self.check_for_updates()
+                if response['type'] == Protocol.ERROR:
+                    raise Exception(f"Server error: {response['payload']['message']}")
 
-        except socket.timeout:
-            logging.error("Connection timeout")
-            self.status = ClientStatus.CONNECTION_TIMEOUT
-            self.cleanup_connection()
-        except Exception as e:
-            logging.error(f"Connection error: {str(e)}")
-            self.status = ClientStatus.OFFLINE
-            self.cleanup_connection()
+                self.last_login = datetime.now()
+                self.status = ClientStatus.CHECK_FOR_UPDATES
+                return True
 
+            except socket.timeout:
+                logging.error(f"Connection attempt {retry_count + 1} timed out")
+            except ConnectionRefusedError:
+                logging.error(f"Connection attempt {retry_count + 1} refused - Is the server running?")
+            except Exception as e:
+                logging.error(f"Connection attempt {retry_count + 1} failed: {str(e)}")
+
+            retry_count += 1
+            if retry_count < self.retry_limit:
+                time.sleep(self.retry_delay)
+
+        self.status = ClientStatus.OFFLINE
+        return False
+    
     def check_for_updates(self):
         """Check for available updates"""
         try:
@@ -334,22 +344,34 @@ class ECUUpdateClient:
         """Receive and parse a message from the server"""
         try:
             # First receive message length (10 bytes)
-            length_data = self.socket.recv(10)
-            if not length_data:
-                return None
+            length_data = b""
+            while len(length_data) < 10:
+                chunk = self.socket.recv(10 - len(length_data))
+                if not chunk:
+                    logging.error("Connection closed by peer while receiving message length")
+                    return None
+                length_data += chunk
             
             message_length = int(length_data.decode())
             
             # Receive the actual message
             message_data = b""
             while len(message_data) < message_length:
-                chunk = self.socket.recv(min(self.chunk_size, message_length - len(message_data)))
+                remaining = message_length - len(message_data)
+                chunk = self.socket.recv(min(self.chunk_size, remaining))
                 if not chunk:
+                    logging.error("Connection closed by peer while receiving message data")
                     return None
                 message_data += chunk
 
             return Protocol.parse_message(message_data)
 
+        except socket.timeout:
+            logging.error("Socket timeout while receiving message")
+            return None
+        except ConnectionError as e:
+            logging.error(f"Connection error while receiving message: {str(e)}")
+            return None
         except Exception as e:
             logging.error(f"Error receiving message: {str(e)}")
             return None
@@ -357,6 +379,10 @@ class ECUUpdateClient:
     def cleanup_connection(self):
         """Clean up socket connection"""
         if self.socket:
+            try:
+                self.socket.shutdown(socket.SHUT_RDWR)
+            except:
+                pass
             try:
                 self.socket.close()
             except:

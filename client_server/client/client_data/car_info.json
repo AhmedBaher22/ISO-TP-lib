@@ -1,0 +1,11 @@
+{
+    "car_type": "ModelX",
+    "car_name": "TestCar",
+    "car_model": "MX2023",
+    "car_id": "MX2023-001",
+    "ecu_versions": {
+        "Engine_Control_Module": "1.0.0",
+        "Transmission_Control_Module": "1.0.0",
+        "Brake_Control_Module": "1.0.0"
+    }
+}
