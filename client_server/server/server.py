@@ -154,6 +154,7 @@ class ECUUpdateServer:
             logging.error(f"Authentication error: {str(e)}")
             request.status = RequestStatus.FAILED
             return False
+        
     def allocate_service(self, request: Request, client_socket: socket.socket):
         """Allocate appropriate service based on request type"""
         try:
@@ -177,7 +178,7 @@ class ECUUpdateServer:
         """Check if updates are available for the car"""
         try:
             car_type = next((ct for ct in self.car_types 
-                           if ct.name == request.car_type), None)
+                        if ct.name == request.car_type), None)
             
             if not car_type:
                 raise Exception("Car type not found")
@@ -200,7 +201,7 @@ class ECUUpdateServer:
             client_socket.send(Protocol.create_error_message(
                 500, "Update check failed"
             ))
-
+            
     def handle_download_request(self, request: Request, client_socket: socket.socket):
         """Handle download request for new ECU versions"""
         try:
@@ -346,13 +347,13 @@ class ECUUpdateServer:
             offset += len(chunk)
             download_request.transferred_size += len(chunk)
 
-    def receive_message(self) -> Optional[Dict]:
-        """Receive and parse a message from the server"""
+    def receive_message(self, client_socket: socket.socket) -> Optional[Dict]:
+        """Receive and parse a message from the client"""
         try:
             # First receive message length (10 bytes)
             length_data = b""
             while len(length_data) < 10:
-                chunk = self.socket.recv(10 - len(length_data))
+                chunk = client_socket.recv(10 - len(length_data))
                 if not chunk:
                     logging.error("Connection closed by peer while receiving message length")
                     return None
@@ -364,7 +365,7 @@ class ECUUpdateServer:
             message_data = b""
             while len(message_data) < message_length:
                 remaining = message_length - len(message_data)
-                chunk = self.socket.recv(min(self.chunk_size, remaining))
+                chunk = client_socket.recv(min(self.chunk_size, remaining))
                 if not chunk:
                     logging.error("Connection closed by peer while receiving message data")
                     return None
