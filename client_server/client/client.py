@@ -209,19 +209,27 @@ class ECUUpdateClient:
             logging.error(f"Update check error: {str(e)}")
             self.status = ClientStatus.OFFLINE
             self.cleanup_connection()
+
     def prepare_download_request(self, updates_needed: Dict[str, str]):
         logging.info("prepare download request has been started processing")
         """Prepare download request for new ECU versions"""
         try:
-            self.current_download = ClientDownloadRequest(
-                request_id=str(uuid.uuid4()),
-                timestamp=datetime.now(),
-                car_info=self.car_info,
-                required_updates=updates_needed,
-                status=ClientDownloadStatus.INITIALIZING,
-                total_ecus=len(updates_needed),
-                completed_ecus=0
-            )
+            # Check if there's an existing download request
+            if self.current_download and self.current_download.status == ClientDownloadStatus.DOWNLOADING:
+                logging.info("Found failed download request, attempting to resume")
+                self.verify_temp_files()
+            else:
+                self.current_download = ClientDownloadRequest(
+                    request_id=str(uuid.uuid4()),
+                    timestamp=datetime.now(),
+                    car_info=self.car_info,
+                    required_updates=updates_needed,
+                    status=ClientDownloadStatus.INITIALIZING,
+                    total_ecus=len(updates_needed),
+                    completed_ecus=0,
+                    file_offsets={}
+                )
+            
             logging.info(f"download request status:{self.current_download.status}")
             # Save initial download request
             self.db.save_download_request(self.current_download)
@@ -235,6 +243,25 @@ class ECUUpdateClient:
             logging.error(f"Error preparing download: {str(e)}")
             self.status = ClientStatus.OFFLINE
 
+
+
+    def verify_temp_files(self):
+        """Verify temporary files and their sizes"""
+        try:
+            for ecu_name in self.current_download.required_updates.keys():
+                temp_path = f"temp_{ecu_name}_{self.current_download.request_id}.hex"
+                if os.path.exists(temp_path):
+                    size = os.path.getsize(temp_path)
+                    self.current_download.file_offsets[ecu_name] = size
+                    logging.info(f"Found existing temporary file for {ecu_name} with size {size} bytes")
+                    return True
+                else:
+                    self.current_download.file_offsets[ecu_name] = 0
+                    logging.info(f"No existing temporary file found for {ecu_name}, will start from beginning")
+                    return False
+        except Exception as e:
+            logging.error(f"Error verifying temp files: {str(e)}")
+
     def download_updates(self):
         logging.info("updating process starts preparing update request messages")
         """Handle the download of new ECU versions"""
@@ -242,34 +269,45 @@ class ECUUpdateClient:
             if not self.current_download:
                 raise Exception("No download request available")
 
+            # Check if this is a resume
+            is_resume = bool(self.current_download.file_offsets)
+            if is_resume:
+                logging.info(f"Resuming download from previous session. Progress: {self.current_download.file_offsets}")
+            
             self.current_download.status = ClientDownloadStatus.REQUESTING
             self.status = ClientStatus.REQUESTING_DOWNLOAD
 
-            # Send download request
+            # Send download request with resume information
             download_message = Protocol.create_message(Protocol.DOWNLOAD_REQUEST, {
                 'request_id': self.current_download.request_id,
                 'car_type': self.car_info.car_type,
                 'car_id': self.car_info.car_id,
                 'required_versions': self.current_download.required_updates,
-                'old_versions': self.car_info.ecu_versions
+                'old_versions': self.car_info.ecu_versions,
+                'is_resume': is_resume,
+                'file_offsets': self.current_download.file_offsets if is_resume else {}
             })
+            
             self.socket.send(download_message)
             logging.info(f"Download request message has been sent successfully with message::{download_message}")
+
             # Wait for download start response
             response = self.receive_message()
-
             if not response or response['type'] != Protocol.DOWNLOAD_START:
                 raise Exception("Invalid download start response")
+
             logging.info(f"received First download payload with the metadata, message::{response}")
             # Update download information
             download_info = response['payload']
-            self.current_download.total_size = download_info['total_size']
+            if not is_resume:
+                self.current_download.total_size = download_info['total_size']
             self.status = ClientStatus.DOWNLOAD_IN_PROGRESS
             self.current_download.status = ClientDownloadStatus.DOWNLOADING
 
             # Send acknowledgment
             self.socket.send(Protocol.create_message("DOWNLOAD_ACK", {'status': 'ready'}))
             logging.info("Download Acknowledgement ready sent back to the server")
+
             # Start receiving files
             self.receive_files()
 
@@ -286,14 +324,17 @@ class ECUUpdateClient:
         num =1
         try:
             while True:
+                self.current_download.status=ClientDownloadStatus.DOWNLOADING
                 message = self.receive_message()
-                logging.info(f"received msg no:{num}, message::{message}")
+                num+=1
+                # logging.info(f"received msg no:{num}, message::{message}")
                 if not message:
                     raise Exception("Connection lost during file transfer")
 
                 if message['type'] == Protocol.FILE_CHUNK:
                     logging.info(f" msg no:{num} is of type file chunk")
                     self.handle_file_chunk(message['payload'])
+                    
                 elif message['type'] == Protocol.DOWNLOAD_COMPLETE:
                     logging.info(f" msg no:{num} is of type donwload complete")
                     self.handle_download_completion(message['payload'])
@@ -319,8 +360,13 @@ class ECUUpdateClient:
                 f.seek(offset)
                 f.write(data)
 
-            # Update progress
+            # Update progress and offset
             self.current_download.downloaded_size += len(data)
+            self.current_download.file_offsets[ecu_name] = offset + len(data)
+            
+            # Log progress
+            total_progress = (self.current_download.downloaded_size / self.current_download.total_size) * 100
+            logging.info(f"Download progress for {ecu_name}: {total_progress:.2f}% (Offset: {offset + len(data)} bytes)")
             
             # Send chunk acknowledgment
             self.socket.send(Protocol.create_message("CHUNK_ACK", {

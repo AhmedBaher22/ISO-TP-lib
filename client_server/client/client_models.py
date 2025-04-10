@@ -9,15 +9,14 @@ class ClientDownloadRequest:
     request_id: str
     timestamp: datetime
     car_info: CarInfo
-    required_updates: Dict[str, str]  # ECU name -> version number
+    required_updates: Dict[str, str]
     status: ClientDownloadStatus
     total_ecus: int
     completed_ecus: int = 0
-    downloaded_versions: Dict[str, str] = field(default_factory=dict)  # ECU name -> version
+    downloaded_versions: Dict[str, str] = field(default_factory=dict)
     total_size: int = 0
     downloaded_size: int = 0
-    retry_count: int = 0
-    last_successful_download: Optional[datetime] = None
+    file_offsets: Dict[str, int] = field(default_factory=dict)  # Track offset for each ECU
     
     def to_dict(self) -> dict:
         """Convert to dictionary for storage"""
@@ -38,9 +37,7 @@ class ClientDownloadRequest:
             'downloaded_versions': self.downloaded_versions,
             'total_size': self.total_size,
             'downloaded_size': self.downloaded_size,
-            'retry_count': self.retry_count,
-            'last_successful_download': self.last_successful_download.isoformat() 
-                if self.last_successful_download else None
+            'file_offsets': self.file_offsets
         }
 
     @classmethod
@@ -57,7 +54,5 @@ class ClientDownloadRequest:
             downloaded_versions=data['downloaded_versions'],
             total_size=data['total_size'],
             downloaded_size=data['downloaded_size'],
-            retry_count=data['retry_count'],
-            last_successful_download=datetime.fromisoformat(data['last_successful_download'])
-                if data['last_successful_download'] else None
+            file_offsets=data.get('file_offsets', {})  # Added file_offsets
         )
