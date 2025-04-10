@@ -3,7 +3,7 @@
         "id": "ECM_V1",
         "version_number": "1.0.0",
         "compatible_car_types": ["ModelX", "ModelY"],
-        "hex_file_path": "hex_files/ECM_1_0_0.hex"
+        "hex_file_path": "hex_files/hello.srec"
     },
     {
         "id": "ECM_V2",
