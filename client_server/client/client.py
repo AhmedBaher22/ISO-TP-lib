@@ -355,7 +355,7 @@ class ECUUpdateClient:
             data = bytes.fromhex(payload['data'])
 
             # Save chunk to temporary file
-            temp_path = f"temp_{ecu_name}_{self.current_download.request_id}.hex"
+            temp_path = f"temp_{ecu_name}_{self.current_download.request_id}.srec"
             with open(temp_path, 'ab') as f:
                 f.seek(offset)
                 f.write(data)
@@ -388,7 +388,7 @@ class ECUUpdateClient:
             if payload['status'] == DownloadStatus.FINISHED_SUCCESSFULLY.value:
                 # Move temporary files to final location
                 for ecu_name, version in self.current_download.required_updates.items():
-                    temp_path = f"temp_{ecu_name}_{self.current_download.request_id}.hex"
+                    temp_path = f"temp_{ecu_name}_{self.current_download.request_id}.srec"
                     if os.path.exists(temp_path):
                         with open(temp_path, 'rb') as f:
                             hex_data = f.read()
