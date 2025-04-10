@@ -22,6 +22,7 @@ class DownloadStatus(Enum):
 
 class ClientStatus(Enum):
     OFFLINE = "offline"
+    AUTHENTICATED="Authenticated"
     CHECK_FOR_UPDATES = "checkForUpdates"
     WAITING_FOR_RESPONSE = "waitingForResponse"
     VERSIONS_UP_TO_DATE = "versionsUpToDate"

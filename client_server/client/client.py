@@ -10,7 +10,7 @@ from protocol import Protocol
 from client_models import ClientDownloadRequest
 from client_database import ClientDatabase
 from shared_models import CarInfo
-
+import os
 logging.basicConfig(level=logging.INFO)
 
 class ECUUpdateClient:
@@ -37,9 +37,12 @@ class ECUUpdateClient:
             self.car_info = self.db.load_car_info()
             if not self.car_info:
                 raise Exception("Car information not found")
+            
+            logging.info(f"car informations fetched successfully::{self.car_info}")
 
             # Check for incomplete downloads
             pending_download = self.db.load_download_request()
+
             if pending_download and pending_download.status not in [
                 ClientDownloadStatus.COMPLETED, 
                 ClientDownloadStatus.FAILED
@@ -48,6 +51,8 @@ class ECUUpdateClient:
 
             self.running = True
             self.status = ClientStatus.OFFLINE
+
+            logging.info("starting new client thread")
 
             # Start main client thread
             client_thread = threading.Thread(target=self.run)
@@ -64,9 +69,13 @@ class ECUUpdateClient:
         """Main client loop"""
         while self.running:
             try:
+                print(f"in loop, status: {self.status}")
                 if self.status == ClientStatus.OFFLINE:
                     self.connect_to_server()
                 
+                # elif self.status==ClientStatus.CHECK_FOR_UPDATES:
+                #     self.check_for_updates()
+
                 elif self.status == ClientStatus.VERSIONS_UP_TO_DATE:
                     # Periodically check for updates
                     time.sleep(self.update_check_interval)
@@ -74,6 +83,7 @@ class ECUUpdateClient:
                 
                 elif self.status == ClientStatus.DOWNLOAD_NEEDED:
                     self.initiate_download()
+
                 
                 time.sleep(1)  # Prevent CPU overuse
 
@@ -83,6 +93,7 @@ class ECUUpdateClient:
                 time.sleep(self.retry_delay)
 
     def connect_to_server(self):
+        logging.info("client trying to connect to server")
         """Connect to update server"""
         retry_count = 0
         while retry_count < self.retry_limit and self.running:
@@ -103,6 +114,7 @@ class ECUUpdateClient:
                         'ecu_versions': self.car_info.ecu_versions
                     }
                 })
+                logging.info(f"handshake message created successfully and ready to be sent, message::{handshake_message}")
                 self.socket.send(handshake_message)
 
                 # Process handshake response
@@ -113,10 +125,30 @@ class ECUUpdateClient:
                 if response['type'] == Protocol.ERROR:
                     raise Exception(f"Server error: {response['payload']['message']}")
 
+                logging.info(f"successfully login to the server, server response:: {str(response)}")
                 self.last_login = datetime.now()
-                self.status = ClientStatus.CHECK_FOR_UPDATES
-                return True
+                self.status = ClientStatus.AUTHENTICATED
+                # Wait for update check response
+                logging.info("Waiting for update check response...")
+                update_response = self.receive_message()
+                
+                if not update_response:
+                    raise Exception("No update check response from server")
 
+                if update_response['type'] == Protocol.UPDATE_RESPONSE:
+                    updates_needed = update_response['payload']['updates_needed']
+                    if updates_needed:
+                        logging.info(f"Updates available: {updates_needed}")
+                        self.status = ClientStatus.DOWNLOAD_NEEDED
+                        self.prepare_download_request(updates_needed)
+                    else:
+                        logging.info("System is up to date")
+                        self.status = ClientStatus.VERSIONS_UP_TO_DATE
+                else:
+                    raise Exception("Invalid update check response type")
+
+                return True
+                
             except socket.timeout:
                 logging.error(f"Connection attempt {retry_count + 1} timed out")
             except ConnectionRefusedError:
@@ -132,6 +164,8 @@ class ECUUpdateClient:
         return False
     
     def check_for_updates(self):
+        logging.info("client start preparing message to check for updates")
+
         """Check for available updates"""
         try:
             if not self.socket:
@@ -139,28 +173,34 @@ class ECUUpdateClient:
                 return
 
             self.status = ClientStatus.CHECK_FOR_UPDATES
-            
-            # Send update check request
-            check_message = Protocol.create_message(Protocol.UPDATE_CHECK, {
-                'car_type': self.car_info.car_type,
-                'car_id': self.car_info.car_id,
-                'ecu_versions': self.car_info.ecu_versions
-            })
-            self.socket.send(check_message)
+            if self.status != ClientStatus.AUTHENTICATED:
+                # Send update check request
+                check_message = Protocol.create_message(Protocol.UPDATE_CHECK, {
+                    'car_type': self.car_info.car_type,
+                    'car_id': self.car_info.car_id,
+                    'ecu_versions': self.car_info.ecu_versions
+                })
+                logging.info(f"checking-for-update message created successfully and ready to be sent, message::{check_message}")            
+                self.socket.send(check_message)
 
             # Wait for response
             self.status = ClientStatus.WAITING_FOR_RESPONSE
+            print(f"client status: WAITING FOR RESPONSE")
             response = self.receive_message()
 
-            if not response:
+            if not response:    
                 raise Exception("No response from server")
+
+            logging.info(f"Server respond:: {response['payload']['message']}")
 
             if response['type'] == Protocol.UPDATE_RESPONSE:
                 updates_needed = response['payload']['updates_needed']
                 if updates_needed:
+                    logging.info("client status: updates needed")
                     self.status = ClientStatus.DOWNLOAD_NEEDED
                     self.prepare_download_request(updates_needed)
                 else:
+                    logging.info("client status: All car versions up to date")
                     self.status = ClientStatus.VERSIONS_UP_TO_DATE
             else:
                 raise Exception("Invalid response type")
@@ -170,6 +210,7 @@ class ECUUpdateClient:
             self.status = ClientStatus.OFFLINE
             self.cleanup_connection()
     def prepare_download_request(self, updates_needed: Dict[str, str]):
+        logging.info("prepare download request has been started processing")
         """Prepare download request for new ECU versions"""
         try:
             self.current_download = ClientDownloadRequest(
@@ -181,7 +222,7 @@ class ECUUpdateClient:
                 total_ecus=len(updates_needed),
                 completed_ecus=0
             )
-            
+            logging.info(f"download request status:{self.current_download.status}")
             # Save initial download request
             self.db.save_download_request(self.current_download)
             
@@ -195,6 +236,7 @@ class ECUUpdateClient:
             self.status = ClientStatus.OFFLINE
 
     def download_updates(self):
+        logging.info("updating process starts preparing update request messages")
         """Handle the download of new ECU versions"""
         try:
             if not self.current_download:
@@ -212,12 +254,13 @@ class ECUUpdateClient:
                 'old_versions': self.car_info.ecu_versions
             })
             self.socket.send(download_message)
-
+            logging.info(f"Download request message has been sent successfully with message::{download_message}")
             # Wait for download start response
             response = self.receive_message()
+
             if not response or response['type'] != Protocol.DOWNLOAD_START:
                 raise Exception("Invalid download start response")
-
+            logging.info(f"received First download payload with the metadata, message::{response}")
             # Update download information
             download_info = response['payload']
             self.current_download.total_size = download_info['total_size']
@@ -226,7 +269,7 @@ class ECUUpdateClient:
 
             # Send acknowledgment
             self.socket.send(Protocol.create_message("DOWNLOAD_ACK", {'status': 'ready'}))
-
+            logging.info("Download Acknowledgement ready sent back to the server")
             # Start receiving files
             self.receive_files()
 
@@ -238,16 +281,21 @@ class ECUUpdateClient:
             self.cleanup_connection()
 
     def receive_files(self):
+        logging.info("loop started to receive files")
         """Receive ECU update files from server"""
+        num =1
         try:
             while True:
                 message = self.receive_message()
+                logging.info(f"received msg no:{num}, message::{message}")
                 if not message:
                     raise Exception("Connection lost during file transfer")
 
                 if message['type'] == Protocol.FILE_CHUNK:
+                    logging.info(f" msg no:{num} is of type file chunk")
                     self.handle_file_chunk(message['payload'])
                 elif message['type'] == Protocol.DOWNLOAD_COMPLETE:
+                    logging.info(f" msg no:{num} is of type donwload complete")
                     self.handle_download_completion(message['payload'])
                     break
                 elif message['type'] == Protocol.ERROR:

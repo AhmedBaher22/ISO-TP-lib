@@ -48,6 +48,7 @@ class ECUUpdateServer:
                         args=(client_socket, client_ip, client_port)
                     )
                     client_thread.daemon = True
+                    logging.info(f"new socket communication received from ip: {str(client_ip)} , port number: {str(client_port)}")
                     client_thread.start()
                 except Exception as e:
                     if self.running:
@@ -73,14 +74,18 @@ class ECUUpdateServer:
     def handle_client(self, client_socket: socket.socket, client_ip: str, client_port: int):
         """Handle individual client connection"""
         try:
-            client_socket.settimeout(30)  # Set timeout for client operations
+            logging.info(f"starting new thread handling request from client ip:{client_ip} and port {client_port}")
+            client_socket.settimeout(1000)  # Set timeout for client operations
             
             # Receive initial message
             message = self.receive_message(client_socket)
+
             if not message:
                 logging.error(f"No initial message received from {client_ip}:{client_port}")
                 return
-                
+            
+            logging.info(f"received new message from client ip: {client_ip} , message:: {str(message)}")  
+
             if message['type'] != Protocol.HANDSHAKE:
                 logging.error(f"Invalid initial message type from {client_ip}:{client_port}")
                 client_socket.send(Protocol.create_error_message(400, "Invalid initial message"))
@@ -90,13 +95,17 @@ class ECUUpdateServer:
             payload = message['payload']
             car_type = payload.get('car_type')
             car_id = payload.get('car_id')
-            
+
             if not car_type or not car_id:
                 logging.error(f"Missing required information in handshake from {client_ip}:{client_port}")
                 client_socket.send(Protocol.create_error_message(400, "Missing required information"))
                 return
+            
+            logging.info(f"client ip: {client_ip} is a car with car ID: {car_id} and car_type: {car_type}")
 
             service_type = ServiceType(payload['service_type'])
+
+            logging.info(f"client ip: {client_ip} is a car with car ID: {car_id} and car_type: {car_type}. service needed:: {service_type}")
 
             # Create request object
             request = Request(
@@ -109,15 +118,54 @@ class ECUUpdateServer:
                 metadata=payload.get('metadata', {}),
                 status=RequestStatus.CHECKING_AUTHENTICITY
             )
+            logging.info(f"new Request has been created for car with client ip:{request.ip_address}. status:{request.status}")
 
             # Authenticate and process request
             if self.check_authentication(request):
+                logging.info(f"Authentication success for request from client ip:{request.ip_address}")
                 client_socket.send(Protocol.create_message(Protocol.HANDSHAKE, {
                     'status': 'authenticated',
                     'message': 'Connection established'
                 }))
-                self.allocate_service(request, client_socket)
+
+                # Initial update check
+                logging.info(f"Performing initial update check for car ID: {car_id}")
+                self.check_for_updates(request, client_socket)
+
+                # Keep connection alive and handle subsequent requests
+                logging.info(f"Maintaining connection for car ID: {car_id} to handle subsequent requests")
+                while True:
+                    logging.info(f"Waiting for next request from car ID: {car_id}")
+                    message = self.receive_message(client_socket)
+                    
+                    if not message:
+                        logging.info(f"Client {car_id} disconnected gracefully")
+                        break
+
+                    logging.info(f"Received request from car ID: {car_id}, message type: {message['type']}")
+
+                    if message['type'] == Protocol.DOWNLOAD_REQUEST:
+                        logging.info(f"Processing download request from car ID: {car_id}")
+                        request.service_type = ServiceType.DOWNLOAD_UPDATE
+                        request.metadata = message['payload']
+                        self.handle_download_request(request, client_socket)
+                        logging.info(f"Completed download request processing for car ID: {car_id}")
+                    
+                    elif message['type'] == Protocol.UPDATE_CHECK:
+                        logging.info(f"Processing update check request from car ID: {car_id}")
+                        request.service_type = ServiceType.CHECK_FOR_UPDATE
+                        request.metadata = message['payload']
+                        self.check_for_updates(request, client_socket)
+                        logging.info(f"Completed update check for car ID: {car_id}")
+                    
+                    else:
+                        logging.warning(f"Unknown message type '{message['type']}' received from car ID: {car_id}")
+                        client_socket.send(Protocol.create_error_message(
+                            400, f"Unknown message type: {message['type']}"
+                        ))
+
             else:
+                logging.info(f"Authentication failed for request from client ip:{request.ip_address}")
                 client_socket.send(Protocol.create_error_message(401, "Authentication failed"))
 
         except socket.timeout:
@@ -128,9 +176,11 @@ class ECUUpdateServer:
             logging.error(f"Error handling client {client_ip}:{client_port}: {str(e)}")
         finally:
             try:
+                logging.info(f"Closing connection for client {client_ip}:{client_port}")
                 client_socket.close()
-            except:
-                pass
+            except Exception as e:
+                logging.error(f"Error closing connection for {client_ip}:{client_port}: {str(e)}")
+            logging.info(f"Connection terminated for client {client_ip}:{client_port}")
 
     def check_authentication(self, request: Request) -> bool:
         """Authenticate the car request"""
@@ -156,6 +206,7 @@ class ECUUpdateServer:
             return False
         
     def allocate_service(self, request: Request, client_socket: socket.socket):
+        logging.info(f"allocating new service with service name:{request.service_type}")
         """Allocate appropriate service based on request type"""
         try:
             request.status = RequestStatus.SERVICE_IN_PROGRESS
@@ -165,6 +216,7 @@ class ECUUpdateServer:
             elif request.service_type == ServiceType.DOWNLOAD_UPDATE:
                 self.handle_download_request(request, client_socket)
             else:
+                logging.error(f"Unknown service type")
                 raise Exception("Unknown service type")
 
         except Exception as e:
@@ -175,6 +227,7 @@ class ECUUpdateServer:
             ))
 
     def check_for_updates(self, request: Request, client_socket: socket.socket):
+        logging.info(f"checking-for-update method started processing for client:{request.ip_address}")
         """Check if updates are available for the car"""
         try:
             car_type = next((ct for ct in self.car_types 
@@ -188,11 +241,13 @@ class ECUUpdateServer:
             
             # Check for updates
             updates_needed = car_type.check_for_updates(current_versions)
-            
+            logging.info(f"updates needed response for client with ip:{request.ip_address}")
             # Send response
             response = Protocol.create_update_response(updates_needed)
-            client_socket.send(response)
             
+            client_socket.send(response)
+            logging.info(f"updates needed response for client with ip:{request.ip_address} is send successfully with message:{response}")
+            logging.info(f"Request for: {request.ip_address} finished successfully")
             request.status = RequestStatus.FINISHED_SUCCESSFULLY
 
         except Exception as e:
