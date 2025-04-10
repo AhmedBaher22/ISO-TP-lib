@@ -58,8 +58,13 @@ class ClientDatabase:
 
     def save_ecu_version(self, ecu_name: str, version: str, hex_data: bytes):
         """Save ECU hex file"""
-        file_name = f"{ecu_name}_v{version}.hex"
-        file_path = os.path.join(self.ecu_versions_dir, file_name)
+        # Create the directory path
+        dir_path = os.path.join(self.ecu_versions_dir, ecu_name, version)
+        os.makedirs(dir_path, exist_ok=True)  # Ensure the directory exists
+
+        # Compose the full file path
+        file_name = f"{ecu_name}_v{version}.srec"
+        file_path = os.path.join(dir_path, file_name)
         with open(file_path, 'wb') as f:
             f.write(hex_data)
         return file_path

@@ -39,7 +39,7 @@
         "id": "BCM_V2",
         "version_number": "1.1.0",
         "compatible_car_types": ["ModelX"],
-        "hex_file_path": "hex_files/BCM_1_1_0.hex"
+        "hex_file_path": "hex_files/hello.srec"
     },
     {
         "id": "BMS_V1",
@@ -51,7 +51,7 @@
         "id": "BMS_V2",
         "version_number": "1.1.0",
         "compatible_car_types": ["ModelY"],
-        "hex_file_path": "hex_files/BMS_1_1_0.hex"
+        "hex_file_path": "hex_files/hello.srec"
     },
     {
         "id": "BMS_V3",
