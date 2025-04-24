@@ -380,7 +380,7 @@ class ECUUpdateServer:
     def transfer_file(self, client_socket: socket.socket, ecu_name: str, 
                      file_path: str, file_size: int, download_request: DownloadRequest):
         """Transfer a single file to client"""
-        print(f"\n\n\nfile_path: {file_path}\n\n\n")
+        print(f"file_path: {file_path}")
         offset = 0
         while offset < file_size:
             chunk = self.db_manager.get_hex_file_chunk(file_path, self.chunk_size, offset)

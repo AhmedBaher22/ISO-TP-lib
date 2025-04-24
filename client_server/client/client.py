@@ -184,7 +184,7 @@ class ECUUpdateClient:
                 self.socket.send(check_message)
 
             # Wait for response
-            self.status = ClientStatus.WAITING_FOR_RESPONSE
+            self.status = ClientStatus.WAITING_FOR_RESPONSE 
             print(f"client status: WAITING FOR RESPONSE")
             response = self.receive_message()
 
@@ -334,7 +334,9 @@ class ECUUpdateClient:
                 if message['type'] == Protocol.FILE_CHUNK:
                     logging.info(f" msg no:{num} is of type file chunk")
                     self.handle_file_chunk(message['payload'])
-                    
+                    # if num == 11:
+                    #     self.cleanup_connection
+                    #     exit()
                 elif message['type'] == Protocol.DOWNLOAD_COMPLETE:
                     logging.info(f" msg no:{num} is of type donwload complete")
                     self.handle_download_completion(message['payload'])
