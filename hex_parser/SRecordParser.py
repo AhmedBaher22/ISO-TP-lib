@@ -34,7 +34,7 @@ class DataRecord:
     data_length: int
 
     def __repr__(self):
-        return (f"DataRecord(record_type={self.record_type}, "
+        return (f"DataRecord(record_type={self.record_type}, d"
                 f"address={self.address.hex().upper()}, "
                 f"data={self.data.hex().upper()}, "  # Convert bytearray to hex string
                 f"data_length={self.data_length})")
