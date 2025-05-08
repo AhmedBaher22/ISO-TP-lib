@@ -58,6 +58,7 @@ class DataRecord:
             'data': self.data.hex(),
             'data_length': self.data_length
         }
+    
     @classmethod
     def from_dict(cls, data: dict) -> 'DataRecord':
         return cls(

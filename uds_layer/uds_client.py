@@ -353,8 +353,8 @@ class UdsClient:
                                 on_failing_flashing:Callable,
                                 flashed_ecu_number:int) -> None:
         #happy all scenario 
-        # sleep(10)
-        # on_successfull_flashing(flashed_ecu_number)
+        sleep(10)
+        on_successfull_flashing(flashed_ecu_number)
         #one time failure without roll-back
         # sleep(10)
         # if self.num ==0:
@@ -406,14 +406,14 @@ class UdsClient:
         #     on_successfull_flashing(flashed_ecu_number)
         
         #4 times failure with roll-back
-        if self.num < 4:
-            sleep(3)
-            self.num+=1
-            on_failing_flashing(flashed_ecu_number,erasing_happen=True)
-        else:
-            sleep(10)
-            self.num+=1
-            on_successfull_flashing(flashed_ecu_number)
+        # if self.num < 4:
+        #     sleep(3)
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=True)
+        # else:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
 
         # #6 times failure with roll-back
         # if self.num < 6:
