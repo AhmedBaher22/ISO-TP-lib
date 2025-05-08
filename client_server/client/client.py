@@ -592,6 +592,7 @@ class ECUUpdateClient:
                 self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].new_version
             self.db.save_car_info(self.car_info)
             return
+        ##  ????
             self.db.save_download_request(self.current_download)
         else:
             print("\n\nELSE\n\n")

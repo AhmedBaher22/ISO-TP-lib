@@ -89,7 +89,7 @@ class ClientDownloadRequest:
                     'new_version': ecu.new_version,
                     'old_version_path': ecu.old_version_path,
                     'new_version_path': ecu.new_version_path,
-                    'delta_records': ecu.delta_records.to_dict(),
+                    'delta_records': [record.to_dict() for record in ecu.delta_records],
                     'flashing_done': ecu.flashing_done,
                     'flashing_retries': ecu.flashing_retries,
                     'roll_back_needed': ecu.roll_back_needed,
