@@ -7,10 +7,36 @@ from typing import Optional, Dict
 import logging
 from enums import *
 from protocol import Protocol
-from client_models import ClientDownloadRequest
+from client_models import ClientDownloadRequest, flashingEcu
 from client_database import ClientDatabase
 from shared_models import CarInfo
 import os
+from delta_generator.DeltaGenerator import DeltaGenerator,DeltaAlgorithm
+
+import sys
+import os
+from time import sleep
+from typing import List
+
+import os
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+package_dir = os.path.abspath(os.path.join(current_dir, ".."))
+package_dir = os.path.abspath(os.path.join(package_dir, ".."))
+sys.path.append(package_dir)
+from iso_tp_layer.IsoTpConfig import IsoTpConfig
+from iso_tp_layer.IsoTp import IsoTp
+from uds_layer.uds_client import UdsClient
+from iso_tp_layer.Address import Address
+from can_layer.can_communication import CANCommunication, CANConfiguration
+from can_layer.enums import CANInterface
+from can_layer.CanExceptions import CANError
+from uds_layer.uds_enums import SessionType
+from uds_layer.server import Server
+from uds_layer.transfer_request import TransferRequest
+from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckSumMethod
+from app_initialization import init_uds_client
+from hex_parser.SRecordParser import DataRecord, SRecordParser
 logging.basicConfig(level=logging.INFO)
 
 class ECUUpdateClient:
@@ -29,6 +55,10 @@ class ECUUpdateClient:
         self.running = False
         self.update_check_interval = 3600  # 1 hour
         self.chunk_size = 8192  # 8KB chunks for file transfer
+        self.uds_client=None
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        package_dir = os.path.abspath(os.path.join(current_dir, ".."))
+        sys.path.append(package_dir)
 
     def start(self):
         """Start the client"""
@@ -39,7 +69,7 @@ class ECUUpdateClient:
                 raise Exception("Car information not found")
             
             logging.info(f"car informations fetched successfully::{self.car_info}")
-
+            logging.info(f"checking for pending download requests")
             # Check for incomplete downloads
             pending_download = self.db.load_download_request()
 
@@ -48,6 +78,10 @@ class ECUUpdateClient:
                 ClientDownloadStatus.FAILED
             ]:
                 self.current_download = pending_download
+                logging.info(f"pending download request found")
+                #add strategy for pending download requests here
+            else:
+                logging.info(f"No pending download request found")
 
             self.running = True
             self.status = ClientStatus.OFFLINE
@@ -66,16 +100,22 @@ class ECUUpdateClient:
             self.shutdown()
 
     def run(self):
+        flag=True
         """Main client loop"""
         while self.running:
             try:
-                print(f"in loop, status: {self.status}")
-                if self.status == ClientStatus.OFFLINE:
+                print(f"in loop, status: {self.status}") 
+                # if self.status == ClientStatus.WAITING_FLASHING_SOME_ECUS:
+                #     self.UDS_flash()
+                if self.status == ClientStatus.OFFLINE and (flag == True):
+                    flag=False
                     self.connect_to_server()
                 
                 # elif self.status==ClientStatus.CHECK_FOR_UPDATES:
                 #     self.check_for_updates()
-
+                elif self.status == ClientStatus.WAITING_FLASHING_SOME_ECUS:
+                    time.sleep(1)
+                    continue
                 elif self.status == ClientStatus.VERSIONS_UP_TO_DATE:
                     # Periodically check for updates
                     time.sleep(self.update_check_interval)
@@ -273,7 +313,7 @@ class ECUUpdateClient:
             is_resume = bool(self.current_download.file_offsets)
             if is_resume:
                 logging.info(f"Resuming download from previous session. Progress: {self.current_download.file_offsets}")
-            
+            #add in here pending downloads flow
             self.current_download.status = ClientDownloadStatus.REQUESTING
             self.status = ClientStatus.REQUESTING_DOWNLOAD
 
@@ -285,7 +325,7 @@ class ECUUpdateClient:
                 'required_versions': self.current_download.required_updates,
                 'old_versions': self.car_info.ecu_versions,
                 'is_resume': is_resume,
-                'file_offsets': self.current_download.file_offsets if is_resume else {}
+                'file_offsets': self.current_download.file_offsets if is_resume else 0
             })
             
             self.socket.send(download_message)
@@ -403,7 +443,9 @@ class ECUUpdateClient:
                         # Clean up temp file
                         os.remove(temp_path)
 
-                self.current_download.status = ClientDownloadStatus.COMPLETED
+                self.current_download.status = ClientDownloadStatus.IN_FLASHING
+                self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
+                self.db.save_download_request(self.current_download)
                 self.flash_updates()
             else:
                 self.current_download.status = ClientDownloadStatus.FAILED
@@ -420,21 +462,39 @@ class ECUUpdateClient:
         try:
             # This is a placeholder for the actual flashing implementation
             logging.info("Starting ECU flashing process...")
-            
+            n=0
             for ecu_name, version in self.current_download.downloaded_versions.items():
                 logging.info(f"Would flash ECU {ecu_name} with version {version}")
-                # Update car info with new version
-                self.car_info.ecu_versions[ecu_name] = version
 
-            # Save updated car info
-            self.db.save_car_info(self.car_info)
-            
-            logging.info("ECU flashing process completed")
-            self.status = ClientStatus.VERSIONS_UP_TO_DATE
+                old_version=self.car_info.ecu_versions[ecu_name]
+                new_version=version
+                deltaGenerator=DeltaGenerator(algorithm=DeltaAlgorithm.SENDING_COMPLETE_SECTOR)
+                old_version_path=self.db.get_ecu_version_path(ecu_name=ecu_name,version=old_version)
+                new_version_path=self.db.get_ecu_version_path(ecu_name=ecu_name,version=new_version)
+                parser = SRecordParser()
+                parser.parse_file(filename=str(old_version_path))
+                old_version_data_records=parser._merged_records
+                parser.parse_file(filename=str(new_version_path))
+                new_version_data_records=parser._merged_records
+                delta_records=deltaGenerator.generate_delta(old_version=old_version_data_records,new_version=new_version_data_records)
+                roll_back_delta=deltaGenerator.generate_delta(old_version=new_version_data_records,new_version=old_version_data_records)
 
+                new_flash_request=flashingEcu(ecu_number=n,old_version_path=old_version_path,
+                new_version_path=new_version_path,delta_records=delta_records,flashing_done=False,
+                ecu_name=ecu_name,old_version=old_version,new_version=new_version,roll_back_delta=roll_back_delta,old_version_data_records=old_version_data_records)
+
+                self.current_download.flashed_ecus.append(new_flash_request)
+                n+=1   
+
+                
+            print("finished making the flash ecu object")
+            self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
+            # self.db.save_download_request(self.current_download)
+            self.UDS_flash()
         except Exception as e:
             logging.error(f"Flashing error: {str(e)}")
             self.status = ClientStatus.OFFLINE
+            time.sleep(100)
 
     def receive_message(self) -> Optional[Dict]:
         """Receive and parse a message from the server"""
@@ -484,8 +544,172 @@ class ECUUpdateClient:
             except:
                 pass
             self.socket = None
+    def handle_successful_flashing(self,ecu_number:int):
+        if self.current_download.flashed_ecus[ecu_number].roll_back_needed == True and self.current_download.flashed_ecus[ecu_number].flashing_retries > 3:
+            self.current_download.flashed_ecus[ecu_number].roll_back_done=True
+        else:    
+            self.current_download.flashed_ecus[ecu_number].flashing_done=True
+
+        self.current_download.flashed_order_index+=1
+        self.current_download.number_of_flashed_ecus+=1
+
+
+        print(f"\n\nself.current_download.number_of_flashed_ecus: {self.current_download.number_of_flashed_ecus}") 
+        if self.current_download.number_of_flashed_ecus >= len(self.current_download.flashed_ecus):
+            check_all_up_to_date_flag:bool=False
+            rolled_back_ecus:List[str]=[]
+            for n in self.current_download.flashed_ecus:
+                if (n.roll_back_done == True) and (n.flashing_done == False):
+                    rolled_back_ecus.append(n.ecu_name)
+                    check_all_up_to_date_flag=True
+            if check_all_up_to_date_flag==True:
+                self.status=ClientStatus.VERSIONS_UP_TO_DATE
+                self.current_download.status=ClientDownloadStatus.FAILED
+                version_updated:str
+                if (self.current_download.flashed_ecus[ecu_number].roll_back_needed == True) and (self.current_download.flashed_ecus[ecu_number].flashing_done == False):
+                    version_updated=self.current_download.flashed_ecus[ecu_number].old_version
+                    logging.info(f"ECU :{self.current_download.flashed_ecus[ecu_number].ecu_name} is rolled back successfully with version:{version_updated}")
+                    self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].old_version
+                else:
+                    version_updated=self.current_download.flashed_ecus[ecu_number].new_version
+                    logging.info(f"ECU :{self.current_download.flashed_ecus[ecu_number].ecu_name} is updated successfully with version:{version_updated}")
+                    self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].new_version                    
+            
+                logging.info(f"ECU :{self.current_download.flashed_ecus[ecu_number].ecu_name} is rolled back successfully with version:{version_updated}")
+                if len(rolled_back_ecus) > 0:
+                    logging.info(f"Flashing process finished but not all ECUS updated and flashed some rolled back to old version which are:{rolled_back_ecus }, Try contacting with COMPANY CAR MAINTENCE COMPANY ")
+                else:
+                    logging.info(f"Flashing process finished all ECUS updated")
+
+                
+            else:
+                version_updated=self.current_download.flashed_ecus[ecu_number].new_version
+                logging.info(f"ECU :{self.current_download.flashed_ecus[ecu_number].ecu_name} is updated successfully with version:{version_updated}")                       
+                self.status=ClientStatus.VERSIONS_UP_TO_DATE
+                self.current_download.status=ClientDownloadStatus.COMPLETED
+                logging.info(f"ECU :{self.current_download.flashed_ecus[ecu_number].ecu_name} is updated successfully with version:{self.current_download.flashed_ecus[ecu_number].new_version}")
+                logging.info("all ECUS updated and flashed successfully and All of them up to date now")
+                self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].new_version
+            self.db.save_car_info(self.car_info)
+            return
+            self.db.save_download_request(self.current_download)
+        else:
+            print("\n\nELSE\n\n")
+            if (self.current_download.flashed_ecus[ecu_number].roll_back_needed == True) and (self.current_download.flashed_ecus[ecu_number].flashing_done == False):
+                self.current_download.flashed_ecus[ecu_number].roll_back_done == True
+                self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
+                self.current_download.status=ClientDownloadStatus.IN_FLASHING
+                logging.info(f"ECU :{self.current_download.flashed_ecus[ecu_number].ecu_name} is rolled back successfully with version:{self.current_download.flashed_ecus[ecu_number].old_version}")
+                self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].new_version
+                self.db.save_car_info(self.car_info)
+                self.db.save_download_request(self.current_download)
+                logging.info("preparing to flash the next ECU")
+                self.UDS_flash()
+            else: 
+                self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
+                self.current_download.status=ClientDownloadStatus.IN_FLASHING
+                logging.info(f"ECU :{self.current_download.flashed_ecus[ecu_number].ecu_name} is updated successfully with version:{self.current_download.flashed_ecus[ecu_number].new_version}")
+                self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].new_version
+                self.db.save_car_info(self.car_info)
+                self.db.save_download_request(self.current_download)
+                logging.info("preparing to flash the next ECU")
+                self.UDS_flash()
+        
+
+        # if self.current_download.flashed_ecus[ecu_number]:
+        #     logging.info(f"flashing of ECU {self.current_download.flashed_ecus[ecu_number].ecu_name} is completed successfully")
+        #     self.current_download.flashed_ecus[ecu_number].flashing_done=True
+        #         # Update car info with new version
+        #     self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].new_version
+        #     self.db.save_car_info(self.car_info)
+        #     alldone=True
+        #     for n in  self.current_download.flashed_ecus:
+        #         if n.flashing_done == False:
+        #             alldone=False
+        #             break
+        #     if alldone == True:
+        #         logging.info("ECU flashing process completed")
+        #         self.status = ClientStatus.VERSIONS_UP_TO_DATE
+
+        #     self.db.save_download_request(self.current_download)
+
+    def handle_failed_flashing(self,ecu_number:int,erasing_happen:bool):
+
+        if erasing_happen == True:
+            self.current_download.flashed_ecus[ecu_number].roll_back_needed=True
+        self.current_download.flashed_ecus[ecu_number].flashing_retries+=1
+
+
+        if self.current_download.flashed_ecus[ecu_number].flashing_retries >=13 and self.current_download.flashed_ecus[ecu_number].roll_back_needed==True:
+            logging.info(f"ECU:{self.current_download.flashed_ecus[ecu_number].ecu_name} failed to roll back to old version")
+            logging.info(f"SAFETY ECU : {self.current_download.flashed_ecus[ecu_number].ecu_name} IS NOT WORKING ANY MORE AND VECHILE IS DISABLED, CONTACT COMPANY TO FIX PROBLEM")
+            self.current_download.status = ClientDownloadStatus.FAILED
+            self.status=ClientStatus.OFFLINE
+            self.db.save_download_request(self.current_download.status) 
+            raise Exception('CAR SYSTEM FAILED')
+
+        if (self.current_download.flashed_ecus[ecu_number].flashing_retries >= 3) and (self.current_download.flashed_ecus[ecu_number].roll_back_needed == False):
+            logging.info(f"ECU:{self.current_download.flashed_ecus[ecu_number].ecu_name} failed to flash the new update")
+            logging.info(f"ECU:{self.current_download.flashed_ecus[ecu_number].ecu_name} reached maximum tries of failure to update, so ECU will be kept on current version")
+            self.current_download.flashed_ecus[ecu_number].roll_back_needed=True
+            self.current_download.flashed_ecus[ecu_number].roll_back_done=True
+            logging.info(f"trying to flash the next ECU that needs to be updated: {(self.current_download.flashed_ecus[self.current_download.flashed_order_index].ecu_name)}")
+            self.handle_successful_flashing(ecu_number)
+            return
+
+        logging.info(f"Trying try number: {self.current_download.flashed_ecus[ecu_number].flashing_retries+1} to flash ECU: {self.current_download.flashed_ecus[ecu_number].ecu_name}")
+        self.UDS_flash()
+            
 
     def shutdown(self):
         """Shutdown the client"""
         self.running = False
         self.cleanup_connection()
+    
+    def UDS_flash(self):
+        if self.current_download:
+            if self.current_download.number_of_flashed_ecus == len(self.current_download.flashed_ecus):
+                self.status=ClientStatus.VERSIONS_UP_TO_DATE
+                raise Exception("Error: Trying to flash some updates but all current downloads are flashed successfully")
+            else:
+                if not self.uds_client:
+                    self.uds_client = init_uds_client()
+                if not self.uds_client:
+                    raise Exception("Error: error initializing the uds layer")
+                else:
+                    logging.info("=== Initializing Communication with ECU ===")
+                    #here should be a function that retrieves  the DA address of ecu from it's name
+                    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
+                    self.uds_client.add_server(ecu_address, SessionType.PROGRAMMING)
+                    sleep(1)
+                    servers: List[Server] = self.uds_client.get_servers()
+                    if not servers[self.current_download.flashed_order_index]:
+                        logging.info(f"Error initializing Programming session with ECU to be updated, ecu name: {self.current_download.flashed_ecus[self.current_download.flashed_order_index].ecu_name}")
+                        self.handle_failed_flashing(self.current_download.flashed_order_index,erasing_happen=False)
+                        return
+                    else:
+                        self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
+                        data_records:List[DataRecord]
+                        
+                        if (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_needed == True) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_done == False) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].flashing_retries >= 4):
+                            data_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].old_version_data_records
+                            print("\n\ndata_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].old_version_data_records")
+                        elif (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_needed == True) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_done == False) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].flashing_retries >= 3) :
+                            data_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_delta
+                            print("\n\ndata_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_delta\n")
+                        else:
+                            data_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].delta_records
+                            print("\n\ndata_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].delta_records")
+                            
+                        logging.info(f"started UDS flashing for ecu:{self.current_download.flashed_ecus[self.current_download.flashed_order_index].ecu_name} , with version : {self.current_download.flashed_ecus[self.current_download.flashed_order_index].new_version}")
+                        self.uds_client.Flash_ECU(segments=data_records ,recv_DA=servers[self.current_download.flashed_order_index].can_id,
+                                                        encryption_method=EncryptionMethod.SEC_P_256_R1,
+                                                        compression_method=CompressionMethod.LZ4,
+                                                        checksum_required=CheckSumMethod.CRC_32,
+                                                        on_successfull_flashing=self.handle_successful_flashing,
+                                                        on_failing_flashing=self.handle_failed_flashing,
+                                                        flashed_ecu_number=self.current_download.flashed_order_index
+                                                        )
+
+        else:
+            raise Exception("Error: Trying to flash some updates but no current downloads found")

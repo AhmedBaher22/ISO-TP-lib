@@ -10,7 +10,7 @@ class CompressionMethod(Enum):
     NO_COMPRESSION = 0x0
     RLE = 0x1
     HUFFMAN = 0x2
-    LZ77 = 0x3
+    LZ4 = 0x3
 
 class CheckSumMethod(Enum):
     NO_CHECKSUM = 0x0

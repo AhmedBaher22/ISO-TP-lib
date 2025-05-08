@@ -71,6 +71,9 @@ class ClientDatabase:
 
     def get_ecu_version_path(self, ecu_name: str, version: str) -> Optional[str]:
         """Get path to ECU hex file"""
-        file_name = f"{ecu_name}_v{version}.hex"
-        file_path = os.path.join(self.ecu_versions_dir, file_name)
+        file_name = f"{ecu_name}_v{version}.srec"
+        print(file_name)
+        file_path = os.path.join(self.ecu_versions_dir, ecu_name, version, file_name)
+        print(self.ecu_versions_dir)
+        print(file_path)
         return file_path if os.path.exists(file_path) else None

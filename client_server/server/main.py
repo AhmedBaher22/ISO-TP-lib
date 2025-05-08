@@ -12,6 +12,8 @@ def main():
     server = ECUUpdateServer(args.host, args.port, args.data_dir)
     try:
         server.start()
+        while True:
+            input()
     except KeyboardInterrupt:
         print("\nShutting down server...")
         server.shutdown()

@@ -7,6 +7,7 @@ import logging
 from models import *
 from protocol import Protocol
 from database_manager import DatabaseManager
+from bson import ObjectId
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,7 +30,7 @@ class ECUUpdateServer:
             self.car_types = self.db_manager.load_all_data()
             if not self.car_types:
                 raise Exception("Failed to load car types database")
-
+            print(self.car_types)
             # Create and bind socket
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -186,13 +187,18 @@ class ECUUpdateServer:
         """Authenticate the car request"""
         try:
             car_type = next((ct for ct in self.car_types 
-                           if ct.name == request.car_type), None)
+                           if ct.name.lower() == request.car_type.lower()), None)
             
             if not car_type:
+                print("bazet fl car type")
                 request.status = RequestStatus.NON_AUTHENTICATED
                 return False
 
-            if request.car_id not in car_type.car_ids:
+            print(f"\n\n request.car_id.lower(): {request.car_id.lower()}")
+            print(f"car_type.car_ids: {car_type.car_ids}")
+            car_type.car_ids = [car_id.lower() for car_id in car_type.car_ids]
+            if request.car_id.lower() not in car_type.car_ids:
+                print("bazet fl id")
                 request.status = RequestStatus.NON_AUTHENTICATED
                 return False
 
@@ -260,6 +266,7 @@ class ECUUpdateServer:
     def handle_download_request(self, request: Request, client_socket: socket.socket):
         """Handle download request for new ECU versions"""
         try:
+            logging.info(f"starting new download request for client with ip:{request.ip_address} on port:{request.port}")
             # Get download information from metadata
             required_versions = request.metadata.get('required_versions', {})
             old_versions = request.metadata.get('old_versions', {})
@@ -333,7 +340,7 @@ class ECUUpdateServer:
                 'files': {name: info['size'] for name, info in files_info.items()}
             })
             client_socket.send(start_message)
-
+            logging.info(f"Download Start message for client on ip:{download_request.ip_address} port: {download_request.port} , with message:{start_message}")
             # Wait for client acknowledgment
             ack = self.receive_message(client_socket)
             if not ack or ack['type'] != "DOWNLOAD_ACK":

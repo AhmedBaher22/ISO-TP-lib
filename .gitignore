@@ -1,1 +1,3 @@
 /logs
+.env
+/client_server/server/.env

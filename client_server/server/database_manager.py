@@ -4,6 +4,12 @@ from models import CarType, ECU, Version
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.binary import Binary
+from azure.storage.blob import BlobServiceClient, BlobClient
+from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class DatabaseManager:
     def __init__(self, data_directory: str):
@@ -13,10 +19,10 @@ class DatabaseManager:
         """
         self.data_directory = data_directory  # Keep for hex files storage
         
-        # MongoDB connection
-        uri = "mongodb+srv://ahmedbaher382001:VMv7y5NvzU0R3aFA@cluster0.ggbavh1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        # MongoDB connection from env variables
+        uri = os.getenv("MONGO_URI")
         self.client = MongoClient(uri, server_api=ServerApi('1'))
-        self.db = self.client['automotive_firmware_db']
+        self.db = self.client[os.getenv("MONGO_DB", 'automotive_firmware_db')]
         
         # Collections
         self.car_types_collection = self.db['car_types']
@@ -24,6 +30,15 @@ class DatabaseManager:
         self.versions_collection = self.db['versions']
         self.requests_collection = self.db['requests']
         self.download_requests_collection = self.db['download_requests']
+        
+        # Azure Blob Storage configuration from env variables
+        self.blob_account_name = os.getenv("HEX_STORAGE_ACCOUNT_NAME")
+        self.blob_container_name = os.getenv("HEX_STORAGE_CONTAINER_NAME")
+        self.blob_account_key = os.getenv("HEX_STORAGE_ACCOUNT_KEY")
+        self.blob_connection_string = (f"DefaultEndpointsProtocol=https;AccountName={self.blob_account_name};"
+                                     f"AccountKey={self.blob_account_key};EndpointSuffix=core.windows.net")
+        self.blob_service_client = BlobServiceClient.from_connection_string(self.blob_connection_string)
+        self.container_client = self.blob_service_client.get_container_client(self.blob_container_name)
         
         # Initialize collections if needed
         self._initialize_db()
@@ -38,6 +53,68 @@ class DatabaseManager:
         self.requests_collection.create_index("car_id")
         self.download_requests_collection.create_index("car_id")
 
+    def _get_blob_name_from_url(self, blob_url: str) -> str:
+        """Extract blob name from blob URL"""
+        # Parse the URL to get the path
+        parsed_url = urlparse(blob_url)
+        # The path will be in format: /containername/blobname
+        path_parts = parsed_url.path.split('/')
+        # The blob name is after the container name (index 2 and beyond)
+        # Join all parts after the container name to handle blobs with '/' in the name
+        blob_name = '/'.join(path_parts[2:])
+        return blob_name
+
+    def get_hex_file_chunk(self, file_path: str, chunk_size: int, offset: int) -> Optional[bytes]:
+        """
+        Read a chunk of hex file from Azure Blob Storage or local file system
+        """
+        try:
+            # Check if it's a blob URL or local file path
+            if file_path.startswith("https://") and "blob.core.windows.net" in file_path:
+                # It's a blob URL, extract blob name
+                blob_name = self._get_blob_name_from_url(file_path)
+                
+                # Get blob client
+                blob_client = self.container_client.get_blob_client(blob_name)
+                
+                # Download the range of bytes from the blob
+                download_stream = blob_client.download_blob(offset=offset, length=chunk_size)
+                
+                # Read the bytes
+                chunk_data = download_stream.readall()
+                return chunk_data
+            else:
+                # Fallback to local file system for backward compatibility
+                with open(file_path, 'rb') as f:
+                    f.seek(offset)
+                    return f.read(chunk_size)
+        except Exception as e:
+            print(f"Error reading hex file: {str(e)}")
+            return None
+
+    def get_file_size(self, file_path: str) -> int:
+        """
+        Get size of a hex file from Azure Blob Storage or local file system
+        """
+        try:
+            # Check if it's a blob URL or local file path
+            if file_path.startswith("https://") and "blob.core.windows.net" in file_path:
+                # It's a blob URL, extract blob name
+                blob_name = self._get_blob_name_from_url(file_path)
+                
+                # Get blob client
+                blob_client = self.container_client.get_blob_client(blob_name)
+                
+                # Get blob properties to get size
+                blob_properties = blob_client.get_blob_properties()
+                return blob_properties.size
+            else:
+                # Fallback to local file system for backward compatibility
+                return os.path.getsize(file_path)
+        except Exception as e:
+            print(f"Error getting file size: {str(e)}")
+            return 0
+    
     def load_all_data(self) -> List[CarType]:
         """Load all data from MongoDB and create CarType objects"""
         try:
@@ -81,7 +158,8 @@ class DatabaseManager:
                     manufactured_count=car_type_info.get('manufactured_count', 0),
                     car_ids=car_type_info.get('car_ids', [])
                 ))
-            
+
+            print(f"car_types: {car_types}")
             return car_types
         
         except Exception as e:
@@ -164,30 +242,6 @@ class DatabaseManager:
             
         except Exception as e:
             print(f"Error saving car type to MongoDB: {str(e)}")
-
-    def get_hex_file_chunk(self, file_path: str, chunk_size: int, offset: int) -> Optional[bytes]:
-        """
-        Read a chunk of hex file - still using file system for binary files
-        In the future, this could be migrated to MongoDB GridFS for binary storage
-        """
-        try:
-            with open(file_path, 'rb') as f:
-                f.seek(offset)
-                return f.read(chunk_size)
-        except Exception as e:
-            print(f"Error reading hex file: {str(e)}")
-            return None
-
-    def get_file_size(self, file_path: str) -> int:
-        """
-        Get size of a hex file - still using file system
-        In the future, this could be migrated to MongoDB GridFS for binary storage
-        """
-        try:
-            return os.path.getsize(file_path)
-        except Exception as e:
-            print(f"Error getting file size: {str(e)}")
-            return 0
     
     def save_request(self, request):
         """Save a service request to the database"""

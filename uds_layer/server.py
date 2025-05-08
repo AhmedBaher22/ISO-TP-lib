@@ -215,7 +215,6 @@ class Server:
     def ecu_reset(self, reset_type: int) -> List[int]:
         if not self.check_access_required(OperationType.ECU_RESET):
             error_msg = f"Error: Insufficient session level for ECU_RESET. Current session: {self._session}"
-            
             self.add_log(error_msg)
             return [0x00]
 
@@ -273,6 +272,7 @@ class Server:
                     self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
                     message=success_msg)
+                    transfer_request.successfull_flashing_response(ecu_number=transfer_request.Flashing_Request_ID)
             
             elif operation_status == 0x7F:  # Negative response
                 nrc = message[0]
@@ -294,7 +294,18 @@ class Server:
                 #print(error_msg)
                 self.add_log(error_msg)
                 operation.status = OperationStatus.REJECTED
+                transfer_request = next((req for req in self.Flash_ECU_Segments_Request 
+                        if req.status == FlashingECUStatus.CLOSED_SUCCESSFULLY), None)
+                
+                if transfer_request != None:
 
+                    transfer_request.status=FlashingECUStatus.REJECTED
+                    success_msg = f"{transfer_request.get_req()}ECU with diagnostic address : {self.can_id} reset successfully after flashing. the ECU is running with the new updates successfully"
+                    self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg)
+                    transfer_request.successfull_flashing_response(transfer_request.flashed_ecu_number)
+                    transfer_request.failed_flashing_response(ecu_number=transfer_request.Flashing_Request_ID,erasing_happen=True)
             # Move operation to completed operations
             self.remove_pending_operation(operation)
             self.add_completed_operation(operation)
@@ -419,6 +430,7 @@ class Server:
             log_type=LogType.error,
             message=error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
 
     def transfer_data(self, transfer_request: TransferRequest) -> List[int]:
@@ -533,6 +545,7 @@ class Server:
             log_type=LogType.ERROR,
             message=error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
     def request_transfer_exit(self, transfer_request: TransferRequest) -> List[int]:
         self._logger.log_message(
@@ -609,6 +622,7 @@ class Server:
             log_type=LogType.ERROR,
             message=error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
     def communication_control(self, sub_function: CommunicationControlSubFunction, 
                             control_type: CommunicationControlType) -> List[int]:
@@ -744,10 +758,15 @@ class Server:
         return message
 
     def on_erase_memory_respond(self, message: List[int]):
+
         self._logger.log_message(
             log_type=LogType.DEBUG,
             message=f"the message received is erase memory respond . messgae:{[hex(x) for x in message]} "
         )
+
+        transfer_request = next((req for req in self.transfer_requests 
+                if req.status == TransferStatus.CREATED), None)
+           
         if message[0] == 0x71:  # Positive response
             # Find matching operation based on routine identifier bytes
             operation = next((op for op in self._pending_operations 
@@ -809,6 +828,8 @@ class Server:
                 error_msg = f"Memory Erase Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
                 #print(error_msg)
                 self.add_log(error_msg)
+                
+                transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
 
     def check_memory(self, transfer_request: TransferRequest) -> List[int]:
@@ -920,6 +941,7 @@ class Server:
                         f"{nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}")
             #print(error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
             
     def get_pending_operations(self):
         return self._pending_operations
@@ -1107,7 +1129,8 @@ class Server:
                     success_msg = f"{flashing_ecu_req.get_req()} HARD RESET SERVICE for ECU with diagnostic address : {self.can_id} send successfully"
                     self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=success_msg)                
+                    message=success_msg)
+               
                 
         elif message[0] == 0x7F:  # Negative response
             flashing_ecu_req.status = TransferStatus.REJECTED
@@ -1131,6 +1154,7 @@ class Server:
                         f"{nrc_descriptions.get(flashing_ecu_req.NRC, 'Unknown Error')}")
             #print(error_msg)
             self.add_log(error_msg)
+            flashing_ecu_req.failed_flashing_response(ecu_number=flashing_ecu_req.Flashing_Request_ID,erasing_happen=True) 
 
 # def calculate_crc32(data: bytearray) -> bytearray:
 #     crc = zlib.crc32(data) & 0xFFFFFFFF

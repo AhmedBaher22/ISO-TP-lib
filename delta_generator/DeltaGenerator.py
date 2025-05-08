@@ -1,23 +1,29 @@
 from typing import List, Tuple, Set, Dict, Optional
 import logging
 from enum import Enum, auto
-
+from hex_parser.SRecordParser import SRecordParser, DataRecord
+# class RecordType(Enum):
+#     TWO_BYTES   = 2
+#     THREE_BYTES = 3
+#     FOUR_BYTES  = 4
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-class DataRecord:
-    def __init__(self, address: bytearray, data: bytearray):
-        self.address = address
-        self.data = data
-        self.data_length = len(data)
+
+# class DataRecord:
+#     def __init__(self, address: bytearray, data: bytearray):
+#         self.record_type: RecordType
+#         self.address = address
+#         self.data = data
+#         self.data_length = len(data)
     
-    def __str__(self) -> str:
-        addr_int = int.from_bytes(self.address, byteorder='big')
-        return f"DataRecord(Address: 0x{addr_int:08X}, Data: {self.data.hex().upper()}, Length: {self.data_length})"
+#     def __str__(self) -> str:
+#         addr_int = int.from_bytes(self.address, byteorder='big')
+#         return f"DataRecord(Address: 0x{addr_int:08X}, Data: {self.data.hex().upper()}, Length: {self.data_length})"
     
-    def __repr__(self) -> str:
-        return self.__str__()
+#     def __repr__(self) -> str:
+#         return self.__str__()
 
 class DeltaAlgorithm(Enum):
     """Enum for different delta generation algorithms"""

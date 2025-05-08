@@ -14,7 +14,7 @@ def main():
         client.start()
         # Keep main thread alive
         while True:
-            input()
+            input()  
     except KeyboardInterrupt:
         print("\nShutting down client...")
         client.shutdown()

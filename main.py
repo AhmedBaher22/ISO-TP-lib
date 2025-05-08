@@ -40,7 +40,7 @@ def main():
 
     client.Flash_ECU(segments=parser.send_file() ,recv_DA=servers[0].can_id,
                                     encryption_method=EncryptionMethod.SEC_P_256_R1,
-                                    compression_method=CompressionMethod.NO_COMPRESSION,
+                                    compression_method=CompressionMethod.LZ4,
                                     checksum_required=CheckSumMethod.CRC_16,
                                     )
     
