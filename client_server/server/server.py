@@ -271,8 +271,12 @@ class ECUUpdateServer:
             required_versions = request.metadata.get('required_versions', {})
             old_versions = request.metadata.get('old_versions', {})
 
+            file_offsets = request.metadata.get('file_offsets', {})
+            print(f"\n\nserver: file_offsets: {file_offsets}\n\n")
+            
             if not required_versions:
                 raise Exception("No versions specified for download")
+
 
             # Create download request
             download_request = DownloadRequest(
@@ -284,7 +288,9 @@ class ECUUpdateServer:
                 required_versions=required_versions,
                 old_versions=old_versions,
                 status=DownloadStatus.PREPARING_FILES,
-                active_transfers={}
+                active_transfers={},
+                file_offsets=file_offsets
+
             )
 
             self.active_downloads[request.car_id] = download_request
@@ -326,19 +332,31 @@ class ECUUpdateServer:
 
                 file_size = self.db_manager.get_file_size(version.hex_file_path)
                 total_size += file_size
+                
+                # Get offset from download_request.files_offset (default to 0)
+                offset = download_request.file_offsets.get(ecu_name, 0)
+
                 files_info[ecu_name] = {
                     'path': version.hex_file_path,
                     'size': file_size,
-                    'transferred': 0
+                    'transferred': offset  # <-- Use offset here
                 }
 
             download_request.total_size = total_size
 
             # Send download start message
+            # start_message = Protocol.create_message(Protocol.DOWNLOAD_START, {
+            #     'total_size': total_size,
+            #     'files': {name: info['size'] for name, info in files_info.items()}
+            # })
+
+            # Send download start message
             start_message = Protocol.create_message(Protocol.DOWNLOAD_START, {
                 'total_size': total_size,
-                'files': {name: info['size'] for name, info in files_info.items()}
+                'files': {name: info['size'] for name, info in files_info.items()},
+                'file_offsets': {name: info['transferred'] for name, info in files_info.items()}
             })
+            
             client_socket.send(start_message)
             logging.info(f"Download Start message for client on ip:{download_request.ip_address} port: {download_request.port} , with message:{start_message}")
             # Wait for client acknowledgment
@@ -355,7 +373,8 @@ class ECUUpdateServer:
                         ecu_name,
                         file_info['path'],
                         file_info['size'],
-                        download_request
+                        download_request,
+                        start_offset=file_info['transferred']  # <-- Pass offset here
                     )
                     successful_transfers += 1
                 except Exception as e:
@@ -385,10 +404,11 @@ class ECUUpdateServer:
             ))
 
     def transfer_file(self, client_socket: socket.socket, ecu_name: str, 
-                     file_path: str, file_size: int, download_request: DownloadRequest):
+                     file_path: str, file_size: int, download_request: DownloadRequest, start_offset: int = 0):
         """Transfer a single file to client"""
         print(f"file_path: {file_path}")
-        offset = 0
+        print(f"File offset: {start_offset}")
+        offset = start_offset
         while offset < file_size:
             chunk = self.db_manager.get_hex_file_chunk(file_path, self.chunk_size, offset)
             if not chunk:
