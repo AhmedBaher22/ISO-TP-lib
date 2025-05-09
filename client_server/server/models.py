@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Dict, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enums import *
 
 @dataclass
@@ -74,3 +74,4 @@ class DownloadRequest:
     total_size: int = 0
     transferred_size: int = 0
     active_transfers: Dict[str, bool] = None
+    file_offsets: Dict[str, int] = field(default_factory=dict)

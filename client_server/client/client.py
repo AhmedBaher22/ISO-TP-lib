@@ -292,7 +292,7 @@ class ECUUpdateClient:
         """Verify temporary files and their sizes"""
         try:
             for ecu_name in self.current_download.required_updates.keys():
-                temp_path = f"temp_{ecu_name}_{self.current_download.request_id}.hex"
+                temp_path = f"temp_{ecu_name}_{self.current_download.request_id}.srec"
                 if os.path.exists(temp_path):
                     size = os.path.getsize(temp_path)
                     self.current_download.file_offsets[ecu_name] = size
@@ -313,13 +313,16 @@ class ECUUpdateClient:
                 raise Exception("No download request available")
 
             # Check if this is a resume
-            is_resume = bool(self.current_download.file_offsets)
-            if is_resume:
+            file_offsets = self.current_download.file_offsets or {}
+            is_resume = bool(file_offsets)
+            print(f"\n\n\n\nnew offset: {file_offsets}")
+            if len(file_offsets) > 0:
                 logging.info(f"Resuming download from previous session. Progress: {self.current_download.file_offsets}")
             #add in here pending downloads flow
             self.current_download.status = ClientDownloadStatus.REQUESTING
             self.status = ClientStatus.REQUESTING_DOWNLOAD
 
+            print(f"\n\nClient file_offsets: {file_offsets}\n\n")
             # Send download request with resume information
             download_message = Protocol.create_message(Protocol.DOWNLOAD_REQUEST, {
                 'request_id': self.current_download.request_id,
@@ -327,8 +330,7 @@ class ECUUpdateClient:
                 'car_id': self.car_info.car_id,
                 'required_versions': self.current_download.required_updates,
                 'old_versions': self.car_info.ecu_versions,
-                'is_resume': is_resume,
-                'file_offsets': self.current_download.file_offsets if is_resume else 0
+                'file_offsets': file_offsets
             })
             
             self.socket.send(download_message)
