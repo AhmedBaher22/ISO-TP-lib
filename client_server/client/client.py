@@ -17,7 +17,7 @@ import sys
 import os
 from time import sleep
 from typing import List
-
+from logger import Logger, LogType, ProtocolType
 import os
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -54,6 +54,7 @@ class ECUUpdateClient:
         self.retry_delay = 5  # seconds
         self.running = False
         self.update_check_interval = 3600  # 1 hour
+        self.logger=Logger(protocol=ProtocolType.HMI_CLIENT)
         self.chunk_size = 8192  # 8KB chunks for file transfer
         self.uds_client=None
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,7 +64,7 @@ class ECUUpdateClient:
     def start(self):
         """Start the client"""
         try:
-            # Load car information
+            # Load car information 
             self.car_info = self.db.load_car_info()
             if not self.car_info:
                 raise Exception("Car information not found")
@@ -72,7 +73,7 @@ class ECUUpdateClient:
             logging.info(f"checking for pending download requests")
             # Check for incomplete downloads
             pending_download = self.db.load_download_request()
-            print("nothing in")
+
             if pending_download and pending_download.status not in [
                 ClientDownloadStatus.COMPLETED, 
                 ClientDownloadStatus.FAILED
@@ -108,7 +109,7 @@ class ECUUpdateClient:
         """Main client loop"""
         while self.running:
             try:
-                print(f"in loop, status: {self.status}") 
+                logging.info(f"in loop, status: {self.status}") 
                 if self.status == ClientStatus.WAITING_FLASHING_SOME_ECUS:
                     time.sleep(1)
                     continue
@@ -228,7 +229,7 @@ class ECUUpdateClient:
 
             # Wait for response
             self.status = ClientStatus.WAITING_FOR_RESPONSE 
-            print(f"client status: WAITING FOR RESPONSE")
+            logging.info(f"client status: WAITING FOR RESPONSE")
             response = self.receive_message()
 
             if not response:    
@@ -315,14 +316,14 @@ class ECUUpdateClient:
             # Check if this is a resume
             file_offsets = self.current_download.file_offsets or {}
             is_resume = bool(file_offsets)
-            print(f"\n\n\n\nnew offset: {file_offsets}")
+
             if len(file_offsets) > 0:
                 logging.info(f"Resuming download from previous session. Progress: {self.current_download.file_offsets}")
             #add in here pending downloads flow
             self.current_download.status = ClientDownloadStatus.REQUESTING
             self.status = ClientStatus.REQUESTING_DOWNLOAD
 
-            print(f"\n\nClient file_offsets: {file_offsets}\n\n")
+
             # Send download request with resume information
             download_message = Protocol.create_message(Protocol.DOWNLOAD_REQUEST, {
                 'request_id': self.current_download.request_id,
@@ -492,7 +493,7 @@ class ECUUpdateClient:
                 n+=1   
 
                 
-            print("finished making the flash ecu object")
+
             self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
             self.db.save_download_request(self.current_download)
             self.UDS_flash()
@@ -559,7 +560,7 @@ class ECUUpdateClient:
         self.current_download.number_of_flashed_ecus+=1
 
 
-        print(f"\n\nself.current_download.number_of_flashed_ecus: {self.current_download.number_of_flashed_ecus}") 
+
         if self.current_download.number_of_flashed_ecus >= len(self.current_download.flashed_ecus):
             check_all_up_to_date_flag:bool=False
             rolled_back_ecus:List[str]=[]
@@ -601,7 +602,7 @@ class ECUUpdateClient:
         
             
         else:
-            print("\n\nELSE\n\n")
+
             if (self.current_download.flashed_ecus[ecu_number].roll_back_needed == True) and (self.current_download.flashed_ecus[ecu_number].flashing_done == False):
                 self.current_download.flashed_ecus[ecu_number].roll_back_done == True
                 self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
@@ -700,13 +701,13 @@ class ECUUpdateClient:
                         
                         if (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_needed == True) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_done == False) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].flashing_retries >= 4):
                             data_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].old_version_data_records
-                            print("\n\ndata_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].old_version_data_records")
+                            
                         elif (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_needed == True) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_done == False) and (self.current_download.flashed_ecus[self.current_download.flashed_order_index].flashing_retries >= 3) :
                             data_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_delta
-                            print("\n\ndata_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].roll_back_delta\n")
+                            
                         else:
                             data_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].delta_records
-                            print("\n\ndata_records=self.current_download.flashed_ecus[self.current_download.flashed_order_index].delta_records")
+                            
                             
                         logging.info(f"started UDS flashing for ecu:{self.current_download.flashed_ecus[self.current_download.flashed_order_index].ecu_name} , with version : {self.current_download.flashed_ecus[self.current_download.flashed_order_index].new_version}")
                         self.uds_client.Flash_ECU(segments=data_records ,recv_DA=servers[self.current_download.flashed_order_index].can_id,

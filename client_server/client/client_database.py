@@ -1,10 +1,12 @@
+import logging
 import json
 import os
 from typing import Optional, Dict
 from datetime import datetime
 from client_models import ClientDownloadRequest
 from shared_models import CarInfo
-
+logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 class ClientDatabase:
     def __init__(self, data_directory: str):
         self.data_directory = data_directory
@@ -36,7 +38,7 @@ class ClientDatabase:
                     return CarInfo(**data)
             return None
         except Exception as e:
-            print(f"Error loading car info: {str(e)}")
+            logging.error(f"Error loading car info: {str(e)}")
             return None
 
     def save_download_request(self, request: ClientDownloadRequest):
@@ -54,7 +56,7 @@ class ClientDatabase:
                     return ClientDownloadRequest.from_dict(data)
             return None
         except Exception as e:
-            print(f"Error loading download request: {str(e)}")
+            logging.error(f"Error loading download request: {str(e)}")
             return None
 
     def save_ecu_version(self, ecu_name: str, version: str, hex_data: bytes):
@@ -73,8 +75,5 @@ class ClientDatabase:
     def get_ecu_version_path(self, ecu_name: str, version: str) -> Optional[str]:
         """Get path to ECU hex file"""
         file_name = f"{ecu_name}_v{version}.srec"
-        print(file_name)
         file_path = os.path.join(self.ecu_versions_dir, ecu_name, version, file_name)
-        print(self.ecu_versions_dir)
-        print(file_path)
         return file_path if os.path.exists(file_path) else None
