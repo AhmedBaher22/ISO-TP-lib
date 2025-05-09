@@ -115,13 +115,16 @@ class ClientDownloadRequest:
                 new_version=ecu_data['new_version'],
                 old_version_path=ecu_data['old_version_path'],
                 new_version_path=ecu_data['new_version_path'],
-                delta_records=DataRecord.from_dict(ecu_data['delta_records']),
+                # Convert list of record dictionaries back to DataRecord objects
+                delta_records=[DataRecord.from_dict(record) for record in ecu_data['delta_records']],
                 flashing_done=ecu_data['flashing_done'],
                 flashing_retries=ecu_data.get('flashing_retries', 0),
                 roll_back_needed=ecu_data.get('roll_back_needed', False),
                 roll_back_done=ecu_data.get('roll_back_done', False),
-                roll_back_delta=DataRecord.from_dict(ecu_data['roll_back_delta']),
-                old_version_data_records=DataRecord.from_dict(ecu_data['old_version_data_records'])
+                # Convert list of record dictionaries back to DataRecord objects
+                roll_back_delta=[DataRecord.from_dict(record) for record in ecu_data['roll_back_delta']],
+                # Convert list of record dictionaries back to DataRecord objects
+                old_version_data_records=[DataRecord.from_dict(record) for record in ecu_data['old_version_data_records']]
             ) for ecu_data in data.get('flashed_ecus', [])
         ]
 

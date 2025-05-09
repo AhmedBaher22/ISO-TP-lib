@@ -72,7 +72,7 @@ class ECUUpdateClient:
             logging.info(f"checking for pending download requests")
             # Check for incomplete downloads
             pending_download = self.db.load_download_request()
-
+            print("nothing in")
             if pending_download and pending_download.status not in [
                 ClientDownloadStatus.COMPLETED, 
                 ClientDownloadStatus.FAILED
@@ -101,21 +101,24 @@ class ECUUpdateClient:
 
     def run(self):
         flag=True
+        if self.current_download:
+            if self.current_download.status == ClientDownloadStatus.IN_FLASHING:
+                self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
+                self.UDS_flash()
         """Main client loop"""
         while self.running:
             try:
                 print(f"in loop, status: {self.status}") 
-                # if self.status == ClientStatus.WAITING_FLASHING_SOME_ECUS:
-                #     self.UDS_flash()
+                if self.status == ClientStatus.WAITING_FLASHING_SOME_ECUS:
+                    time.sleep(1)
+                    continue
                 if self.status == ClientStatus.OFFLINE and (flag == True):
                     flag=False
                     self.connect_to_server()
                 
                 # elif self.status==ClientStatus.CHECK_FOR_UPDATES:
                 #     self.check_for_updates()
-                elif self.status == ClientStatus.WAITING_FLASHING_SOME_ECUS:
-                    time.sleep(1)
-                    continue
+
                 elif self.status == ClientStatus.VERSIONS_UP_TO_DATE:
                     # Periodically check for updates
                     time.sleep(self.update_check_interval)
@@ -489,7 +492,7 @@ class ECUUpdateClient:
                 
             print("finished making the flash ecu object")
             self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
-            # self.db.save_download_request(self.current_download)
+            self.db.save_download_request(self.current_download)
             self.UDS_flash()
         except Exception as e:
             logging.error(f"Flashing error: {str(e)}")
@@ -591,9 +594,10 @@ class ECUUpdateClient:
                 logging.info("all ECUS updated and flashed successfully and All of them up to date now")
                 self.car_info.ecu_versions[self.current_download.flashed_ecus[ecu_number].ecu_name] = self.current_download.flashed_ecus[ecu_number].new_version
             self.db.save_car_info(self.car_info)
-            return
-        ##  ????
             self.db.save_download_request(self.current_download)
+            return
+        
+            
         else:
             print("\n\nELSE\n\n")
             if (self.current_download.flashed_ecus[ecu_number].roll_back_needed == True) and (self.current_download.flashed_ecus[ecu_number].flashing_done == False):

@@ -50,6 +50,7 @@ class ClientDatabase:
             if os.path.exists(self.download_request_file):
                 with open(self.download_request_file, 'r') as f:
                     data = json.load(f)
+
                     return ClientDownloadRequest.from_dict(data)
             return None
         except Exception as e:
