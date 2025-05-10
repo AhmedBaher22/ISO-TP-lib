@@ -183,8 +183,8 @@ class CarUpdateGUI(QMainWindow):
         try:
             # Initialize client with your specific parameters
             self.client = ECUUpdateClient(
-                server_host="localhost",
-                server_port=5000,
+                server_host="4.161.52.76",
+                server_port=9000,
                 data_directory="../client_data"
             )
             
