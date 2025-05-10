@@ -478,10 +478,11 @@ class ECUUpdateClient:
                 old_version_path=self.db.get_ecu_version_path(ecu_name=ecu_name,version=old_version)
                 new_version_path=self.db.get_ecu_version_path(ecu_name=ecu_name,version=new_version)
                 parser = SRecordParser()
+                parser2 = SRecordParser()
                 parser.parse_file(filename=str(old_version_path))
                 old_version_data_records=parser._merged_records
-                parser.parse_file(filename=str(new_version_path))
-                new_version_data_records=parser._merged_records
+                parser2.parse_file(filename=str(new_version_path))
+                new_version_data_records=parser2._merged_records
                 delta_records=deltaGenerator.generate_delta(old_version=old_version_data_records,new_version=new_version_data_records)
                 roll_back_delta=deltaGenerator.generate_delta(old_version=new_version_data_records,new_version=old_version_data_records)
 
