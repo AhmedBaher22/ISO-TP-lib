@@ -251,22 +251,3 @@ class CompletionScreen(QWidget):
             self.details_content.setText(details_text)
         else:
             self.details_content.setText(details)
-
-# For testing the screen individually
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setStyle(QStyleFactory.create("Fusion"))
-    
-    screen = CompletionScreen()
-    
-    # Set some sample details
-    screen.set_update_details([
-        "Engine Control Module updated from v1.2.3 to v1.3.0",
-        "Brake Control Module updated from v1.5.2 to v2.0.0",
-        "Airbag Control Unit updated from v2.1.0 to v2.1.2",
-        "Security enhancements applied to all systems"
-    ])
-    
-    screen.show()
-    
-    sys.exit(app.exec_())

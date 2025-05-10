@@ -21,12 +21,16 @@ from flash_consent_screen import FlashConsentScreen
 from flashing_screen import FlashingScreen
 from completion_screen import CompletionScreen
 from pending_requests_screen import PendingRequestsScreen
+from client_for_gui import ECUUpdateClient
 
 # Import backend related modules
-sys.path.append('..')  # Add parent directory to path if needed
-from client import ECUUpdateClient
-from enums import ClientStatus, ClientDownloadStatus
-from shared_models import CarInfo
+current_dir = os.path.dirname(os.path.abspath(__file__))
+package_dir = os.path.abspath(os.path.join(current_dir, ".."))
+package_dir = os.path.abspath(os.path.join(package_dir, ".."))
+package_dir = os.path.abspath(os.path.join(package_dir, ".."))
+sys.path.append(package_dir)
+from client_server.client.enums import ClientStatus, ClientDownloadStatus
+from client_server.client.shared_models import CarInfo
 
 class SignalHandler(QObject):
     """Class to handle Qt signals across threads"""
@@ -50,6 +54,16 @@ class CarUpdateGUI(QMainWindow):
         
         # Create signal handler
         self.signal_handler = SignalHandler()
+        
+        # Initialize tracking flags
+        self.download_completed_handled = False
+        self.updates_displayed = False
+        self.pending_download_handled = False
+        self.pending_flash_handled = False
+        self.just_flashed = False
+        self.download_just_started = False
+        self.updates_downloaded = False
+        self.updates = {}
         
         # Initialize the UI
         self.init_ui()
@@ -98,6 +112,11 @@ class CarUpdateGUI(QMainWindow):
         
         # Connect all signals
         self.connect_signals()
+
+    def show_flash_consent(self):
+        """Show flash consent screen directly when Install Downloaded Updates button is clicked"""
+        logging.info("Showing flash consent screen directly")
+        self.stacked_widget.setCurrentWidget(self.flash_consent_screen)
     
     def connect_signals(self):
         """Connect all signals to slots"""
@@ -109,6 +128,10 @@ class CarUpdateGUI(QMainWindow):
         self.signal_handler.flash_completed.connect(self.on_flash_completed)
         self.signal_handler.pending_download.connect(self.on_pending_download)
         self.signal_handler.pending_flash.connect(self.on_pending_flash)
+        
+        # Welcome screen connections
+        self.welcome_screen.view_updates_clicked.connect(self.show_update_notification)
+        self.welcome_screen.install_downloaded_clicked.connect(self.show_flash_consent)
         
         # Screen-specific connections
         self.notification_screen.download_approved.connect(self.start_download)
@@ -127,7 +150,7 @@ class CarUpdateGUI(QMainWindow):
     def setup_client(self):
         """Set up the ECU update client"""
         try:
-            # Initialize client
+            # Initialize client with your specific parameters
             self.client = ECUUpdateClient(
                 server_host="localhost",
                 server_port=5000,
@@ -139,7 +162,7 @@ class CarUpdateGUI(QMainWindow):
             self.client_thread.daemon = True
             self.client_thread.start()
             
-            # Start client
+            # Start client without automatic background processing
             self.client.start()
             
         except Exception as e:
@@ -166,41 +189,73 @@ class CarUpdateGUI(QMainWindow):
                     time.sleep(1)
                     continue
                 
+                # Debug logging
+                if self.client.status != last_status:
+                    logging.info(f"Client status changed: {last_status} -> {self.client.status}")
+                
                 # Check for initial connection timeout
                 if self.client.status == ClientStatus.OFFLINE:
                     connection_timeout_counter += 1
                     if connection_timeout_counter >= connection_timeout_limit:
+                        logging.info("Connection timeout reached, emitting connection_failed signal")
                         self.signal_handler.connection_failed.emit()
                         connection_timeout_counter = 0  # Reset counter
                 
                 # Handle status changes
                 if self.client.status != last_status:
                     last_status = self.client.status
-                    self.signal_handler.status_changed.emit(f"Status: {self.client.status.name}")
+                    status_msg = f"Status: {self.client.status.name}"
+                    logging.info(f"Emitting status_changed signal: {status_msg}")
+                    self.signal_handler.status_changed.emit(status_msg)
                     
                     # Handle specific status changes
                     if self.client.status == ClientStatus.AUTHENTICATED:
+                        logging.info("Emitting connection_success signal")
                         self.signal_handler.connection_success.emit()
                     
                     elif self.client.status == ClientStatus.VERSIONS_UP_TO_DATE:
+                        # System is up to date - update welcome screen
+                        logging.info("System is up to date, updating welcome screen")
+                        self.signal_handler.status_changed.emit("System is up to date")
+                        
                         # If we just completed a flashing operation
-                        if hasattr(self, 'just_flashed') and self.just_flashed:
+                        if self.just_flashed:
+                            logging.info("Flashing just completed (just_flashed=True), emitting flash_completed signal")
                             self.signal_handler.flash_completed.emit()
                             self.just_flashed = False
+                            logging.info("Reset just_flashed to False")
+                        else:
+                            logging.info("System is up to date but just_flashed=False, not showing completion screen")
+                    
+                    elif self.client.status == ClientStatus.DOWNLOAD_NEEDED:
+                        # Updates are available - update welcome screen
+                        logging.info("Updates available, emitting status for welcome screen")
+                        self.signal_handler.status_changed.emit("Updates available - download needed")
+                        self.signal_handler.status_changed.emit(f"Status: {self.client.status.name}")
                 
                 # Check for pending download/flash requests
                 if hasattr(self.client, 'current_download') and self.client.current_download:
                     download = self.client.current_download
                     
-                    # Check download status
+                    # Check if update has been downloaded and is ready to flash
+                    if download.status == ClientDownloadStatus.DOWNLOAD_COMPLETED or download.status == ClientDownloadStatus.COMPLETED:
+                        if not self.updates_downloaded:
+                            logging.info("Updates downloaded detected, setting updates_downloaded flag")
+                            self.updates_downloaded = True
+                            self.signal_handler.status_changed.emit("Updates downloaded - ready to flash")
+
+                    # Check download status - only treat as pending if we didn't just start it
                     if download.status == ClientDownloadStatus.DOWNLOADING:
-                        if not hasattr(self, 'pending_download_handled') or not self.pending_download_handled:
+                        # Only treat as pending if we didn't just start the download ourselves
+                        if not self.pending_download_handled and not self.download_just_started:
+                            logging.info("Pending download found, emitting pending_download signal")
                             self.signal_handler.pending_download.emit(download)
                             self.pending_download_handled = True
                     
-                    # Check flashing status
+                    # Check flashing status - only treat as pending if we didn't just start it
                     elif download.status == ClientDownloadStatus.IN_FLASHING:
-                        if not hasattr(self, 'pending_flash_handled') or not self.pending_flash_handled:
+                        if not self.pending_flash_handled and not self.just_flashed:
+                            logging.info("Pending flashing found, emitting pending_flash signal")
                             self.signal_handler.pending_flash.emit(download)
                             self.pending_flash_handled = True
                     
@@ -228,25 +283,51 @@ class CarUpdateGUI(QMainWindow):
                                 )
                     
                     # Check for download completion
-                    if download.status == ClientDownloadStatus.COMPLETED:
-                        if not hasattr(self, 'download_completed_handled'):
+                    # Try to check both possible download completed status values
+                    download_completed_status = False
+                    try:
+                        if download.status == ClientDownloadStatus.DOWNLOAD_COMPLETED:
+                            logging.info("Download completed detected (DOWNLOAD_COMPLETED status)")
+                            download_completed_status = True
+                    except (AttributeError, ValueError):
+                        try:
+                            if download.status == ClientDownloadStatus.COMPLETED:
+                                logging.info("Download completed detected (COMPLETED status)")
+                                download_completed_status = True
+                        except (AttributeError, ValueError):
+                            pass
+                    
+                    if download_completed_status:
+                        logging.info(f"Download completed status: handled={self.download_completed_handled}")
+                        if not self.download_completed_handled:
+                            logging.info("Emitting download_completed signal")
                             self.signal_handler.download_completed.emit()
                             self.download_completed_handled = True
+                            self.updates_downloaded = True  # Set updates downloaded flag
+                            logging.info("download_completed_handled set to True")
                 
-                # Check for updates if authenticated
+                # Check for updates if authenticated and notify UI
                 if self.client.status == ClientStatus.DOWNLOAD_NEEDED:
+                    logging.info("Client status is DOWNLOAD_NEEDED, checking for update details")
                     if hasattr(self.client, 'car_info') and self.client.car_info:
+                        logging.info(f"Car info found: {self.client.car_info}")
                         # Convert required updates to old_version -> new_version format
-                        if hasattr(self.client.current_download, 'required_updates'):
-                            updates = {}
-                            for ecu_name, new_version in self.client.current_download.required_updates.items():
-                                old_version = self.client.car_info.ecu_versions.get(ecu_name, "Unknown")
-                                updates[ecu_name] = (old_version, new_version)
-                            
-                            # Emit signal with updates
-                            if updates and not hasattr(self, 'updates_displayed'):
-                                self.signal_handler.update_available.emit(updates)
-                                self.updates_displayed = True
+                        if hasattr(self.client, 'current_download') and self.client.current_download:
+                            logging.info(f"Current download: {self.client.current_download}")
+                            if hasattr(self.client.current_download, 'required_updates'):
+                                logging.info(f"Required updates: {self.client.current_download.required_updates}")
+                                updates = {}
+                                for ecu_name, new_version in self.client.current_download.required_updates.items():
+                                    old_version = self.client.car_info.ecu_versions.get(ecu_name, "Unknown")
+                                    updates[ecu_name] = (old_version, new_version)
+                                
+                                # Emit signal with updates
+                                if updates and not self.updates_displayed:
+                                    logging.info(f"Emitting update_available signal with updates: {updates}")
+                                    self.signal_handler.update_available.emit(updates)
+                                    self.updates_displayed = True
+                                else:
+                                    logging.info("Updates already displayed, not emitting signal again")
                 
                 time.sleep(0.5)  # Prevent high CPU usage
             
@@ -254,9 +335,33 @@ class CarUpdateGUI(QMainWindow):
                 logging.error(f"Error monitoring client: {str(e)}")
                 time.sleep(1)  # Wait before retrying
     
+    def show_update_notification(self):
+        """Show update notification screen when user clicks the View Updates button"""
+        logging.info("Showing update notification screen")
+        
+        # Use stored updates if available
+        if self.updates:
+            logging.info(f"Using stored updates: {self.updates}")
+            self.notification_screen.show_updates(self.updates)
+        # Otherwise try to get them from the client
+        elif hasattr(self.client, 'current_download') and self.client.current_download:
+            if hasattr(self.client.current_download, 'required_updates'):
+                updates = {}
+                for ecu_name, new_version in self.client.current_download.required_updates.items():
+                    old_version = self.client.car_info.ecu_versions.get(ecu_name, "Unknown")
+                    updates[ecu_name] = (old_version, new_version)
+                
+                if updates:
+                    logging.info(f"Using updates from client: {updates}")
+                    self.notification_screen.show_updates(updates)
+        
+        # Switch to notification screen
+        self.stacked_widget.setCurrentWidget(self.notification_screen)
+    
     # Signal handlers
     def on_connection_success(self):
         """Handle successful connection to server"""
+        logging.info("Connection successful")
         self.welcome_screen.show_connection_success()
         
         # Wait a moment to show the success message before proceeding
@@ -264,6 +369,7 @@ class CarUpdateGUI(QMainWindow):
     
     def on_connection_failed(self):
         """Handle failed connection to server"""
+        logging.info("Connection failed")
         self.welcome_screen.show_connection_failure()
         
         # Show error message
@@ -282,55 +388,107 @@ class CarUpdateGUI(QMainWindow):
     
     def on_update_available(self, updates):
         """Handle when updates are available"""
-        # Show notification screen
-        self.stacked_widget.setCurrentWidget(self.notification_screen)
+        logging.info(f"Updates available: {updates}")
+        # Store the updates for when the user clicks the View Updates button
+        self.updates = updates
+        
+        # Don't automatically switch to notification screen
+        # Just set the flag so we know updates are displayed on welcome screen
+        self.updates_displayed = True
+        
+        # Explicitly force the welcome screen to show updates are available
+        # This helps ensure the UI updates correctly
+        logging.info("Forcing welcome screen to show updates available")
+        self.welcome_screen.show_updates_available()
     
     def on_download_completed(self):
         """Handle download completion"""
+        logging.info("Download completed, showing flash consent screen")
+        self.updates_downloaded = True
+
         # Show flash consent screen
         self.stacked_widget.setCurrentWidget(self.flash_consent_screen)
     
     def on_flash_completed(self):
         """Handle flashing completion"""
+        logging.info("Flashing completion handler called")
+        self.updates_downloaded = False
+        
         # Set update details if available
         if hasattr(self.client, 'current_download') and self.client.current_download:
             download = self.client.current_download
+            logging.info(f"Current download: {download}")
+            
             if hasattr(download, 'downloaded_versions'):
+                logging.info(f"Downloaded versions: {download.downloaded_versions}")
                 details = []
                 for ecu_name, new_version in download.downloaded_versions.items():
-                    old_version = self.client.car_info.ecu_versions.get(ecu_name, "Unknown")
-                    details.append(f"{ecu_name} updated from v{old_version} to v{new_version}")
+                    details.append(f"{ecu_name} updated to version: {new_version}")
                 
                 if details:
+                    logging.info(f"Setting update details: {details}")
                     self.completion_screen.set_update_details(details)
+            else:
+                logging.info("No downloaded_versions attribute found")
+                
+                # Try to get info from flashed_ecus instead
+                if hasattr(download, 'flashed_ecus'):
+                    logging.info(f"Found flashed_ecus: {download.flashed_ecus}")
+                    details = []
+                    for ecu in download.flashed_ecus:
+                        if hasattr(ecu, 'flashing_done') and ecu.flashing_done:
+                            details.append(f"{ecu.ecu_name} updated from v{ecu.old_version} to v{ecu.new_version}")
+                    
+                    if details:
+                        logging.info(f"Setting update details from flashed_ecus: {details}")
+                        self.completion_screen.set_update_details(details)
         
         # Show completion screen
         self.stacked_widget.setCurrentWidget(self.completion_screen)
     
     def on_pending_download(self, download_request):
         """Handle pending download request"""
+        logging.info("Pending download found, showing pending requests screen")
         # Show pending requests screen
         self.stacked_widget.setCurrentWidget(self.pending_requests_screen)
     
     def on_pending_flash(self, download_request):
         """Handle pending flash request"""
+        logging.info("Pending flashing found, showing pending requests screen")
         # Show pending requests screen
         self.stacked_widget.setCurrentWidget(self.pending_requests_screen)
     
     # User action handlers
     def start_download(self):
         """Start downloading updates"""
+        logging.info("Starting download")
         # Switch to download screen
         self.stacked_widget.setCurrentWidget(self.download_screen)
         
         # Set ECU info in download screen
         if hasattr(self.client, 'current_download') and self.client.current_download:
             if hasattr(self.client.current_download, 'required_updates'):
+                logging.info("Setting ECU info in download screen")
                 self.download_screen.set_ecu_info(self.client.current_download.required_updates.keys())
         
         # Reset handled flags
-        if hasattr(self, 'download_completed_handled'):
-            delattr(self, 'download_completed_handled')
+        self.download_completed_handled = False
+        logging.info("Reset download_completed_handled to False")
+        
+        # Set flag to indicate we just started a download (to prevent resume dialog)
+        self.download_just_started = True
+        logging.info("Set download_just_started flag")
+        
+        # Clear the flag after 5 seconds
+        def clear_download_started_flag():
+            self.download_just_started = False
+            logging.info("Cleared download_just_started flag")
+        
+        QTimer.singleShot(5000, clear_download_started_flag)
+        
+        # Initiate download using the client state pattern
+        logging.info("Calling client.initiate_download()")
+        self.client.initiate_download()
     
     def skip_updates(self):
         """Skip updates for now"""
@@ -343,8 +501,19 @@ class CarUpdateGUI(QMainWindow):
         )
         
         if result == QMessageBox.Yes:
-            # Reset to welcome screen
-            self.reset_to_welcome()
+            logging.info("Skipping updates - returning to welcome screen without canceling")
+            # DO NOT cancel the operation, just return to welcome screen
+            # so the updates remain available
+            
+            # Reset UI-related flags but preserve update status
+            self.pending_download_handled = False
+            self.pending_flash_handled = False
+            self.download_completed_handled = False
+            self.just_flashed = False
+            self.download_just_started = False
+            
+            # Return to welcome screen
+            self.stacked_widget.setCurrentWidget(self.welcome_screen)
     
     def cancel_download(self):
         """Cancel download in progress"""
@@ -357,71 +526,131 @@ class CarUpdateGUI(QMainWindow):
         )
         
         if result == QMessageBox.Yes:
+            logging.info("Cancelling download")
+            # Cancel operation through the client
+            self.client.cancel_operation()
+            
             # Reset to welcome screen
             self.reset_to_welcome()
     
     def start_flashing(self):
         """Start flashing ECUs"""
+        logging.info("Starting flashing")
         # Switch to flashing screen
         self.stacked_widget.setCurrentWidget(self.flashing_screen)
         
         # Set ECU list in flashing screen
         if hasattr(self.client, 'current_download') and self.client.current_download:
+            # Set ECU names
+            ecu_names = []
+            ecu_versions = {}
+            
             if hasattr(self.client.current_download, 'flashed_ecus'):
-                ecu_names = [ecu.ecu_name for ecu in self.client.current_download.flashed_ecus]
-                self.flashing_screen.set_ecu_list(ecu_names)
+                logging.info("Setting ECU list from flashed_ecus")
+                for ecu in self.client.current_download.flashed_ecus:
+                    ecu_names.append(ecu.ecu_name)
+                    ecu_versions[ecu.ecu_name] = ecu.new_version
             elif hasattr(self.client.current_download, 'required_updates'):
-                self.flashing_screen.set_ecu_list(self.client.current_download.required_updates.keys())
+                logging.info("Setting ECU list from required_updates")
+                for ecu_name, version in self.client.current_download.required_updates.items():
+                    ecu_names.append(ecu_name)
+                    ecu_versions[ecu_name] = version
+            
+            self.flashing_screen.set_ecu_list(ecu_names)
+            self.flashing_screen.set_ecu_versions(ecu_versions)
         
         # Set flag to detect when flashing completes
         self.just_flashed = True
+        logging.info("Set just_flashed to True")
         
-        # Trigger flashing if needed
-        if self.client.current_download.status == ClientDownloadStatus.DOWNLOADING:
-            # Change status to start flashing
-            self.client.current_download.status = ClientDownloadStatus.IN_FLASHING
-            # Reset flash handling flag
-            if hasattr(self, 'pending_flash_handled'):
-                delattr(self, 'pending_flash_handled')
+        # Start flashing through the client
+        logging.info("Calling client.flash_updates()")
+        self.client.flash_updates()
     
     def postpone_flashing(self):
         """Postpone flashing for later"""
+        logging.info("Postponing flashing - keeping download status")
         QMessageBox.information(
             self,
             "Installation Postponed",
             "Updates have been downloaded and will be available to install later.",
             QMessageBox.Ok
         )
-        self.reset_to_welcome()
+        
+        # Reset UI-related flags but preserve download status
+        self.pending_download_handled = False
+        self.pending_flash_handled = False 
+        self.just_flashed = False
+        self.download_just_started = False
+        
+        # Update welcome screen to show "Updates downloaded" status
+        self.signal_handler.status_changed.emit("Updates downloaded - ready to flash")
+        
+        # Return to welcome screen, which should show updates are available for installation
+        self.stacked_widget.setCurrentWidget(self.welcome_screen)
     
     def resume_pending_request(self):
         """Resume a pending download or flash request"""
         if self.pending_requests_screen.is_download:
             # Resume download
+            logging.info("Resuming download")
             self.stacked_widget.setCurrentWidget(self.download_screen)
             
             # Set ECU info
             if hasattr(self.client, 'current_download') and self.client.current_download:
                 if hasattr(self.client.current_download, 'required_updates'):
+                    logging.info("Setting ECU info in download screen")
                     self.download_screen.set_ecu_info(self.client.current_download.required_updates.keys())
             
             # Reset download flags
-            if hasattr(self, 'download_completed_handled'):
-                delattr(self, 'download_completed_handled')
+            self.download_completed_handled = False
+            self.pending_download_handled = False
+            self.download_just_started = True
+            logging.info("Reset download flags")
+            
+            # Clear the flag after 5 seconds
+            def clear_download_started_flag():
+                self.download_just_started = False
+                logging.info("Cleared download_just_started flag")
+            
+            QTimer.singleShot(5000, clear_download_started_flag)
+                
+            # Resume the download through the client
+            logging.info("Calling client.resume_download()")
+            self.client.resume_download()
         else:
             # Resume flashing
+            logging.info("Resuming flashing")
             self.stacked_widget.setCurrentWidget(self.flashing_screen)
             
-            # Set ECU list
+            # Set ECU list with versions
             if hasattr(self.client, 'current_download') and self.client.current_download:
+                # Set ECU names
+                ecu_names = []
+                ecu_versions = {}
+                
                 if hasattr(self.client.current_download, 'flashed_ecus'):
-                    ecu_names = [ecu.ecu_name for ecu in self.client.current_download.flashed_ecus]
-                    self.flashing_screen.set_ecu_list(ecu_names)
+                    logging.info("Setting ECU list from flashed_ecus")
+                    for ecu in self.client.current_download.flashed_ecus:
+                        ecu_names.append(ecu.ecu_name)
+                        ecu_versions[ecu.ecu_name] = ecu.new_version
+                elif hasattr(self.client.current_download, 'required_updates'):
+                    logging.info("Setting ECU list from required_updates")
+                    for ecu_name, version in self.client.current_download.required_updates.items():
+                        ecu_names.append(ecu_name)
+                        ecu_versions[ecu_name] = version
+                
+                self.flashing_screen.set_ecu_list(ecu_names)
+                self.flashing_screen.set_ecu_versions(ecu_versions)
             
             # Set flash flags
             self.just_flashed = True
-            if hasattr(self, 'pending_flash_handled'):
-                delattr(self, 'pending_flash_handled')
+            self.pending_flash_handled = False
+            logging.info("Reset flash flags")
+                
+            # Resume flashing through the client
+            logging.info("Calling client.resume_flashing()")
+            self.client.resume_flashing()
     
     def cancel_pending_request(self):
         """Cancel a pending request"""
@@ -434,25 +663,30 @@ class CarUpdateGUI(QMainWindow):
         )
         
         if result == QMessageBox.Yes:
-            # Mark the download as failed
-            if self.client.current_download:
-                self.client.current_download.status = ClientDownloadStatus.FAILED
-                self.client.db.save_download_request(self.client.current_download)
+            logging.info("Cancelling pending request")
+            # Cancel the operation through the client
+            self.client.cancel_operation()
             
             # Reset to welcome screen
             self.reset_to_welcome()
     
     def reset_to_welcome(self):
         """Reset the GUI to welcome screen"""
+        logging.info("Resetting to welcome screen")
         # Reset all handled flags
-        if hasattr(self, 'updates_displayed'):
-            delattr(self, 'updates_displayed')
-        if hasattr(self, 'pending_download_handled'):
-            delattr(self, 'pending_download_handled')
-        if hasattr(self, 'pending_flash_handled'):
-            delattr(self, 'pending_flash_handled')
-        if hasattr(self, 'download_completed_handled'):
-            delattr(self, 'download_completed_handled')
+        self.updates_displayed = False
+        self.pending_download_handled = False
+        self.pending_flash_handled = False
+        self.download_completed_handled = False
+        self.just_flashed = False
+        self.download_just_started = False
+        logging.info("Reset all flags")
+
+        # Check if we still have downloaded updates and update welcome screen accordingly
+        if self.updates_downloaded:
+            logging.info("Updates are downloaded, showing the appropriate status")
+            self.signal_handler.status_changed.emit("Updates downloaded - ready to flash")
+
         
         # Return to welcome screen
         self.stacked_widget.setCurrentWidget(self.welcome_screen)
@@ -475,6 +709,7 @@ class CarUpdateGUI(QMainWindow):
         
         # Shut down client
         if self.client:
+            logging.info("Shutting down client")
             self.client.shutdown()
         
         event.accept()
@@ -492,12 +727,10 @@ def main():
     )
     
     # Ensure data directory exists
-    # data_directory="../client_data"
-    # data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-    data_dir = os.path.join(".", "client_data")
-
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../client_data")
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
+        logging.info(f"Created data directory: {data_dir}")
     
     # Create QApplication instance
     app = QApplication(sys.argv)

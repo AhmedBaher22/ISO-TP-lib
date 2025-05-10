@@ -2,8 +2,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional
-from enums import ClientStatus, ClientDownloadStatus
-from shared_models import ECUVersion, CarInfo
 import os
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +9,8 @@ package_dir = os.path.abspath(os.path.join(current_dir, ".."))
 package_dir = os.path.abspath(os.path.join(package_dir, ".."))
 sys.path.append(package_dir)
 from hex_parser.SRecordParser import DataRecord
+from client_server.client.enums import ClientStatus, ClientDownloadStatus
+from client_server.client.shared_models import ECUVersion, CarInfo
 
 @dataclass
 class flashingEcu:

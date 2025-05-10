@@ -31,6 +31,8 @@ class ClientStatus(Enum):
     REQUESTING_DOWNLOAD = "requestingDownload"
     DOWNLOAD_IN_PROGRESS = "downloadInProgress"
     CONNECTION_TIMEOUT = "connectionTimeout"
+    DOWNLOAD_COMPLETED = "downloadCompleted"
+
 
 class ClientDownloadStatus(Enum):
     INITIALIZING = "initializing"
@@ -42,3 +44,4 @@ class ClientDownloadStatus(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     PARTIALLY_COMPLETED = "partiallyCompleted"
+    DOWNLOAD_COMPLETED = "downloadCompleted"
