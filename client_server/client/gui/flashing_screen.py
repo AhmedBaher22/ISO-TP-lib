@@ -3,8 +3,7 @@ Simplified Flashing Screen for the ECU Update System.
 Shows a loading animation while ECUs are being flashed.
 """
 
-import sys
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QApplication, QFrame, QSpacerItem, QSizePolicy)
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QFrame, QSpacerItem, QSizePolicy)
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QPainter, QColor, QPen
 
@@ -125,7 +124,7 @@ class FlashingScreen(QWidget):
         self.loading_circle = LoadingCircle()
         
         # Current ECU label
-        self.current_ecu_label = QLabel("Preparing to install...")
+        self.current_ecu_label = QLabel("installing...")
         self.current_ecu_label.setAlignment(Qt.AlignCenter)
         # CLAUDE CHANGE: Changed font to Segoe UI
         self.current_ecu_label.setFont(QFont("Segoe UI", 16, QFont.Bold))

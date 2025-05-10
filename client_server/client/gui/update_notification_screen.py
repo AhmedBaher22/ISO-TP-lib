@@ -3,13 +3,11 @@ Update Notification Screen for the ECU Update System.
 Shows available updates and asks for user permission to download.
 """
 
-import sys
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QPushButton, QTableWidget, QTableWidgetItem, 
-                            QHeaderView, QSpacerItem, QSizePolicy, QFrame,
-                            QApplication, QStyleFactory)
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QIcon, QPixmap, QLinearGradient
+                            QHeaderView, QSizePolicy, QFrame)
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QFont, QColor
 
 # CLAUDE CHANGE: Added ContentPanel class for consistent styling with welcome screen
 class ContentPanel(QFrame):

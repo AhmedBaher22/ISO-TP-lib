@@ -3,7 +3,6 @@ Flash Consent Screen for the ECU Update System.
 Asks for user permission before flashing ECUs.
 """
 
-import sys
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QPushButton, QSpacerItem, QSizePolicy, QFrame, QCheckBox)
 from PyQt5.QtCore import Qt, pyqtSignal
