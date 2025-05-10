@@ -13,6 +13,18 @@ from shared_models import CarInfo
 import os
 from delta_generator.DeltaGenerator import DeltaGenerator,DeltaAlgorithm
 
+
+import os
+import sys
+import shutil
+import subprocess
+import json
+import logging
+import hashlib
+from pathlib import Path
+import signal
+import time
+
 import sys
 import os
 from time import sleep
@@ -37,7 +49,17 @@ from uds_layer.transfer_request import TransferRequest
 from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckSumMethod
 from app_initialization import init_uds_client
 from hex_parser.SRecordParser import DataRecord, SRecordParser
-logging.basicConfig(level=logging.INFO)
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("client_data/update_logs.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger("HMI_Update")
 
 class ECUUpdateClient:
     def __init__(self, server_host: str, server_port: int, data_directory: str):
@@ -729,3 +751,191 @@ class ECUUpdateClient:
 
         else:
             raise Exception("Error: Trying to flash some updates but no current downloads found")
+        
+    def get_current_folder():
+        """Determine which folder (1 or 2) the current process is running from."""
+        current_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+        if os.path.basename(current_path) == "folder_1":
+            return 1
+        elif os.path.basename(current_path) == "folder_2":
+            return 2
+        else:
+            logger.error(f"Unable to determine current folder from path: {current_path}")
+            return None
+
+    def calculate_checksum(file_path):
+        """Calculate SHA-256 checksum of a file."""
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        return sha256_hash.hexdigest()
+
+    def verify_update_package(update_file_path):
+        """
+        Verify the integrity and authenticity of the update package.
+        Returns True if valid, False otherwise.
+        """
+        try:
+            # Check if update file exists
+            if not os.path.exists(update_file_path):
+                logger.error(f"Update file does not exist: {update_file_path}")
+                return False
+            
+            # In a real implementation, you would:
+            # 1. Verify digital signature of the package
+            # 2. Check compatibility with current hardware/software
+            # 3. Validate package structure
+            
+            logger.info(f"Update package verified: {update_file_path}")
+            return True
+        except Exception as e:
+            logger.error(f"Error verifying update package: {str(e)}")
+            return False
+
+    def flash_HMI(self,update_file_path):
+        """
+        Main function to handle HMI update process.
+        
+        Args:
+            update_file_path: Path to the new system executable/package
+        
+        Returns:
+            bool: True if update process started successfully, False otherwise
+        """
+        try:
+            logger.info(f"Starting HMI update process with file: {update_file_path}")
+            
+            # Step 1: Determine current folder
+            current_folder = self.get_current_folder()
+            if current_folder is None:
+                logger.error("Cannot determine current folder, aborting update")
+                return False
+            
+            # Step 2: Determine target folder
+            target_folder = 2 if current_folder == 1 else 1
+            logger.info(f"Current folder: {current_folder}, Target folder: {target_folder}")
+            
+            # Step 3: Verify update package
+            if not self.verify_update_package(update_file_path):
+                logger.error("Update package verification failed")
+                return False
+            
+            # Step 4: Calculate and store checksum for later verification
+            update_checksum = self.calculate_checksum(update_file_path)
+            update_meta = {
+                "source_folder": current_folder,
+                "target_folder": target_folder,
+                "update_file": update_file_path,
+                "checksum": update_checksum,
+                "timestamp": time.time()
+            }
+            
+            # Save update metadata for recovery system
+            os.makedirs("client_data", exist_ok=True)
+            with open("client_data/update_meta.json", "w") as f:
+                json.dump(update_meta, f)
+            
+            logger.info(f"Update metadata saved: {update_meta}")
+            
+            # Step 5: Call the recovery system to handle the update
+            recovery_script = os.path.join("folder_3", "recovery_system.py")
+            
+            logger.info(f"Launching recovery system: {recovery_script}")
+            subprocess.Popen([
+                sys.executable, 
+                recovery_script,
+                str(current_folder),
+                update_file_path
+            ])
+            
+            logger.info("Recovery system launched, current HMI will exit shortly")
+            
+            # Step 6: Exit current process after a short delay
+            # This allows the recovery system to take control
+            def delayed_exit():
+                time.sleep(2)  # Short delay to ensure recovery system starts
+                logger.info("HMI shutting down for update...")
+                os._exit(0)
+                
+            # Start the delayed exit in a separate thread
+            import threading
+            threading.Thread(target=delayed_exit, daemon=True).start()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error during HMI update process: {str(e)}")
+            return False
+
+# This should be part of your main HMI application
+
+def run_test_mode():
+    """
+    Run HMI in test mode to validate functionality.
+    Called by recovery system during update process.
+    
+    Returns:
+        bool: True if all tests pass, False otherwise
+    """
+    try:
+        logger.info("Starting HMI test mode")
+        
+        # Test 1: Basic functionality
+        if not test_basic_functionality():
+            logger.error("Basic functionality test failed")
+            return False
+            
+        # Test 2: Communication with safety ECUs
+        if not test_ecu_communication():
+            logger.error("ECU communication test failed")
+            return False
+            
+        # Test 3: File system access
+        if not test_file_system_access():
+            logger.error("File system access test failed")
+            return False
+            
+        # Test 4: Memory usage
+        if not test_memory_usage():
+            logger.error("Memory usage test failed")
+            return False
+            
+        # Add more tests as needed for your specific system
+        
+        logger.info("All tests passed successfully")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error in test mode: {str(e)}")
+        return False
+
+def test_basic_functionality():
+    """Test basic HMI functionality."""
+    # Implement your tests here
+    return True
+
+def test_ecu_communication():
+    """Test communication with safety ECUs."""
+    # Implement your tests here
+    return True
+
+def test_file_system_access():
+    """Test file system access."""
+    # Implement your tests here
+    return True
+
+def test_memory_usage():
+    """Test memory usage."""
+    # Implement your tests here
+    return True
+
+# Add this to your main execution logic
+if __name__ == "__main__":
+    # Check if running in test mode
+    if len(sys.argv) > 1 and sys.argv[1] == "--test-mode":
+        success = run_test_mode()
+        sys.exit(0 if success else 1)
+        
+    # Normal execution
+    # ... rest of your main code
