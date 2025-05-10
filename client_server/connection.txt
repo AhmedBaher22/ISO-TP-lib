@@ -1,3 +1,5 @@
 python server/main.py --host localhost --port 5000 --data-dir ./server/data
 
 python client/main.py --server-host localhost --server-port 5000 --data-dir ./client/client_data
+
+python client/main.py --server-host 4.161.52.76 --server-port 9000 --data-dir ./client/client_data

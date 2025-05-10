@@ -295,6 +295,7 @@ class UdsClient:
                                 checksum_required: CheckSumMethod,
                                 is_multiple_segments:bool=False,
                                 flashing_ECU_req:FlashingECU=None) -> None:
+        transfer_request:TransferRequest=None                        
         if compression_method != CompressionMethod.NO_COMPRESSION:
             if compression_method == CompressionMethod.LZ4:
                 compressor=Compressor(algorithm=CompressionAlgorithm.LZ4)
@@ -302,24 +303,45 @@ class UdsClient:
                     log_type=LogType.INFO,
                     message=f"compressing data is being precessing, data before compression has length:{len(data)}"
                 )
-                data=compressor.compress(data=data)
+                deCompressed_data=compressor.compress(data=data)
                 self._logger.log_message(
                     log_type=LogType.INFO,
                     message=f"compressing data is done successfully, data after compression has length:{len(data)}"
                 )
 
-        # Create TransferRequest object
-        transfer_request = TransferRequest(
-            recv_DA=recv_DA,
-            data=data,
-            encryption_method=encryption_method,
-            compression_method=compression_method,
-            memory_address=memory_address,
-            checksum_required=checksum_required,
-            is_multiple_segments=is_multiple_segments,
-            flashing_ECU_REQ=flashing_ECU_req
+                # Create TransferRequest object
+                transfer_request = TransferRequest(
+                    recv_DA=recv_DA,
+                    data=deCompressed_data,
+                    encryption_method=encryption_method,
+                    compression_method=compression_method,
+                    memory_address=memory_address,
+                    checksum_required=checksum_required,
+                    is_multiple_segments=is_multiple_segments,
+                    flashing_ECU_REQ=flashing_ECU_req,
+                    deCompressed_data=data
 
-        )
+                )
+            else:
+                self._logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=f"compressing data is done successfully, data after compression has length:{len(data)}"
+                )
+        else:
+                # Create TransferRequest object
+            transfer_request = TransferRequest(
+                recv_DA=recv_DA,
+                data=data,
+                encryption_method=encryption_method,
+                compression_method=compression_method,
+                memory_address=memory_address,
+                checksum_required=checksum_required,
+                is_multiple_segments=is_multiple_segments,
+                flashing_ECU_REQ=flashing_ECU_req,
+                deCompressed_data=bytearray()
+
+            )
+
 
         # Find server with matching CAN ID
         server = next((s for s in self._servers if s.can_id == recv_DA), None)
@@ -353,8 +375,8 @@ class UdsClient:
                                 on_failing_flashing:Callable,
                                 flashed_ecu_number:int) -> None:
         #happy all scenario 
-        sleep(10)
-        on_successfull_flashing(flashed_ecu_number)
+        # sleep(10)
+        # on_successfull_flashing(flashed_ecu_number)
         #one time failure without roll-back
         # sleep(10)
         # if self.num ==0:
@@ -444,7 +466,7 @@ class UdsClient:
         #     sleep(10)
         #     self.num+=1
         #     on_successfull_flashing(flashed_ecu_number)
-        return
+        # return
         newFlashingECUrequest=FlashingECU(segments=segments,recv_DA=recv_DA,checksum_required=checksum_required,encryption_method=encryption_method,compression_method=compression_method,successfull_flashing_response=on_successfull_flashing,failed_flashing_response=on_failing_flashing,flashed_ecu_number=flashed_ecu_number)
         newFlashingECUrequest.current_number_of_segments_send=0
         newFlashingECUrequest.status=FlashingECUStatus.CREATED
