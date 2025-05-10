@@ -78,7 +78,7 @@ class SRecordParser:
         ValidExtensions.S28:  {'0',      '2',      '5', '6',      '8'     },
         ValidExtensions.S37:  {'0',           '3', '5', '6', '7'          },
     }
-
+    
     def __init__(self):
         self._records: list[DataRecord] = []  # Initialize an empty list for parsed records
         self._merged_records: list[DataRecord] = []  # Initialize an empty list for parsed records
@@ -115,7 +115,9 @@ class SRecordParser:
             0x01580000  # End boundary for the last sector
         ]
 
-
+    def get_merged_records(self):
+        return self._merged_records
+    
     @staticmethod
     def _verify_checksum(record: str, provided_checksum: int) -> bool:
         """
