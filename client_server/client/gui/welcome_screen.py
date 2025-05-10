@@ -7,8 +7,8 @@ import sys
 import logging
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QApplication, 
                             QSpacerItem, QSizePolicy, QPushButton, QFrame)
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QSize, pyqtSignal
-from PyQt5.QtGui import QFont, QPainter, QColor, QPen, QFontMetrics, QLinearGradient
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import QFont, QPainter, QColor, QPen
 
 class LoadingCircle(QWidget):
     """A custom widget that shows an animated loading circle"""

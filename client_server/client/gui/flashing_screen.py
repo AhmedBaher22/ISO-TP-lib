@@ -4,9 +4,8 @@ Shows a loading animation while ECUs are being flashed.
 """
 
 import sys
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QApplication, 
-                            QSpacerItem, QSizePolicy)
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QApplication)
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QPainter, QColor, QPen
 
 class LoadingCircle(QWidget):

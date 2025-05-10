@@ -11,7 +11,7 @@ import threading
 from typing import Dict, List, Optional
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                            QStackedWidget, QMessageBox, QStyleFactory)
-from PyQt5.QtCore import Qt, pyqtSignal, QObject, QTimer
+from PyQt5.QtCore import pyqtSignal, QObject, QTimer
 
 # Import all screens
 from welcome_screen import WelcomeScreen

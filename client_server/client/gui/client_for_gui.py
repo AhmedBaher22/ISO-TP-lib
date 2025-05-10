@@ -13,7 +13,7 @@ import os
 import logging
 import sys
 from datetime import datetime
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 package_dir = os.path.abspath(os.path.join(current_dir, ".."))
@@ -27,7 +27,7 @@ from client_server.client.client_models import ClientDownloadRequest, flashingEc
 from client_server.client.client_database import ClientDatabase
 from client_server.client.shared_models import CarInfo
 from delta_generator.DeltaGenerator import DeltaGenerator, DeltaAlgorithm
-from hex_parser.SRecordParser import DataRecord, SRecordParser
+from hex_parser.SRecordParser import SRecordParser
 from app_initialization import init_uds_client
 
 # Base State Class
