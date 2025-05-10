@@ -78,7 +78,7 @@ class SRecordParser:
         ValidExtensions.S28:  {'0',      '2',      '5', '6',      '8'     },
         ValidExtensions.S37:  {'0',           '3', '5', '6', '7'          },
     }
-
+    
     def __init__(self):
         self._records: list[DataRecord] = []  # Initialize an empty list for parsed records
         self._merged_records: list[DataRecord] = []  # Initialize an empty list for parsed records
@@ -115,7 +115,9 @@ class SRecordParser:
             0x01580000  # End boundary for the last sector
         ]
 
-
+    def get_merged_records(self):
+        return self._merged_records
+    
     @staticmethod
     def _verify_checksum(record: str, provided_checksum: int) -> bool:
         """
@@ -204,28 +206,27 @@ class SRecordParser:
             raise ValueError(
                 f"Error in record {record} - Type S{record_type} is not allowed for {self._file_extension}")
 
-        match record_type:
-            case '0':
-                # print(f"Header {record}")
-                pass
-            case '1':
-                self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.TWO_BYTES)
-            case '2':
-                self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.THREE_BYTES)
-            case '3':
-                self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.FOUR_BYTES)
-            case '5':
-                self._process_count_record(record=record, record_type=RecordType.TWO_BYTES)
-            case '6':
-                self._process_count_record(record=record, record_type=RecordType.THREE_BYTES)
-            case '7':
-                self._process_start_address_record(record=record, record_type=RecordType.FOUR_BYTES)
-            case '8':
-                self._process_start_address_record(record=record, record_type=RecordType.THREE_BYTES)
-            case '9':
-                self._process_start_address_record(record=record, record_type=RecordType.TWO_BYTES)
-            case _:
-                raise ValueError(f"Error in record {record} - The type must be in this range [0 - 9] except 4")
+        if record_type == '0':
+            # print(f"Header {record}")
+            pass
+        elif record_type == '1':
+            self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.TWO_BYTES)
+        elif record_type == '2':
+            self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.THREE_BYTES)
+        elif record_type == '3':
+            self._process_data_record(record=record, byte_count=byte_count, record_type=RecordType.FOUR_BYTES)
+        elif record_type == '5':
+            self._process_count_record(record=record, record_type=RecordType.TWO_BYTES)
+        elif record_type == '6':
+            self._process_count_record(record=record, record_type=RecordType.THREE_BYTES)
+        elif record_type == '7':
+            self._process_start_address_record(record=record, record_type=RecordType.FOUR_BYTES)
+        elif record_type == '8':
+            self._process_start_address_record(record=record, record_type=RecordType.THREE_BYTES)
+        elif record_type == '9':
+            self._process_start_address_record(record=record, record_type=RecordType.TWO_BYTES)
+        else:
+            raise ValueError(f"Error in record {record} - The type must be in this range [0 - 9] except 4")
 
     def parse_file(self, filename: str):
         try:

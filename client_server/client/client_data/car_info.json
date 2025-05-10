@@ -1,1 +1,1 @@
-{"car_type": "modelx", "car_name": "TestCar", "car_model": "mx2023", "car_id": "mx2023-001", "ecu_versions": {"engine_control_module": "1.0.0", "Transmission_Control_Module": "1.0.0", "brake_control_module": "1.1.0"}}
+{"car_type": "modelx", "car_name": "TestCar", "car_model": "mx2023", "car_id": "mx2023-001", "ecu_versions": {"engine_control_module": "1.0.0", "Transmission_Control_Module": "1.0.0", "brake_control_module": "1.2.0"}}

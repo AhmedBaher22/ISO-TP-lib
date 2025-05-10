@@ -233,6 +233,7 @@ class ECUUpdateServer:
             ))
 
     def check_for_updates(self, request: Request, client_socket: socket.socket):
+        self.car_types = self.db_manager.load_all_data()
         logging.info(f"checking-for-update method started processing for client:{request.ip_address}")
         """Check if updates are available for the car"""
         try:
