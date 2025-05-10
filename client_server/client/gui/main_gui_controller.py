@@ -142,7 +142,7 @@ class CarUpdateGUI(QMainWindow):
         self.flash_consent_screen.flash_approved.connect(self.start_flashing)
         self.flash_consent_screen.flash_postponed.connect(self.postpone_flashing)
         
-        self.completion_screen.done_clicked.connect(self.reset_to_welcome)
+        self.completion_screen.done_clicked.connect(self.handle_completion_done)
         
         self.pending_requests_screen.resume_clicked.connect(self.resume_pending_request)
         self.pending_requests_screen.cancel_clicked.connect(self.cancel_pending_request)
@@ -238,7 +238,7 @@ class CarUpdateGUI(QMainWindow):
                     download = self.client.current_download
                     
                     # Check if update has been downloaded and is ready to flash
-                    if download.status == ClientDownloadStatus.DOWNLOAD_COMPLETED or download.status == ClientDownloadStatus.COMPLETED:
+                    if download.status == ClientDownloadStatus.DOWNLOAD_COMPLETED:
                         if not self.updates_downloaded:
                             logging.info("Updates downloaded detected, setting updates_downloaded flag")
                             self.updates_downloaded = True
@@ -685,12 +685,35 @@ class CarUpdateGUI(QMainWindow):
         # Check if we still have downloaded updates and update welcome screen accordingly
         if self.updates_downloaded:
             logging.info("Updates are downloaded, showing the appropriate status")
-            self.signal_handler.status_changed.emit("Updates downloaded - ready to flash")
+            self.signal_handler.status_changed.emit("Updates downloaded - ready to install")
+        else:
+            logging.info("No pending updates, showing up to date status")
+            self.signal_handler.status_changed.emit("System is up to date")
 
         
         # Return to welcome screen
         self.stacked_widget.setCurrentWidget(self.welcome_screen)
     
+
+    def handle_completion_done(self):
+        """Handle when the user clicks Done on the completion screen"""
+        logging.info("User clicked Done on completion screen")
+
+        # Reset all flags related to the update process
+        self.updates_displayed = False
+        self.pending_download_handled = False
+        self.pending_flash_handled = False
+        self.download_completed_handled = False
+        self.just_flashed = False
+        self.download_just_started = False
+        self.updates_downloaded = False  # Ensure this flag is reset
+
+        # Force the welcome screen to show "System is up to date"
+        self.signal_handler.status_changed.emit("System is up to date")
+
+        # Switch to welcome screen
+        self.stacked_widget.setCurrentWidget(self.welcome_screen)
+
     def closeEvent(self, event):
         """Handle window close event"""
         if hasattr(self.client, 'current_download') and self.client.current_download:
