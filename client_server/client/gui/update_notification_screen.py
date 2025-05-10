@@ -9,10 +9,28 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QHeaderView, QSpacerItem, QSizePolicy, QFrame,
                             QApplication, QStyleFactory)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QIcon, QPixmap
+from PyQt5.QtGui import QFont, QColor, QIcon, QPixmap, QLinearGradient
+
+# CLAUDE CHANGE: Added ContentPanel class for consistent styling with welcome screen
+class ContentPanel(QFrame):
+    """A styled panel to contain all content with rounded corners and shadow"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Set frame style
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setFrameShadow(QFrame.Raised)
+        
+        # Set styling with rounded corners and soft shadow
+        self.setStyleSheet("""
+            ContentPanel {
+                background-color: #C0C0C0;
+                border-radius: 15px;
+                border: 1px solid #dddddd;
+            }
+        """)
 
 class UpdateTableWidget(QTableWidget):
-    """Enhanced table widget for displaying updates with better styling"""
+    """Enhanced table widget for displaying updates with modern styling"""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setColumnCount(3)
@@ -24,32 +42,129 @@ class UpdateTableWidget(QTableWidget):
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         header.setSectionResizeMode(2, QHeaderView.Stretch)
         
-        # Set table styling
+        # CLAUDE CHANGE: Completely redesigned table styling for modern look
         self.setStyleSheet("""
             QTableWidget {
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                background-color: white;
-                gridline-color: #f0f0f0;
-            }
-            QTableWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #f0f0f0;
-            }
-            QHeaderView::section {
-                background-color: #f8f9fa;
-                padding: 10px;
                 border: none;
-                border-bottom: 1px solid #e0e0e0;
+                border-radius: 12px;
+                background-color: rgba(255, 255, 255, 0.9);
+                gridline-color: transparent;
+                font-family: 'Segoe UI';
+                font-size: 11pt;
+                selection-background-color: #e0f2fe;
+                selection-color: #2c3e50;
+            }
+            
+            QTableWidget::item {
+                padding: 12px;
+                border-bottom: 1px solid #eaeaea;
+                border-radius: 6px;
+                margin: 4px;
+            }
+            
+            QTableWidget::item:hover {
+                background-color: #f8f9fa;
+            }
+            
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 14px;
+                border: none;
+                font-family: 'Segoe UI';
+                font-size: 12pt;
                 font-weight: bold;
+            }
+            
+            QHeaderView::section:first {
+                border-top-left-radius: 12px;
+            }
+            
+            QHeaderView::section:last {
+                border-top-right-radius: 12px;
+            }
+            
+            QScrollBar:vertical {
+                border: none;
+                background: #f0f0f0;
+                width: 10px;
+                border-radius: 5px;
+                margin: 0px;
+            }
+            
+            QScrollBar::handle:vertical {
+                background: #bdc3c7;
+                border-radius: 5px;
+                min-height: 20px;
+            }
+            
+            QScrollBar::handle:vertical:hover {
+                background: #95a5a6;
+            }
+            
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                height: 0px;
+            }
+            
+            QTableCornerButton::section {
+                background-color: #34495e;
             }
         """)
         
-        # Set other properties
-        self.setAlternatingRowColors(True)
-        self.setSelectionMode(QTableWidget.NoSelection)
+        # CLAUDE CHANGE: Set other properties for modern look
+        self.setSelectionBehavior(QTableWidget.SelectRows)
+        self.setSelectionMode(QTableWidget.SingleSelection)
         self.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.setShowGrid(False)  # Hide grid lines for cleaner look
         self.verticalHeader().setVisible(False)
+        self.setFocusPolicy(Qt.NoFocus)  # Remove focus highlighting
+        
+        # Set fixed row height
+        self.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.verticalHeader().setDefaultSectionSize(60)  # Larger row height
+        
+        # Add some padding around the table
+        self.setContentsMargins(15, 15, 15, 15)
+        
+    # CLAUDE CHANGE: Custom paint method to add box shadow effect
+    def paintEvent(self, event):
+        """Override paint event to add custom styling"""
+        super().paintEvent(event)
+        # This would be the place to add additional custom drawing if needed
+        # For example, to highlight the current row or add custom decorations
+        
+    # CLAUDE CHANGE: Custom method to style cells based on content
+    def setRowData(self, row, ecu_name, old_version, new_version):
+        """Set row data with custom styling for each cell"""
+        # Create table items
+        ecu_item = QTableWidgetItem(ecu_name)
+        old_version_item = QTableWidgetItem(old_version)
+        new_version_item = QTableWidgetItem(new_version)
+        
+        # ECU name styling
+        ecu_item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        ecu_font = QFont("Segoe UI", 11)
+        ecu_font.setBold(True)
+        ecu_item.setFont(ecu_font)
+        ecu_item.setForeground(QColor("#2c3e50"))
+        
+        # Old version styling
+        old_version_item.setTextAlignment(Qt.AlignCenter)
+        old_version_item.setFont(QFont("Segoe UI", 10))
+        old_version_item.setForeground(QColor("#7f8c8d"))
+        
+        # New version styling - highlight with blue instead of green for better design harmony
+        new_version_item.setTextAlignment(Qt.AlignCenter)
+        new_version_font = QFont("Segoe UI", 10)
+        new_version_font.setBold(True)
+        new_version_item.setFont(new_version_font)
+        new_version_item.setForeground(QColor("#3498db"))
+        
+        # Set items in the table
+        self.setItem(row, 0, ecu_item)
+        self.setItem(row, 1, old_version_item)
+        self.setItem(row, 2, new_version_item)
+
 
 class InfoBox(QFrame):
     """A styled info box to display important information"""
@@ -79,12 +194,14 @@ class InfoBox(QFrame):
             icon_color = "#4caf50"
             icon = "✓"
         
+        # CLAUDE CHANGE: Updated with Segoe UI font
         self.setStyleSheet(f"""
             QFrame {{
                 background-color: {bg_color};
                 border: 1px solid {border_color};
                 border-radius: 8px;
                 padding: 10px;
+                font-family: 'Segoe UI';
             }}
         """)
         
@@ -93,13 +210,16 @@ class InfoBox(QFrame):
         
         # Icon
         icon_label = QLabel(icon)
-        icon_label.setFont(QFont("Arial", 16, QFont.Bold))
+        # CLAUDE CHANGE: Updated to Segoe UI font
+        icon_label.setFont(QFont("Segoe UI", 16, QFont.Bold))
         icon_label.setStyleSheet(f"color: {icon_color}; background-color: transparent;")
         icon_label.setFixedWidth(30)
         
         # Message
         message_label = QLabel(message)
         message_label.setWordWrap(True)
+        # CLAUDE CHANGE: Updated to Segoe UI font
+        message_label.setFont(QFont("Segoe UI", 10))
         message_label.setStyleSheet("background-color: transparent;")
         
         layout.addWidget(icon_label)
@@ -110,7 +230,8 @@ class StyledButton(QPushButton):
     """Custom styled button with hover effects"""
     def __init__(self, text, button_type="primary", parent=None):
         super().__init__(text, parent)
-        self.setFont(QFont("Arial", 12))
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        self.setFont(QFont("Segoe UI", 12))
         self.setCursor(Qt.PointingHandCursor)
         
         # Set minimum size for better touch targets
@@ -119,67 +240,99 @@ class StyledButton(QPushButton):
         
         # Set style based on button type
         if button_type == "primary":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #3498db;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #3da7f5, stop:1 #3498db);
                     color: white;
-                    border: none;
+                    border: 1px solid #2980b9;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #2475ab;
                 }
                 QPushButton:hover {
-                    background-color: #2980b9;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #45aef7, stop:1 #2980b9);
                 }
                 QPushButton:pressed {
-                    background-color: #1f6dad;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #2980b9, stop:1 #2475ab);
+                    border-bottom: 1px solid #2475ab;
+                    padding-top: 12px;
                 }
             """)
         elif button_type == "success":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #2ecc71;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #40d47e, stop:1 #2ecc71);
                     color: white;
-                    border: none;
+                    border: 1px solid #27ae60;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #229954;
                 }
                 QPushButton:hover {
-                    background-color: #27ae60;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #4adc88, stop:1 #27ae60);
                 }
                 QPushButton:pressed {
-                    background-color: #1f8c4d;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #27ae60, stop:1 #1f8c4d);
+                    border-bottom: 1px solid #1f8c4d;
+                    padding-top: 12px;
                 }
             """)
         elif button_type == "danger":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #e74c3c;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #f05a4b, stop:1 #e74c3c);
                     color: white;
-                    border: none;
+                    border: 1px solid #c0392b;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #a5281d;
                 }
                 QPushButton:hover {
-                    background-color: #c0392b;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #f16f61, stop:1 #c0392b);
                 }
                 QPushButton:pressed {
-                    background-color: #a5281d;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #c0392b, stop:1 #a5281d);
+                    border-bottom: 1px solid #a5281d;
+                    padding-top: 12px;
                 }
             """)
         elif button_type == "secondary":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #ecf0f1;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #f5f5f5, stop:1 #ecf0f1);
                     color: #2c3e50;
                     border: 1px solid #bdc3c7;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #95a5a6;
                 }
                 QPushButton:hover {
-                    background-color: #bdc3c7;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #ecf0f1, stop:1 #bdc3c7);
                 }
                 QPushButton:pressed {
-                    background-color: #a1a6a9;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #bdc3c7, stop:1 #a1a6a9);
+                    border-bottom: 1px solid #95a5a6;
+                    padding-top: 12px;
                 }
             """)
 
@@ -198,30 +351,25 @@ class UpdateNotificationScreen(QWidget):
         
     def init_ui(self):
         """Initialize the user interface"""
-        layout = QVBoxLayout()
-        layout.setContentsMargins(30, 30, 30, 30)
-        layout.setSpacing(20)
+        # CLAUDE CHANGE: Create main layout with minimal margins
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(10, 10, 10, 10)
+        main_layout.setSpacing(0)
+        
+        # CLAUDE CHANGE: Create the content panel to contain all widgets
+        self.content_panel = ContentPanel()
+        
+        # CLAUDE CHANGE: Create panel layout
+        panel_layout = QVBoxLayout(self.content_panel)
+        panel_layout.setContentsMargins(30, 30, 30, 30)
+        panel_layout.setSpacing(20)
         
         # Header
-        header = QLabel("Software Updates Available")
+        header = QLabel("Available Updates")
         header.setAlignment(Qt.AlignCenter)
-        header.setFont(QFont("Arial", 24, QFont.Bold))
-        header.setStyleSheet("color: #2c3e50; margin-bottom: 10px;")
-        
-        # Description
-        description = QLabel("The following Electronic Control Units (ECUs) have updates available. "
-                            "Would you like to download these updates?")
-        description.setAlignment(Qt.AlignCenter)
-        description.setWordWrap(True)
-        description.setFont(QFont("Arial", 14))
-        description.setStyleSheet("color: #34495e; margin-bottom: 15px;")
-        
-        # Info box
-        self.info_box = InfoBox(
-            "Downloading updates will prepare your vehicle for the latest features and improvements. "
-            "Your vehicle will remain operational during this process.",
-            "info"
-        )
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        header.setFont(QFont("Segoe UI", 24, QFont.Bold))
+        header.setStyleSheet("color: #2c3e50; margin-bottom: 10px; background-color: transparent;")
         
         # Table for updates
         self.table = UpdateTableWidget()
@@ -231,21 +379,30 @@ class UpdateNotificationScreen(QWidget):
         button_layout.setSpacing(15)
         
         self.skip_button = StyledButton("Skip For Now", "secondary")
-        self.download_button = StyledButton("Download Updates", "primary")
+        self.download_button = StyledButton("Download", "primary")
         
         # Add spacer to push buttons to the right
         button_layout.addStretch()
         button_layout.addWidget(self.skip_button)
         button_layout.addWidget(self.download_button)
         
-        # Add all components to main layout
-        layout.addWidget(header)
-        layout.addWidget(description)
-        layout.addWidget(self.info_box)
-        layout.addWidget(self.table, 1)  # 1 is the stretch factor
-        layout.addLayout(button_layout)
+        # Add all components to panel layout
+        panel_layout.addWidget(header)
+        panel_layout.addWidget(self.table, 1)  # 1 is the stretch factor
+        panel_layout.addLayout(button_layout)
         
-        self.setLayout(layout)
+        # CLAUDE CHANGE: Add the content panel to the main layout
+        self.content_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        main_layout.addWidget(self.content_panel)
+        
+        # CLAUDE CHANGE: Set overall dark background for main widget
+        self.setStyleSheet("""
+            QWidget#UpdateNotificationScreen {
+                background-color: #2c3e50;
+            }
+        """)
+        # Set object name for the style to work
+        self.setObjectName("UpdateNotificationScreen")
         
         # Connect signals
         self.signal_handler.update_available.connect(self.show_updates)
@@ -261,54 +418,34 @@ class UpdateNotificationScreen(QWidget):
         for ecu_name, versions in updates.items():
             old_version, new_version = versions
             
-            # Create table items
-            ecu_item = QTableWidgetItem(ecu_name)
-            old_version_item = QTableWidgetItem(old_version)
-            new_version_item = QTableWidgetItem(new_version)
-            
-            # Center align the version numbers
-            old_version_item.setTextAlignment(Qt.AlignCenter)
-            new_version_item.setTextAlignment(Qt.AlignCenter)
-            
-            # Highlight new version with green color
-            new_version_item.setForeground(QColor("#27ae60"))
-            new_version_item.setFont(QFont("Arial", 9, QFont.Bold))
-            
-            # Set items in the table
-            self.table.setItem(row, 0, ecu_item)
-            self.table.setItem(row, 1, old_version_item)
-            self.table.setItem(row, 2, new_version_item)
+            # CLAUDE CHANGE: Use the new custom method to set row data with modern styling
+            self.table.setRowData(row, ecu_name, old_version, new_version)
             
             row += 1
         
-        # Resize row heights for better spacing
-        for i in range(self.table.rowCount()):
-            self.table.setRowHeight(i, 40)
-
-# For testing the screen individually
-if __name__ == "__main__":
-    class DummySignalHandler:
-        def __init__(self):
-            self.update_available = pyqtSignal(dict)
+        # CLAUDE CHANGE: Add visual separator between table and buttons
+        separator = QFrame()
+        separator.setFrameShape(QFrame.HLine)
+        separator.setFrameShadow(QFrame.Sunken)
+        separator.setStyleSheet("background-color: transparent; margin: 10px 0;")
         
-        def connect(self, slot):
-            pass
-    
-    app = QApplication(sys.argv)
-    app.setStyle(QStyleFactory.create("Fusion"))
-    
-    dummy_handler = DummySignalHandler()
-    screen = UpdateNotificationScreen(dummy_handler)
-    screen.show()
-    
-    # Add some sample data
-    sample_updates = {
-        "Engine Control Module": ("1.2.3", "1.3.0"),
-        "Brake Control Module": ("1.5.2", "2.0.0"),
-        "Airbag Control Unit": ("2.1.0", "2.1.2"),
-        "Transmission Control Unit": ("2.2.4", "2.3.1")
-    }
-    screen.show_updates(sample_updates)
-    
-    sys.exit(app.exec_())
-    
+        # Find the button layout and add the separator before it
+        for i in range(self.content_panel.layout().count()):
+            item = self.content_panel.layout().itemAt(i)
+            if isinstance(item, QHBoxLayout):
+                # Remove old button layout
+                button_layout = item
+                self.content_panel.layout().removeItem(button_layout)
+                
+                # Add separator and then button layout
+                self.content_panel.layout().addWidget(separator)
+                self.content_panel.layout().addLayout(button_layout)
+                break
+            
+
+    def resizeEvent(self, event):
+        """Handle resize events to keep the content panel full size"""
+        super().resizeEvent(event)
+        # Force the content panel to update its geometry
+        if hasattr(self, 'content_panel'):
+            self.content_panel.setGeometry(10, 10, self.width() - 20, self.height() - 20)
