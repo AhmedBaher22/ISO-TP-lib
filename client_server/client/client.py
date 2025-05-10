@@ -469,6 +469,7 @@ class ECUUpdateClient:
             # This is a placeholder for the actual flashing implementation
             logging.info("Starting ECU flashing process...")
             n=0
+            flashing_HMI:bool=False
             for ecu_name, version in self.current_download.downloaded_versions.items():
                 logging.info(f"Would flash ECU {ecu_name} with version {version}")
 
@@ -491,13 +492,19 @@ class ECUUpdateClient:
                 ecu_name=ecu_name,old_version=old_version,new_version=new_version,roll_back_delta=roll_back_delta,old_version_data_records=old_version_data_records)
 
                 self.current_download.flashed_ecus.append(new_flash_request)
-                n+=1   
+                n+=1
+
+                if ecu_name == "HMI":
+                    flashing_HMI = True
 
                 
 
             self.status=ClientStatus.WAITING_FLASHING_SOME_ECUS
             self.db.save_download_request(self.current_download)
-            self.UDS_flash()
+            if flashing_HMI == True:
+                self.flash_HMI(update_file_path)
+            else:    
+                self.UDS_flash()
         except Exception as e:
             logging.error(f"Flashing error: {str(e)}")
             self.status = ClientStatus.OFFLINE
