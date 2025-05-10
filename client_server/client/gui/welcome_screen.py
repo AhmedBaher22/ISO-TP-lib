@@ -213,6 +213,9 @@ class WelcomeScreen(QWidget):
         self.connection_status = "connecting"  # "connecting", "success", "failed", "up_to_date", "updates_available", "updates_downloaded"
         self.init_ui()
         
+    def sizeHint(self):
+        return QSize(800, 600)  # Your desired width and height
+        
     def init_ui(self):
         """Initialize the user interface"""
         # Create main layout with minimal margins
