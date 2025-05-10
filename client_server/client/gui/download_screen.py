@@ -24,7 +24,6 @@ class ContentPanel(QFrame):
         self.setStyleSheet("""
             ContentPanel {
                 background-color: #C0C0C0;
-                border-radius: 15px;
                 border: 1px solid #dddddd;
             }
         """)

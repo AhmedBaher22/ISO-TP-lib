@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt5.QtCore import pyqtSignal, QObject, QTimer
 
 # Import all screens
+from home_screen import HomeScreen  # CLAUDE CHANGE: Added import for new home screen
 from welcome_screen import WelcomeScreen
 from update_notification_screen import UpdateNotificationScreen
 from download_screen import DownloadScreen
@@ -71,6 +72,10 @@ class CarUpdateGUI(QMainWindow):
         self.client = None
         self.client_thread = None
         self.setup_client()
+        
+        # CLAUDE CHANGE: Make the app full screen or maximized
+        self.showMaximized()  # Use this for maximized window with decorations
+        # self.showFullScreen()  # Use this for completely full screen (no window frame)
     
     def init_ui(self):
         """Initialize the user interface"""
@@ -86,6 +91,8 @@ class CarUpdateGUI(QMainWindow):
         self.stacked_widget = QStackedWidget()
         
         # Create all screens
+        # CLAUDE CHANGE: Added home screen
+        self.home_screen = HomeScreen()
         self.welcome_screen = WelcomeScreen(self.signal_handler)
         self.notification_screen = UpdateNotificationScreen(self.signal_handler)
         self.download_screen = DownloadScreen(self.signal_handler)
@@ -95,6 +102,8 @@ class CarUpdateGUI(QMainWindow):
         self.pending_requests_screen = PendingRequestsScreen(self.signal_handler)
         
         # Add screens to stacked widget
+        # CLAUDE CHANGE: Added home screen as first screen
+        self.stacked_widget.addWidget(self.home_screen)
         self.stacked_widget.addWidget(self.welcome_screen)
         self.stacked_widget.addWidget(self.notification_screen)
         self.stacked_widget.addWidget(self.download_screen)
@@ -106,11 +115,28 @@ class CarUpdateGUI(QMainWindow):
         # Add stacked widget to main layout
         main_layout.addWidget(self.stacked_widget)
         
-        # Set welcome screen as initial screen
-        self.stacked_widget.setCurrentWidget(self.welcome_screen)
+        # CLAUDE CHANGE: Set home screen as initial screen
+        self.stacked_widget.setCurrentWidget(self.home_screen)
         
         # Connect all signals
         self.connect_signals()
+
+    
+    
+    def return_to_home_screen(self):
+        """Return to the home screen when the back button is clicked"""
+        logging.info("Back button clicked, returning to home screen")
+        self.stacked_widget.setCurrentWidget(self.home_screen)
+
+
+    def show_welcome_screen(self):
+        """Show welcome screen from home screen"""
+        logging.info("Showing welcome screen from home screen")
+        self.stacked_widget.setCurrentWidget(self.welcome_screen)
+        
+        # CLAUDE CHANGE: Start connecting to the server when entering welcome screen
+        # This will trigger the connection sequence
+        self.signal_handler.status_changed.emit("Connecting to update server...")
 
     def show_flash_consent(self):
         """Show flash consent screen directly when Install Downloaded Updates button is clicked"""
@@ -127,6 +153,9 @@ class CarUpdateGUI(QMainWindow):
         self.signal_handler.flash_completed.connect(self.on_flash_completed)
         self.signal_handler.pending_download.connect(self.on_pending_download)
         self.signal_handler.pending_flash.connect(self.on_pending_flash)
+        
+        # CLAUDE CHANGE: Connect home screen check for updates button
+        self.home_screen.check_for_updates_clicked.connect(self.show_welcome_screen)
         
         # Welcome screen connections
         self.welcome_screen.view_updates_clicked.connect(self.show_update_notification)
@@ -145,6 +174,9 @@ class CarUpdateGUI(QMainWindow):
         
         self.pending_requests_screen.resume_clicked.connect(self.resume_pending_request)
         self.pending_requests_screen.cancel_clicked.connect(self.cancel_pending_request)
+
+        self.welcome_screen.back_button_clicked.connect(self.return_to_home_screen)
+
     
     def setup_client(self):
         """Set up the ECU update client"""
@@ -511,8 +543,8 @@ class CarUpdateGUI(QMainWindow):
             self.just_flashed = False
             self.download_just_started = False
             
-            # Return to welcome screen
-            self.stacked_widget.setCurrentWidget(self.welcome_screen)
+            # CLAUDE CHANGE: Return to home screen instead of welcome screen
+            self.stacked_widget.setCurrentWidget(self.home_screen)
     
     def cancel_download(self):
         """Cancel download in progress"""
@@ -585,8 +617,8 @@ class CarUpdateGUI(QMainWindow):
         # Update welcome screen to show "Updates downloaded" status
         self.signal_handler.status_changed.emit("Updates downloaded - ready to flash")
         
-        # Return to welcome screen, which should show updates are available for installation
-        self.stacked_widget.setCurrentWidget(self.welcome_screen)
+        # CLAUDE CHANGE: Return to home screen instead of welcome screen
+        self.stacked_widget.setCurrentWidget(self.home_screen)
     
     def resume_pending_request(self):
         """Resume a pending download or flash request"""
@@ -689,11 +721,9 @@ class CarUpdateGUI(QMainWindow):
             logging.info("No pending updates, showing up to date status")
             self.signal_handler.status_changed.emit("System is up to date")
 
-        
-        # Return to welcome screen
-        self.stacked_widget.setCurrentWidget(self.welcome_screen)
+        # CLAUDE CHANGE: Return to home screen instead of welcome screen
+        self.stacked_widget.setCurrentWidget(self.home_screen)
     
-
     def handle_completion_done(self):
         """Handle when the user clicks Done on the completion screen"""
         logging.info("User clicked Done on completion screen")
@@ -710,8 +740,8 @@ class CarUpdateGUI(QMainWindow):
         # Force the welcome screen to show "System is up to date"
         self.signal_handler.status_changed.emit("System is up to date")
 
-        # Switch to welcome screen
-        self.stacked_widget.setCurrentWidget(self.welcome_screen)
+        # CLAUDE CHANGE: Switch to home screen instead of welcome screen
+        self.stacked_widget.setCurrentWidget(self.home_screen)
 
     def closeEvent(self, event):
         """Handle window close event"""

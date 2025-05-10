@@ -5,10 +5,10 @@ Shows loading animation until connection is established.
 
 import sys
 import logging
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QApplication, 
-                            QSpacerItem, QSizePolicy, QPushButton, QFrame)
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QFont, QPainter, QColor, QPen
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
+                            QApplication, QSpacerItem, QSizePolicy, QPushButton, QFrame)
+from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QSize, pyqtSignal
+from PyQt5.QtGui import QFont, QPainter, QColor, QPen, QFontMetrics, QIcon
 
 class LoadingCircle(QWidget):
     """A custom widget that shows an animated loading circle"""
@@ -69,8 +69,7 @@ class StyledButton(QPushButton):
     """Custom styled button with hover effects"""
     def __init__(self, text, button_type="primary", parent=None):
         super().__init__(text, parent)
-        # CLAUDE CHANGE: Changed font to Segoe UI which is more modern and better for displays
-        self.setFont(QFont("Segoe UI", 12, QFont.Medium))  
+        self.setFont(QFont("Segoe UI", 12))
         self.setCursor(Qt.PointingHandCursor)
         
         # Set minimum size for better touch targets
@@ -79,7 +78,6 @@ class StyledButton(QPushButton):
         
         # Set style based on button type
         if button_type == "primary":
-            # CLAUDE CHANGE: Added 3D effect with border, gradient, and box-shadow
             self.setStyleSheet("""
                 QPushButton {
                     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
@@ -103,11 +101,10 @@ class StyledButton(QPushButton):
                 }
             """)
         elif button_type == "success":
-            # CLAUDE CHANGE: Added 3D effect with border, gradient, and box-shadow
             self.setStyleSheet("""
                 QPushButton {
                     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-                                      stop:0 #40d47e, stop:1 #32CD32);
+                                      stop:0 #40d47e, stop:1 #2ecc71);
                     color: white;
                     border: 1px solid #27ae60;
                     border-radius: 8px;
@@ -127,7 +124,6 @@ class StyledButton(QPushButton):
                 }
             """)
         elif button_type == "danger":
-            # CLAUDE CHANGE: Added 3D effect with border, gradient, and box-shadow
             self.setStyleSheet("""
                 QPushButton {
                     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
@@ -151,7 +147,42 @@ class StyledButton(QPushButton):
                 }
             """)
 
-# CLAUDE CHANGE: Added new container widget class for the grey background panel
+# CLAUDE CHANGE: Create a styled back button class
+class BackButton(QPushButton):
+    """Styled back button with an arrow icon"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFont(QFont("Segoe UI", 12))
+        self.setText("Back")
+        self.setCursor(Qt.PointingHandCursor)
+        
+        # Set size
+        self.setMinimumHeight(40)
+        self.setMinimumWidth(100)
+        
+        # Set style
+        self.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(52, 73, 94, 0.7);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 8px;
+                padding: 5px 15px 5px 10px;
+                font-weight: bold;
+                text-align: center;
+            }
+            QPushButton:hover {
+                background-color: rgba(41, 128, 185, 0.8);
+                border: 1px solid rgba(255, 255, 255, 0.5);
+            }
+            QPushButton:pressed {
+                background-color: rgba(41, 128, 185, 1.0);
+                border: 1px solid rgba(255, 255, 255, 0.7);
+            }
+        """)
+    
+   
+
 class ContentPanel(QFrame):
     """A styled panel to contain all content with rounded corners and shadow"""
     def __init__(self, parent=None):
@@ -164,20 +195,17 @@ class ContentPanel(QFrame):
         self.setStyleSheet("""
             ContentPanel {
                 background-color: #C0C0C0;
-                border-radius: 15px;
                 border: 1px solid #dddddd;
             }
         """)
-        
-        # Set minimum size
-        # self.setMinimumSize(600, 500)
 
 class WelcomeScreen(QWidget):
     """Welcome screen with loading animation"""
     
     # Define custom signals for the buttons
     view_updates_clicked = pyqtSignal()
-    install_downloaded_clicked = pyqtSignal()  # New signal for installing downloaded updates
+    install_downloaded_clicked = pyqtSignal()  # Signal for installing downloaded updates
+    back_button_clicked = pyqtSignal()  # CLAUDE CHANGE: Added signal for back button
     
     def __init__(self, signal_handler):
         super().__init__()
@@ -185,39 +213,42 @@ class WelcomeScreen(QWidget):
         self.connection_status = "connecting"  # "connecting", "success", "failed", "up_to_date", "updates_available", "updates_downloaded"
         self.init_ui()
         
-
     def init_ui(self):
         """Initialize the user interface"""
-        # CLAUDE CHANGE: Create main layout with minimal margins to maximize screen usage
+        # Create main layout with minimal margins
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(0)  # Reduce spacing to maximize content area
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
         
-        # CLAUDE CHANGE: Create the content panel to contain all widgets
+        # Create the content panel to contain all widgets
         self.content_panel = ContentPanel()
         
-        # CLAUDE CHANGE: Create panel layout
+        # Create panel layout
         panel_layout = QVBoxLayout(self.content_panel)
         panel_layout.setContentsMargins(30, 30, 30, 30)
+        panel_layout.setSpacing(20)
+        
+        # CLAUDE CHANGE: Add a back button at the top left
+        back_button_container = QWidget()
+        back_button_container.setStyleSheet("background-color: transparent;")
+        back_button_layout = QHBoxLayout(back_button_container)
+        back_button_layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.back_button = BackButton()
+        back_button_layout.addWidget(self.back_button, 0, Qt.AlignLeft)
+        back_button_layout.addStretch(1)  # Push button to the left
         
         # Welcome Text
-        # welcome_label = QLabel("Welcome")
-        # welcome_label.setAlignment(Qt.AlignCenter)
-        # # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look
-        # welcome_label.setFont(QFont("Segoe UI", 32, QFont.Bold))  
-        # # CLAUDE CHANGE: Changed text color to dark blue
-        # welcome_label.setStyleSheet("color: #2c3e50; background-color: transparent;")  
+        welcome_label = QLabel("Welcome")
+        welcome_label.setAlignment(Qt.AlignCenter)
+        welcome_label.setFont(QFont("Segoe UI", 32, QFont.Bold))
+        welcome_label.setStyleSheet("color: #2c3e50; background-color: transparent;")
         
         # Subtitle
-        subtitle_label = QLabel("Software Update")
+        subtitle_label = QLabel("Car Software Update System")
         subtitle_label.setAlignment(Qt.AlignCenter)
-        # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look        
-        font = QFont("Segoe UI", 32)
-        font.setBold(True)  # <-- Make it bold
-        subtitle_label.setFont(font)
-        # subtitle_label.setFont(QFont("Segoe UI", 32))  
-        # CLAUDE CHANGE: Changed text color to dark blue
-        subtitle_label.setStyleSheet("color: #34495e; background-color: transparent; margin-bottom: 30px;")  
+        subtitle_label.setFont(QFont("Segoe UI", 18))
+        subtitle_label.setStyleSheet("color: #34495e; background-color: transparent; margin-bottom: 30px;")
         
         # Loading circle
         self.loading_circle = LoadingCircle()
@@ -225,54 +256,42 @@ class WelcomeScreen(QWidget):
         # Status message
         self.status_label = QLabel("Connecting to update server...")
         self.status_label.setAlignment(Qt.AlignCenter)
-        # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look
-        self.status_label.setFont(QFont("Segoe UI", 14))  
-        # CLAUDE CHANGE: Changed default text color to dark blue (status-specific colors are set in their methods)
-        self.status_label.setStyleSheet("color: #34495e; background-color: transparent; margin-top: 20px;")  
+        self.status_label.setFont(QFont("Segoe UI", 14))
+        self.status_label.setStyleSheet("color: #34495e; background-color: transparent; margin-top: 20px;")
         
         # Success icon (hidden initially)
         self.success_label = QLabel("✓")
         self.success_label.setAlignment(Qt.AlignCenter)
-        # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look
-        self.success_label.setFont(QFont("Segoe UI", 48))  
-        # CLAUDE CHANGE: Keep green color but transparent background
-        self.success_label.setStyleSheet("color: #32CD32; background-color: transparent;")  
+        self.success_label.setFont(QFont("Segoe UI", 48))
+        self.success_label.setStyleSheet("color: #2ecc71; background-color: transparent;")
         self.success_label.hide()
         
         # Failure icon (hidden initially)
         self.failure_label = QLabel("✗")
         self.failure_label.setAlignment(Qt.AlignCenter)
-        # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look
-        self.failure_label.setFont(QFont("Segoe UI", 48))  
-        # CLAUDE CHANGE: Keep red color but transparent background
-        self.failure_label.setStyleSheet("color: #e74c3c; background-color: transparent;")  
+        self.failure_label.setFont(QFont("Segoe UI", 48))
+        self.failure_label.setStyleSheet("color: #e74c3c; background-color: transparent;")
         self.failure_label.hide()
         
         # Up to date icon (hidden initially)
         self.up_to_date_label = QLabel("✓")
         self.up_to_date_label.setAlignment(Qt.AlignCenter)
-        # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look
-        self.up_to_date_label.setFont(QFont("Segoe UI", 48))  
-        # CLAUDE CHANGE: Keep green color but transparent background
-        self.up_to_date_label.setStyleSheet("color: #32CD32; background-color: transparent;")  
+        self.up_to_date_label.setFont(QFont("Segoe UI", 48))
+        self.up_to_date_label.setStyleSheet("color: #2ecc71; background-color: transparent;")
         self.up_to_date_label.hide()
         
         # Updates available icon (hidden initially)
         self.updates_available_label = QLabel("!")
         self.updates_available_label.setAlignment(Qt.AlignCenter)
-        # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look
-        self.updates_available_label.setFont(QFont("Segoe UI", 48, QFont.Bold))  
-        # CLAUDE CHANGE: Keep orange color but transparent background
-        self.updates_available_label.setStyleSheet("color: #f39c12; background-color: transparent;")  
+        self.updates_available_label.setFont(QFont("Segoe UI", 48, QFont.Bold))
+        self.updates_available_label.setStyleSheet("color: #f39c12; background-color: transparent;")
         self.updates_available_label.hide()
         
         # Updates downloaded icon (hidden initially)
         self.updates_downloaded_label = QLabel("↓")
         self.updates_downloaded_label.setAlignment(Qt.AlignCenter)
-        # CLAUDE CHANGE: Changed font to Segoe UI for a more modern look
-        self.updates_downloaded_label.setFont(QFont("Segoe UI", 48, QFont.Bold))  
-        # CLAUDE CHANGE: Keep blue color but transparent background
-        self.updates_downloaded_label.setStyleSheet("color: #3498db; background-color: transparent;")  
+        self.updates_downloaded_label.setFont(QFont("Segoe UI", 48, QFont.Bold))
+        self.updates_downloaded_label.setStyleSheet("color: #3498db; background-color: transparent;")
         self.updates_downloaded_label.hide()
         
         # View Updates button (hidden initially)
@@ -280,12 +299,12 @@ class WelcomeScreen(QWidget):
         self.view_updates_button.hide()
         
         # Install Downloaded Updates button (hidden initially)
-        self.install_downloaded_button = StyledButton("Install Updates", "success")
+        self.install_downloaded_button = StyledButton("Install Downloaded Updates", "success")
         self.install_downloaded_button.hide()
         
         # Add widgets to panel layout with proper spacing
-        panel_layout.addStretch(1)
-        # panel_layout.addWidget(welcome_label)
+        panel_layout.addWidget(back_button_container)  # CLAUDE CHANGE: Add back button container at top
+        panel_layout.addWidget(welcome_label)
         panel_layout.addWidget(subtitle_label)
         panel_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
         panel_layout.addWidget(self.loading_circle, alignment=Qt.AlignCenter)
@@ -301,17 +320,17 @@ class WelcomeScreen(QWidget):
         panel_layout.addWidget(self.install_downloaded_button, alignment=Qt.AlignCenter)
         panel_layout.addStretch(1)
         
-        # CLAUDE CHANGE: Add the content panel to the main layout with full size policy
+        # Add the content panel to the main layout
         self.content_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         main_layout.addWidget(self.content_panel)
         
-        # CLAUDE CHANGE: Set dark background for the main widget (will only show at margins if any)
+        # Set overall dark background for main widget
         self.setStyleSheet("""
             QWidget#WelcomeScreen {
                 background-color: #2c3e50;
             }
         """)
-        # CLAUDE CHANGE: Need to set object name for the style to work
+        # Set object name for the style to work
         self.setObjectName("WelcomeScreen")
         
         # Connect signals
@@ -320,17 +339,8 @@ class WelcomeScreen(QWidget):
         self.signal_handler.connection_failed.connect(self.show_connection_failure)
         self.view_updates_button.clicked.connect(self.view_updates_clicked.emit)
         self.install_downloaded_button.clicked.connect(self.install_downloaded_clicked.emit)
-        
-
-
-    def resizeEvent(self, event):
-        """Handle resize events to keep the content panel full size"""
-        super().resizeEvent(event)
-        # Force the content panel to update its geometry
-        if hasattr(self, 'content_panel'):
-            self.content_panel.setGeometry(10, 10, self.width() - 20, self.height() - 20)
-
-
+        self.back_button.clicked.connect(self.back_button_clicked.emit)  # CLAUDE CHANGE: Connect back button signal
+    
     def update_status(self, status):
         """Update the status message"""
         self.status_label.setText(status)
@@ -377,8 +387,7 @@ class WelcomeScreen(QWidget):
         self.loading_circle.hide()
         self.success_label.show()
         self.status_label.setText("Connected successfully!")
-        # CLAUDE CHANGE: Keep green text color for success
-        self.status_label.setStyleSheet("color: #32CD32; margin-top: 20px; background-color: transparent;")  
+        self.status_label.setStyleSheet("color: #2ecc71; margin-top: 20px; background-color: transparent;")  
     
     def show_connection_failure(self):
         """Update UI for connection failure"""
@@ -387,7 +396,6 @@ class WelcomeScreen(QWidget):
         self.loading_circle.hide()
         self.failure_label.show()
         self.status_label.setText("Connection failed. Please try again.")
-        # CLAUDE CHANGE: Keep red text color for failure
         self.status_label.setStyleSheet("color: #e74c3c; margin-top: 20px; background-color: transparent;")  
     
     def show_up_to_date(self):
@@ -404,9 +412,7 @@ class WelcomeScreen(QWidget):
         self.install_downloaded_button.hide()
         self.up_to_date_label.show()
         self.status_label.setText("Your vehicle software is up to date!")
-        self.status_label.setFont(QFont("Segoe UI", 18)) 
-        # CLAUDE CHANGE: Keep green text color for up to date
-        self.status_label.setStyleSheet("color: #32CD32; margin-top: 20px; background-color: transparent;")  
+        self.status_label.setStyleSheet("color: #2ecc71; margin-top: 20px; background-color: transparent;")  
     
     def show_updates_available(self):
         """Update UI to show updates are available"""
@@ -422,7 +428,6 @@ class WelcomeScreen(QWidget):
         self.view_updates_button.show()
         self.install_downloaded_button.hide()
         self.status_label.setText("Software updates are available for your vehicle!")
-        # CLAUDE CHANGE: Keep orange text color for updates available
         self.status_label.setStyleSheet("color: #f39c12; margin-top: 20px; background-color: transparent;")  
         
         # Debug check visibility
@@ -446,7 +451,6 @@ class WelcomeScreen(QWidget):
         logging.info(f"Install button visible after show() call: {self.install_downloaded_button.isVisible()}")
         
         self.status_label.setText("Updates downloaded and ready to install!")
-        # CLAUDE CHANGE: Keep blue text color for updates downloaded
         self.status_label.setStyleSheet("color: #3498db; margin-top: 20px; background-color: transparent;")  
         
         # Force layout update
@@ -470,5 +474,54 @@ class WelcomeScreen(QWidget):
         self.view_updates_button.hide()
         self.install_downloaded_button.hide()
         self.status_label.setText("Connecting to update server...")
-        # CLAUDE CHANGE: Dark blue text color for connecting state
-        self.status_label.setStyleSheet("color: #34495e; margin-top: 20px; background-color: transparent;")
+        self.status_label.setStyleSheet("color: #34495e; margin-top: 20px; background-color: transparent;")  
+    
+    def resizeEvent(self, event):
+        """Handle resize events to keep the content panel full size"""
+        super().resizeEvent(event)
+        # Force the content panel to update its geometry
+        if hasattr(self, 'content_panel'):
+            self.content_panel.setGeometry(10, 10, self.width() - 20, self.height() - 20)
+
+# For testing the screen individually
+if __name__ == "__main__":
+    class DummySignalHandler:
+        def __init__(self):
+            self.status_changed = None
+            self.connection_success = None
+            self.connection_failed = None
+        
+        def connect(self, func):
+            if hasattr(func, "__self__") and func.__self__.__class__.__name__ == "WelcomeScreen":
+                if func.__name__ == "update_status":
+                    self.status_changed = func
+                elif func.__name__ == "show_connection_success":
+                    self.connection_success = func
+                elif func.__name__ == "show_connection_failure":
+                    self.connection_failed = func
+    
+    app = QApplication(sys.argv)
+    
+    handler = DummySignalHandler()
+    screen = WelcomeScreen(handler)
+    screen.show()
+    
+    # Simulate status updates
+    def update_status():
+        handler.status_changed("Connected to server...")
+    
+    def show_success():
+        handler.connection_success()
+    
+    def show_updates_available():
+        handler.status_changed("Updates available - download needed")
+    
+    def show_updates_downloaded():
+        handler.status_changed("Updates downloaded - ready to install")
+        
+    QTimer.singleShot(1000, update_status)
+    QTimer.singleShot(2000, show_success)
+    QTimer.singleShot(3000, show_updates_available)
+    QTimer.singleShot(5000, show_updates_downloaded)
+    
+    sys.exit(app.exec_())
