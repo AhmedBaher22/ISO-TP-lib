@@ -10,7 +10,7 @@ class Compressor:
 
     def compress(self, data: bytearray) -> bytearray:
         if self.algorithm == CompressionAlgorithm.LZ4:
-            compressed = lz4.frame.compress(bytes(data))
+            compressed = lz4.frame.compress(bytes(data),)
             return bytearray(compressed)
         else:
             raise NotImplementedError(f"Compression for {self.algorithm} is not implemented.")
@@ -50,3 +50,16 @@ if __name__ == "__main__":
     
     assert decompressed == large_data
     print(" Decompressed data matches original!")
+
+    original_data = bytearray(b"Hello from Python! This will be decompressed in C. 3")
+    print(original_data)
+
+    compressor=Compressor(algorithm=CompressionAlgorithm.LZ4)
+    compressed_data=compressor.compress(data=original_data)
+    print("compressed data :::")
+    print(compressed_data)
+    print(f"{[hex(x) for x in compressed_data]}")
+    data=compressor.decompress(data=compressed_data)
+    print(" data :::")
+    print(data)
+    print(f"{[hex(x) for x in data]}")
