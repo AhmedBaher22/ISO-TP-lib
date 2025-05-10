@@ -4,16 +4,35 @@ Shows a loading animation while ECUs are being flashed.
 """
 
 import sys
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QApplication)
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QApplication, QFrame, QSpacerItem, QSizePolicy)
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QPainter, QColor, QPen
+
+# CLAUDE CHANGE: Added ContentPanel class for consistent styling with other screens
+class ContentPanel(QFrame):
+    """A styled panel to contain all content with rounded corners and shadow"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Set frame style
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setFrameShadow(QFrame.Raised)
+        
+        # Set styling with rounded corners and soft shadow
+        self.setStyleSheet("""
+            ContentPanel {
+                background-color: #C0C0C0;
+                border-radius: 15px;
+                border: 1px solid #dddddd;
+            }
+        """)
 
 class LoadingCircle(QWidget):
     """A custom widget that shows an animated loading circle"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumSize(150, 150)
-        self.setMaximumSize(150, 150)
+        # CLAUDE CHANGE: Increased size of loading circle
+        self.setMinimumSize(250, 250)
+        self.setMaximumSize(250, 250)
         self.angle = 0
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.rotate)
@@ -33,14 +52,16 @@ class LoadingCircle(QWidget):
         painter.setRenderHint(QPainter.Antialiasing)
         
         center = self.rect().center()
-        radius = min(self.width(), self.height()) / 2 - 10
+        radius = min(self.width(), self.height()) / 2 - 15
         
         # Draw a complete light gray circle as background
-        painter.setPen(QPen(QColor("#e0e0e0"), 5))
+        # CLAUDE CHANGE: Increased line width for more prominence
+        painter.setPen(QPen(QColor("#e0e0e0"), 10))
         painter.drawEllipse(center, radius, radius)
         
         # Draw the blue arc that rotates
-        painter.setPen(QPen(QColor("#3498db"), 5))
+        # CLAUDE CHANGE: Increased line width and updated color for better appearance
+        painter.setPen(QPen(QColor("#3498db"), 10))
         span_angle = 120 * 16  # 120 degrees, in 1/16th of a degree units (Qt convention)
         
         # Convert our angle to Qt's angle system (counterclockwise, starting at 3 o'clock)
@@ -67,40 +88,77 @@ class FlashingScreen(QWidget):
         
     def init_ui(self):
         """Initialize the user interface"""
-        layout = QVBoxLayout()
-        layout.setContentsMargins(30, 30, 30, 30)
-        layout.setSpacing(20)
+        # CLAUDE CHANGE: Create main layout with minimal margins
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(10, 10, 10, 10)
+        main_layout.setSpacing(0)
+        
+        # CLAUDE CHANGE: Create the content panel to contain all widgets
+        self.content_panel = ContentPanel()
+        
+        # CLAUDE CHANGE: Create panel layout
+        panel_layout = QVBoxLayout(self.content_panel)
+        panel_layout.setContentsMargins(30, 30, 30, 30)
+        panel_layout.setSpacing(20)
         
         # Header
         self.header = QLabel("Installing Updates")
         self.header.setAlignment(Qt.AlignCenter)
-        self.header.setFont(QFont("Arial", 24, QFont.Bold))
-        self.header.setStyleSheet("color: #2c3e50;")
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        self.header.setFont(QFont("Segoe UI", 24, QFont.Bold))
+        self.header.setStyleSheet("color: #2c3e50; background-color: transparent;")
         
         # Warning message
         warning = QLabel("DO NOT TURN OFF THE VEHICLE")
         warning.setAlignment(Qt.AlignCenter)
-        warning.setFont(QFont("Arial", 14, QFont.Bold))
-        warning.setStyleSheet("color: #e74c3c;")
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        warning.setFont(QFont("Segoe UI", 14, QFont.Bold))
+        warning.setStyleSheet("color: #e74c3c; background-color: transparent;")
+        
+        # # CLAUDE CHANGE: Added subtitle for better user experience
+        # subtitle = QLabel("Please wait while we install the latest software for your vehicle.")
+        # subtitle.setAlignment(Qt.AlignCenter)
+        # subtitle.setFont(QFont("Segoe UI", 12))
+        # subtitle.setStyleSheet("color: #34495e; background-color: transparent; margin-bottom: 20px;")
         
         # Loading circle
         self.loading_circle = LoadingCircle()
         
         # Current ECU label
-        self.current_ecu_label = QLabel("updating...")
+        self.current_ecu_label = QLabel("Preparing to install...")
         self.current_ecu_label.setAlignment(Qt.AlignCenter)
-        self.current_ecu_label.setFont(QFont("Arial", 16, QFont.Bold))
-        self.current_ecu_label.setStyleSheet("color: #2c3e50; margin-top: 20px;")
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        self.current_ecu_label.setFont(QFont("Segoe UI", 16, QFont.Bold))
+        self.current_ecu_label.setStyleSheet("color: #2c3e50; margin-top: 20px; background-color: transparent;")
         
-        # Add widgets to layout with proper spacing
-        layout.addWidget(self.header)
-        layout.addWidget(warning)
-        layout.addStretch(1)
-        layout.addWidget(self.loading_circle, alignment=Qt.AlignCenter)
-        layout.addWidget(self.current_ecu_label)
-        layout.addStretch(1)
+        # CLAUDE CHANGE: Added progress info label
+        self.progress_label = QLabel("")
+        self.progress_label.setAlignment(Qt.AlignCenter)
+        self.progress_label.setFont(QFont("Segoe UI", 12))
+        self.progress_label.setStyleSheet("color: #34495e; background-color: transparent;")
         
-        self.setLayout(layout)
+        # CLAUDE CHANGE: Add widgets to panel layout with proper spacing
+        panel_layout.addWidget(self.header)
+        panel_layout.addWidget(warning)
+        # panel_layout.addWidget(subtitle)
+        panel_layout.addSpacerItem(QSpacerItem(20, 30, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        panel_layout.addWidget(self.loading_circle, alignment=Qt.AlignCenter)
+        panel_layout.addWidget(self.current_ecu_label)
+        panel_layout.addWidget(self.progress_label)
+        panel_layout.addSpacerItem(QSpacerItem(20, 30, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        
+        # CLAUDE CHANGE: Add the content panel to the main layout
+        self.content_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        main_layout.addWidget(self.content_panel)
+        
+        # CLAUDE CHANGE: Set overall dark background for main widget
+        self.setStyleSheet("""
+            QWidget#FlashingScreen {
+                background-color: #2c3e50;
+            }
+        """)
+        # Set object name for the style to work
+        self.setObjectName("FlashingScreen")
         
         # Connect signals
         self.signal_handler.flash_progress.connect(self.update_flash_progress)
@@ -112,6 +170,8 @@ class FlashingScreen(QWidget):
         
         if len(self.ecu_names) > 0:
             self.update_current_ecu_label(0)
+            # CLAUDE CHANGE: Update progress information
+            self.progress_label.setText(f"ECU 1 of {len(self.ecu_names)}")
     
     def set_ecu_versions(self, ecu_versions):
         """Set the versions for each ECU"""
@@ -126,8 +186,11 @@ class FlashingScreen(QWidget):
         current_ecu_index = min(completed_ecus, len(self.ecu_names) - 1)
         
         # If we've moved to a new ECU
-        if current_ecu_index > self.current_ecu_index:
+        if current_ecu_index != self.current_ecu_index:
             self.update_current_ecu_label(current_ecu_index)
+            
+        # CLAUDE CHANGE: Update progress information
+        self.progress_label.setText(f"ECU {completed_ecus + 1} of {total_ecus}")
     
     def update_current_ecu_label(self, index):
         """Update the label showing the current ECU being flashed"""
@@ -142,44 +205,10 @@ class FlashingScreen(QWidget):
                 self.current_ecu_label.setText(f"Updating {ecu_name} to version {version}")
             else:
                 self.current_ecu_label.setText(f"Updating {ecu_name}")
-
-# For testing the screen individually
-if __name__ == "__main__":
-    class DummySignalHandler:
-        def __init__(self):
-            self.flash_progress = None
-        
-        def connect(self, slot):
-            self.flash_progress = slot
-    
-    app = QApplication(sys.argv)
-    
-    handler = DummySignalHandler()
-    screen = FlashingScreen(handler)
-    
-    # Set sample ECU list
-    screen.set_ecu_list([
-        "Engine Control Module",
-        "Brake Control Module",
-        "Airbag Control Unit"
-    ])
-    
-    # Set sample versions
-    screen.set_ecu_versions({
-        "Engine Control Module": "1.3.0",
-        "Brake Control Module": "2.0.0",
-        "Airbag Control Unit": "2.1.2"
-    })
-    
-    screen.show()
-    
-    # Simulate progress updates
-    def update_progress():
-        for i in range(4):  # 0, 1, 2, 3
-            if i < 3:
-                handler.flash_progress(i, 3)
-            QTimer.singleShot(i * 2000, lambda idx=i: handler.flash_progress(idx, 3))
-    
-    QTimer.singleShot(1000, update_progress)
-    
-    sys.exit(app.exec_())
+                
+    def resizeEvent(self, event):
+        """Handle resize events to keep the content panel full size"""
+        super().resizeEvent(event)
+        # Force the content panel to update its geometry
+        if hasattr(self, 'content_panel'):
+            self.content_panel.setGeometry(10, 10, self.width() - 20, self.height() - 20)
