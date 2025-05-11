@@ -5,20 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0776d9f4-874d-47ce-8a7f-8f4777033dea" name="Changes" comment="fixing paths and .hex files">
-      <change afterPath="$PROJECT_DIR$/client_server/hex_files/hello.srec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09-Mar-25_2_23_AM_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09-Mar-25_2_23_AM__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client_server/client/client_data/car_info.json" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/client/client_data/car_info.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/download_histrory.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/download_request.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/ecu_versions/Brake_Control_Module_v1.1.0.hex" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/ecu_versions/Engine_Control_Module_v1.2.0.hex" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/ecu_versions/Transmission_Control_Module_v1.1.0.hex" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/pending_downloads.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/download_request.json" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/client/client_data/download_request.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_server/client/client_data/ecu_versions/Brake_Control_Module/1.1.0/Brake_Control_Module_v1.1.0.srec" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/client_server/client/client_database.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/client/client_database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/server/data/versions.json" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/server/data/versions.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_server/server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/server/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_server/client/client_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/client/client_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_server/client/enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/client/enums.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_server/client/gui/main_gui_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/client/gui/main_gui_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_server/client/gui/welcome_screen.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_server/client/gui/welcome_screen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex_parser/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/hex_parser/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_delta.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_delta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,16 +47,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Git.Branch.Popup.ShowAllRemotes": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "D:/Spring 25/Grad/Code/CAN_TP_LIB/client_server/hex_files",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "two.files.diff.last.used.file": "D:/Spring 25/Grad/Code/CAN_TP_LIB/hex_parser/hello_world_mpc5748g.srec"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Git.Branch.Popup.ShowAllRemotes&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Spring 25/Grad/Code/CAN_TP_LIB/client_server/hex_files&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;D:/Spring 25/Grad/Code/CAN_TP_LIB/hex_parser/hello_world_mpc5748g.srec&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Spring 25\Grad\Code\CAN_TP_LIB\client_server\hex_files" />

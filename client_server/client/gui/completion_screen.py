@@ -3,19 +3,35 @@ Completion Screen for the ECU Update System.
 Shows a success message after all ECUs have been updated.
 """
 
-import sys
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                            QPushButton, QSpacerItem, QSizePolicy, QFrame,
-                            QApplication, QStyleFactory)
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, 
+                            QPushButton, QSpacerItem, QSizePolicy, QFrame, QHBoxLayout)
 from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QPainter, QPen, QBrush
+from PyQt5.QtGui import QFont, QColor, QPainter, QPen, QLinearGradient
+
+# CLAUDE CHANGE: Added ContentPanel class for consistent styling with other screens
+class ContentPanel(QFrame):
+    """A styled panel to contain all content with rounded corners and shadow"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Set frame style
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setFrameShadow(QFrame.Raised)
+        
+        # Set styling with rounded corners and soft shadow
+        self.setStyleSheet("""
+            ContentPanel {
+                background-color: #C0C0C0;
+                border: 1px solid #dddddd;
+            }
+        """)
 
 class SuccessIcon(QWidget):
     """A custom widget that draws an animated success checkmark"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumSize(150, 150)
-        self.setMaximumSize(150, 150)
+        # CLAUDE CHANGE: Made icon larger
+        self.setMinimumSize(200, 200)
+        self.setMaximumSize(200, 200)
         self.animation_progress = 0.0
         
         # Create animation
@@ -58,7 +74,8 @@ class SuccessIcon(QWidget):
         radius = min(width, height) / 2 - 10
         
         # Draw circle
-        circle_pen = QPen(QColor("#2ecc71"), 5)
+        # CLAUDE CHANGE: Increased line width for better visibility
+        circle_pen = QPen(QColor("#2ecc71"), 8)
         painter.setPen(circle_pen)
         
         # Draw partial circle based on animation progress
@@ -78,7 +95,8 @@ class SuccessIcon(QWidget):
         if self.animation_progress > 0.5:
             check_progress = min((self.animation_progress - 0.5) * 2, 1.0)
             
-            painter.setPen(QPen(QColor("#2ecc71"), 8, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            # CLAUDE CHANGE: Increased line width for better visibility
+            painter.setPen(QPen(QColor("#2ecc71"), 12, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             
             # Calculate checkmark points
             left_point = (center_x - radius/2, center_y)
@@ -119,7 +137,8 @@ class StyledButton(QPushButton):
     """Custom styled button with hover effects"""
     def __init__(self, text, button_type="primary", parent=None):
         super().__init__(text, parent)
-        self.setFont(QFont("Arial", 12))
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        self.setFont(QFont("Segoe UI", 12))
         self.setCursor(Qt.PointingHandCursor)
         
         # Set minimum size for better touch targets
@@ -128,35 +147,51 @@ class StyledButton(QPushButton):
         
         # Set style based on button type
         if button_type == "primary":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #3498db;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #3da7f5, stop:1 #3498db);
                     color: white;
-                    border: none;
+                    border: 1px solid #2980b9;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #2475ab;
                 }
                 QPushButton:hover {
-                    background-color: #2980b9;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #45aef7, stop:1 #2980b9);
                 }
                 QPushButton:pressed {
-                    background-color: #1f6dad;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #2980b9, stop:1 #2475ab);
+                    border-bottom: 1px solid #2475ab;
+                    padding-top: 12px;
                 }
             """)
         elif button_type == "success":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #2ecc71;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #40d47e, stop:1 #2ecc71);
                     color: white;
-                    border: none;
+                    border: 1px solid #27ae60;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #229954;
                 }
                 QPushButton:hover {
-                    background-color: #27ae60;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #4adc88, stop:1 #27ae60);
                 }
                 QPushButton:pressed {
-                    background-color: #1f8c4d;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #27ae60, stop:1 #1f8c4d);
+                    border-bottom: 1px solid #1f8c4d;
+                    padding-top: 12px;
                 }
             """)
 
@@ -170,31 +205,51 @@ class CompletionScreen(QWidget):
         super().__init__()
         self.signal_handler = signal_handler
         self.init_ui()
-        
+    
+            
     def init_ui(self):
         """Initialize the user interface"""
-        layout = QVBoxLayout()
-        layout.setContentsMargins(30, 30, 30, 30)
-        layout.setSpacing(20)
+        # Create main layout with minimal margins
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
         
-        # Success icon
-        self.success_icon = SuccessIcon()
+        # Create the content panel to contain all widgets
+        self.content_panel = ContentPanel()
+        
+        # Create panel layout
+        panel_layout = QVBoxLayout(self.content_panel)
+        panel_layout.setContentsMargins(30, 30, 30, 30)
+        # CLAUDE CHANGE: Reduced overall spacing between elements
+        panel_layout.setSpacing(10)
+        
+        # Create a container for the header with minimal margins
+        header_container = QWidget()
+        header_container.setStyleSheet("background-color: transparent;")
+        header_layout = QVBoxLayout(header_container)
+        header_layout.setContentsMargins(0, 0, 0, 0)
         
         # Header
-        header = QLabel("Updates Installed Successfully")
+        header = QLabel("Updated Successfully")
         header.setAlignment(Qt.AlignCenter)
-        header.setFont(QFont("Arial", 24, QFont.Bold))
-        header.setStyleSheet("color: #2c3e50;")
+        header.setFont(QFont("Segoe UI", 24, QFont.Bold))
+        header.setStyleSheet("color: #2c3e50; background-color: transparent;")
         
-        # Message
-        message = QLabel(
-            "All Electronic Control Units have been updated to the latest version. "
-            "Your vehicle software is now up to date with the latest improvements and fixes."
-        )
-        message.setAlignment(Qt.AlignCenter)
-        message.setWordWrap(True)
-        message.setFont(QFont("Arial", 14))
-        message.setStyleSheet("color: #34495e; margin-bottom: 20px;")
+        # Add header to its container
+        header_layout.addWidget(header)
+        
+        # Add a divider line below the header
+        divider = QFrame()
+        divider.setFrameShape(QFrame.HLine)
+        divider.setStyleSheet("background-color: rgba(189, 195, 199, 0.5); margin: 0 100px 10px 100px;")
+        divider.setMaximumHeight(1)
+        
+        # CLAUDE CHANGE: Made success icon optional or smaller
+        # Success icon - comment out to remove or use a smaller size
+        self.success_icon = SuccessIcon()
+        # CLAUDE CHANGE: Reduced size of success icon (optional)
+        self.success_icon.setMinimumSize(150, 150)
+        self.success_icon.setMaximumSize(150, 150)
         
         # Details Frame
         details_frame = QFrame()
@@ -209,10 +264,12 @@ class CompletionScreen(QWidget):
         """)
         
         details_layout = QVBoxLayout(details_frame)
+        # CLAUDE CHANGE: Reduced internal spacing in details frame
+        details_layout.setSpacing(5)
         
         details_header = QLabel("Update Summary")
-        details_header.setFont(QFont("Arial", 14, QFont.Bold))
-        details_header.setStyleSheet("color: #2c3e50; margin-bottom: 10px;")
+        details_header.setFont(QFont("Segoe UI", 14, QFont.Bold))
+        details_header.setStyleSheet("color: #2c3e50; margin-bottom: 5px; background-color: transparent;")
         
         self.details_content = QLabel(
             "• All ECUs have been successfully updated\n"
@@ -220,8 +277,8 @@ class CompletionScreen(QWidget):
             "• New features are now available\n"
             "• Performance and stability improvements applied"
         )
-        self.details_content.setFont(QFont("Arial", 12))
-        self.details_content.setStyleSheet("color: #2c3e50;")
+        self.details_content.setFont(QFont("Segoe UI", 12))
+        self.details_content.setStyleSheet("color: #2c3e50; background-color: transparent;")
         
         details_layout.addWidget(details_header)
         details_layout.addWidget(self.details_content)
@@ -229,20 +286,39 @@ class CompletionScreen(QWidget):
         # Done button
         self.done_button = StyledButton("Done", "success")
         
-        # Add all components to main layout with proper spacing
-        layout.addWidget(self.success_icon, 0, Qt.AlignCenter)
-        layout.addWidget(header)
-        layout.addWidget(message)
-        layout.addSpacerItem(QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Minimum))
-        layout.addWidget(details_frame)
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        layout.addWidget(self.done_button, 0, Qt.AlignCenter)
+        # CLAUDE CHANGE: Use layout to position elements with less space between them
+        panel_layout.addWidget(header_container)
+        panel_layout.addWidget(divider)
         
-        self.setLayout(layout)
+        # CLAUDE CHANGE: Calculate available space and use a fixed portion for top and bottom spacing
+        # This creates a more balanced layout with less empty space in the middle
+        panel_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        panel_layout.addWidget(self.success_icon, 0, Qt.AlignCenter)
+        # CLAUDE CHANGE: Minimal spacing between icon and details
+        panel_layout.addSpacerItem(QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        panel_layout.addWidget(details_frame)
+        # CLAUDE CHANGE: Minimal space after details frame
+        panel_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        panel_layout.addWidget(self.done_button, 0, Qt.AlignCenter)
+        panel_layout.addSpacerItem(QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        
+        # Add the content panel to the main layout
+        self.content_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        main_layout.addWidget(self.content_panel)
+        
+        # Set overall dark background for main widget
+        self.setStyleSheet("""
+            QWidget#CompletionScreen {
+                background-color: #2c3e50;
+            }
+        """)
+        # Set object name for the style to work
+        self.setObjectName("CompletionScreen")
         
         # Connect signals
         self.done_button.clicked.connect(self.done_clicked.emit)
-    
+
+
     def set_update_details(self, details):
         """Set detailed information about the updates"""
         if isinstance(details, list):
@@ -251,22 +327,10 @@ class CompletionScreen(QWidget):
             self.details_content.setText(details_text)
         else:
             self.details_content.setText(details)
-
-# For testing the screen individually
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setStyle(QStyleFactory.create("Fusion"))
-    
-    screen = CompletionScreen()
-    
-    # Set some sample details
-    screen.set_update_details([
-        "Engine Control Module updated from v1.2.3 to v1.3.0",
-        "Brake Control Module updated from v1.5.2 to v2.0.0",
-        "Airbag Control Unit updated from v2.1.0 to v2.1.2",
-        "Security enhancements applied to all systems"
-    ])
-    
-    screen.show()
-    
-    sys.exit(app.exec_())
+            
+    def resizeEvent(self, event):
+        """Handle resize events to keep the content panel full size"""
+        super().resizeEvent(event)
+        # Force the content panel to update its geometry
+        if hasattr(self, 'content_panel'):
+            self.content_panel.setGeometry(10, 10, self.width() - 20, self.height() - 20)

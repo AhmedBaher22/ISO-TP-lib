@@ -4,18 +4,37 @@ Shows download progress with a visual progress bar.
 """
 
 import sys
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                            QPushButton, QProgressBar, QSpacerItem, QSizePolicy,
+import time
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, 
+                            QPushButton, QSpacerItem, QSizePolicy,
                             QFrame, QApplication, QStyleFactory)
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QIcon, QPixmap
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QFont
+
+# CLAUDE CHANGE: Added ContentPanel class for consistent styling with other screens
+class ContentPanel(QFrame):
+    """A styled panel to contain all content with rounded corners and shadow"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Set frame style
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setFrameShadow(QFrame.Raised)
+        
+        # Set styling with rounded corners and soft shadow
+        self.setStyleSheet("""
+            ContentPanel {
+                background-color: #C0C0C0;
+                border: 1px solid #dddddd;
+            }
+        """)
 
 class CircularProgressBar(QWidget):
     """A circular progress bar for visual feedback"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumSize(150, 150)
-        self.setMaximumSize(150, 150)
+        # CLAUDE CHANGE: Increased size of the progress circle
+        self.setMinimumSize(250, 250)
+        self.setMaximumSize(250, 250)
         self.value = 0
         self.max_value = 100
         
@@ -36,8 +55,9 @@ class CircularProgressBar(QWidget):
         # Calculate sizes
         width = self.width()
         height = self.height()
-        margin = 10
-        line_width = 10
+        margin = 15
+        # CLAUDE CHANGE: Increased line width for more prominence
+        line_width = 15
         
         # Draw background circle
         painter.setPen(QPen(QColor("#e0e0e0"), line_width))
@@ -45,6 +65,7 @@ class CircularProgressBar(QWidget):
         
         # Draw progress arc
         if self.value > 0:
+            # CLAUDE CHANGE: Improved color of the progress arc
             pen = QPen(QColor("#3498db"), line_width)
             pen.setCapStyle(Qt.RoundCap)
             painter.setPen(pen)
@@ -60,71 +81,19 @@ class CircularProgressBar(QWidget):
         
         # Draw text in center
         painter.setPen(QColor("#2c3e50"))
-        painter.setFont(QFont("Arial", 20, QFont.Bold))
+        # CLAUDE CHANGE: Changed font to Segoe UI and increased size
+        painter.setFont(QFont("Segoe UI", 32, QFont.Bold))
         
         percent_text = f"{int(self.value)}%"
         text_rect = QRectF(0, 0, width, height)
         painter.drawText(text_rect, Qt.AlignCenter, percent_text)
 
-class StyledProgressBar(QProgressBar):
-    """An enhanced progress bar with better styling"""
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setTextVisible(False)
-        self.setMinimumHeight(12)
-        self.setMaximumHeight(12)
-        self.setStyleSheet("""
-            QProgressBar {
-                border: none;
-                border-radius: 6px;
-                background-color: #ecf0f1;
-                text-align: center;
-            }
-            QProgressBar::chunk {
-                background-color: #3498db;
-                border-radius: 6px;
-            }
-        """)
-
-class InfoCard(QFrame):
-    """A card widget to display download information"""
-    def __init__(self, title, parent=None):
-        super().__init__(parent)
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setStyleSheet("""
-            QFrame {
-                background-color: white;
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                padding: 15px;
-            }
-        """)
-        
-        layout = QVBoxLayout(self)
-        
-        # Title
-        title_label = QLabel(title)
-        title_label.setFont(QFont("Arial", 14, QFont.Bold))
-        title_label.setStyleSheet("color: #2c3e50; padding-bottom: 5px; border-bottom: 1px solid #ecf0f1;")
-        
-        # Content widget (will be set externally)
-        self.content_widget = QLabel()
-        self.content_widget.setFont(QFont("Arial", 12))
-        self.content_widget.setStyleSheet("color: #34495e; margin-top: 10px;")
-        self.content_widget.setWordWrap(True)
-        
-        layout.addWidget(title_label)
-        layout.addWidget(self.content_widget)
-        
-    def set_content(self, content):
-        """Set the content text"""
-        self.content_widget.setText(content)
-
 class StyledButton(QPushButton):
     """Custom styled button with hover effects"""
     def __init__(self, text, button_type="primary", parent=None):
         super().__init__(text, parent)
-        self.setFont(QFont("Arial", 12))
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        self.setFont(QFont("Segoe UI", 12))
         self.setCursor(Qt.PointingHandCursor)
         
         # Set minimum size for better touch targets
@@ -133,51 +102,75 @@ class StyledButton(QPushButton):
         
         # Set style based on button type
         if button_type == "primary":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #3498db;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #3da7f5, stop:1 #3498db);
                     color: white;
-                    border: none;
+                    border: 1px solid #2980b9;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #2475ab;
                 }
                 QPushButton:hover {
-                    background-color: #2980b9;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #45aef7, stop:1 #2980b9);
                 }
                 QPushButton:pressed {
-                    background-color: #1f6dad;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #2980b9, stop:1 #2475ab);
+                    border-bottom: 1px solid #2475ab;
+                    padding-top: 12px;
                 }
             """)
         elif button_type == "danger":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #e74c3c;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #f05a4b, stop:1 #e74c3c);
                     color: white;
-                    border: none;
+                    border: 1px solid #c0392b;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #a5281d;
                 }
                 QPushButton:hover {
-                    background-color: #c0392b;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #f16f61, stop:1 #c0392b);
                 }
                 QPushButton:pressed {
-                    background-color: #a5281d;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #c0392b, stop:1 #a5281d);
+                    border-bottom: 1px solid #a5281d;
+                    padding-top: 12px;
                 }
             """)
         elif button_type == "secondary":
+            # CLAUDE CHANGE: Added 3D effect with border, gradient, and shadow
             self.setStyleSheet("""
                 QPushButton {
-                    background-color: #ecf0f1;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #f5f5f5, stop:1 #ecf0f1);
                     color: #2c3e50;
                     border: 1px solid #bdc3c7;
                     border-radius: 8px;
                     padding: 10px 20px;
+                    font-weight: bold;
+                    border-bottom: 3px solid #95a5a6;
                 }
                 QPushButton:hover {
-                    background-color: #bdc3c7;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #ecf0f1, stop:1 #bdc3c7);
                 }
                 QPushButton:pressed {
-                    background-color: #a1a6a9;
+                    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                      stop:0 #bdc3c7, stop:1 #a1a6a9);
+                    border-bottom: 1px solid #95a5a6;
+                    padding-top: 12px;
                 }
             """)
 
@@ -194,81 +187,83 @@ class DownloadScreen(QWidget):
         
     def init_ui(self):
         """Initialize the user interface"""
-        layout = QVBoxLayout()
-        layout.setContentsMargins(30, 30, 30, 30)
-        layout.setSpacing(20)
+        # CLAUDE CHANGE: Create main layout with minimal margins
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        
+        # CLAUDE CHANGE: Create the content panel to contain all widgets
+        self.content_panel = ContentPanel()
+        
+        # CLAUDE CHANGE: Create panel layout
+        panel_layout = QVBoxLayout(self.content_panel)
+        panel_layout.setContentsMargins(30, 30, 30, 30)
+        panel_layout.setSpacing(20)
         
         # Header
         header = QLabel("Downloading Updates")
         header.setAlignment(Qt.AlignCenter)
-        header.setFont(QFont("Arial", 24, QFont.Bold))
-        header.setStyleSheet("color: #2c3e50;")
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        header.setFont(QFont("Segoe UI", 24, QFont.Bold))
+        header.setStyleSheet("color: #2c3e50; background-color: transparent;")
         
-        # Description
-        description = QLabel("Please wait while updates are being downloaded.")
-        description.setAlignment(Qt.AlignCenter)
-        description.setFont(QFont("Arial", 14))
-        description.setStyleSheet("color: #34495e; margin-bottom: 20px;")
+        # CLAUDE CHANGE: Add subtitle
+        subtitle = QLabel("Please wait while we download the latest software for your vehicle.")
+        subtitle.setAlignment(Qt.AlignCenter)
+        subtitle.setFont(QFont("Segoe UI", 12))
+        subtitle.setStyleSheet("color: #34495e; background-color: transparent; margin-bottom: 20px;")
         
-        # Progress visualization section
-        progress_layout = QHBoxLayout()
-        
-        # Circular progress indicator
+        # CLAUDE CHANGE: Simplified layout with just the circular progress in the center
+        # Circular progress indicator - now centered
         self.circular_progress = CircularProgressBar()
         
-        # Vertical progress information
-        progress_info_layout = QVBoxLayout()
+        # CLAUDE CHANGE: Create a vertical layout for text below the circular progress
+        info_layout = QVBoxLayout()
+        info_layout.setAlignment(Qt.AlignCenter)
+        info_layout.setSpacing(10)
         
-        self.progress_label = QLabel("0%")
-        self.progress_label.setFont(QFont("Arial", 18, QFont.Bold))
-        self.progress_label.setStyleSheet("color: #2c3e50;")
-        
-        self.progress_bar = StyledProgressBar()
-        
+        # CLAUDE CHANGE: Progress percentage is already in the circle, but we'll add download info and estimated time
         self.details_label = QLabel("Starting download...")
-        self.details_label.setFont(QFont("Arial", 12))
-        self.details_label.setWordWrap(True)
+        self.details_label.setAlignment(Qt.AlignCenter)
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        self.details_label.setFont(QFont("Segoe UI", 12))
+        self.details_label.setStyleSheet("color: #34495e; background-color: transparent;")
         
-        progress_info_layout.addWidget(self.progress_label)
-        progress_info_layout.addWidget(self.progress_bar)
-        progress_info_layout.addWidget(self.details_label)
+        # CLAUDE CHANGE: Add estimated time label
+        self.time_label = QLabel("Calculating time remaining...")
+        self.time_label.setAlignment(Qt.AlignCenter)
+        # CLAUDE CHANGE: Changed font to Segoe UI
+        self.time_label.setFont(QFont("Segoe UI", 12))
+        self.time_label.setStyleSheet("color: #34495e; background-color: transparent;")
         
-        progress_layout.addWidget(self.circular_progress, alignment=Qt.AlignCenter)
-        progress_layout.addLayout(progress_info_layout)
-        
-        # Information cards section
-        cards_layout = QHBoxLayout()
-        cards_layout.setSpacing(15)
-        
-        # ECUs card
-        self.ecus_card = InfoCard("ECUs Being Updated")
-        self.ecus_card.set_content("Preparing...")
-        
-        # Size card
-        self.size_card = InfoCard("Download Size")
-        self.size_card.set_content("Calculating...")
-        
-        # Estimated time card
-        self.time_card = InfoCard("Estimated Time")
-        self.time_card.set_content("Calculating...")
-        
-        cards_layout.addWidget(self.ecus_card)
-        cards_layout.addWidget(self.size_card)
-        cards_layout.addWidget(self.time_card)
+        # Add labels to info layout
+        info_layout.addWidget(self.details_label)
+        info_layout.addWidget(self.time_label)
         
         # Cancel button
         self.cancel_button = StyledButton("Cancel", "danger")
         
-        # Add all components to main layout
-        layout.addWidget(header)
-        layout.addWidget(description)
-        layout.addLayout(progress_layout)
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        layout.addLayout(cards_layout)
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        layout.addWidget(self.cancel_button, alignment=Qt.AlignCenter)
+        # CLAUDE CHANGE: Add all components to panel layout
+        panel_layout.addWidget(header)
+        panel_layout.addWidget(subtitle)
+        panel_layout.addSpacerItem(QSpacerItem(20, 30, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        panel_layout.addWidget(self.circular_progress, alignment=Qt.AlignCenter)
+        panel_layout.addLayout(info_layout)
+        panel_layout.addSpacerItem(QSpacerItem(20, 30, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        panel_layout.addWidget(self.cancel_button, alignment=Qt.AlignCenter)
         
-        self.setLayout(layout)
+        # CLAUDE CHANGE: Add the content panel to the main layout
+        self.content_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        main_layout.addWidget(self.content_panel)
+        
+        # CLAUDE CHANGE: Set overall dark background for main widget
+        self.setStyleSheet("""
+            QWidget#DownloadScreen {
+                background-color: #2c3e50;
+            }
+        """)
+        # Set object name for the style to work
+        self.setObjectName("DownloadScreen")
         
         # Connect signals
         self.signal_handler.download_progress.connect(self.update_progress)
@@ -278,8 +273,7 @@ class DownloadScreen(QWidget):
         """Update the progress indicators with current download status"""
         if total_size > 0:
             percent = int((downloaded_size / total_size) * 100)
-            self.progress_bar.setValue(percent)
-            self.progress_label.setText(f"{percent}%")
+            # CLAUDE CHANGE: Just update the circular progress and labels
             self.circular_progress.set_value(percent)
             
             # Update details
@@ -287,12 +281,8 @@ class DownloadScreen(QWidget):
                 f"Downloaded {self.format_size(downloaded_size)} of {self.format_size(total_size)}"
             )
             
-            # Update size card
-            self.size_card.set_content(f"{self.format_size(downloaded_size)} / {self.format_size(total_size)}")
-            
             # Update estimated time (simple calculation)
             if downloaded_size > 0:
-                import time
                 current_time = time.time()
                 # Calculate rate and estimated time remaining
                 if hasattr(self, 'last_update_time') and hasattr(self, 'last_downloaded_size'):
@@ -305,23 +295,23 @@ class DownloadScreen(QWidget):
                         remaining_time = remaining_size / download_rate if download_rate > 0 else 0
                         
                         if remaining_time < 60:
-                            time_str = f"About {int(remaining_time)} seconds"
+                            time_str = f"About {int(remaining_time)} seconds remaining"
                         elif remaining_time < 3600:
-                            time_str = f"About {int(remaining_time / 60)} minutes"
+                            time_str = f"About {int(remaining_time / 60)} minutes remaining"
                         else:
-                            time_str = f"About {int(remaining_time / 3600)} hours {int((remaining_time % 3600) / 60)} minutes"
+                            time_str = f"About {int(remaining_time / 3600)} hours {int((remaining_time % 3600) / 60)} minutes remaining"
                         
-                        self.time_card.set_content(time_str)
+                        self.time_label.setText(time_str)
                 
                 # Store current values for next calculation
                 self.last_update_time = time.time()
                 self.last_downloaded_size = downloaded_size
                 
     def set_ecu_info(self, ecu_names):
-        """Set information about the ECUs being updated"""
-        if ecu_names:
-            ecu_text = "\n".join([f"• {name}" for name in ecu_names])
-            self.ecus_card.set_content(ecu_text)
+        """
+        This method is kept for backwards compatibility but doesn't display anything now
+        """
+        pass
     
     def format_size(self, size_bytes):
         """Format bytes into human-readable format"""
@@ -333,6 +323,13 @@ class DownloadScreen(QWidget):
             return f"{size_bytes/(1024*1024):.1f} MB"
         else:
             return f"{size_bytes/(1024*1024*1024):.1f} GB"
+            
+    def resizeEvent(self, event):
+        """Handle resize events to keep the content panel full size"""
+        super().resizeEvent(event)
+        # Force the content panel to update its geometry
+        if hasattr(self, 'content_panel'):
+            self.content_panel.setGeometry(10, 10, self.width() - 20, self.height() - 20)
 
 # For testing the screen individually
 if __name__ == "__main__":
@@ -340,7 +337,7 @@ if __name__ == "__main__":
     
     class DummySignalHandler:
         def __init__(self):
-            self.download_progress = pyqtSignal(int, int)
+            self.download_progress = None
         
         def connect(self, slot):
             self.slot = slot
@@ -351,9 +348,7 @@ if __name__ == "__main__":
     dummy_handler = DummySignalHandler()
     screen = DownloadScreen(dummy_handler)
     screen.show()
-    
-    # Set ECU info
-    screen.set_ecu_info(["Engine Control Module", "Brake Control Module", "Airbag Control Unit"])
+    screen.showMaximized()  # Show maximized for better testing
     
     # Simulate download progress
     def simulate_progress():

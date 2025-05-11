@@ -3,10 +3,19 @@ import json
 import os
 from typing import Optional, Dict
 from datetime import datetime
-from client_models import ClientDownloadRequest
-from shared_models import CarInfo
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+package_dir = os.path.abspath(os.path.join(current_dir, ".."))
+package_dir = os.path.abspath(os.path.join(package_dir, ".."))
+sys.path.append(package_dir)
+
+from client_server.client.client_models import ClientDownloadRequest
+from client_server.client.shared_models import CarInfo
+
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.ERROR)
+
+
 class ClientDatabase:
     def __init__(self, data_directory: str):
         self.data_directory = data_directory
