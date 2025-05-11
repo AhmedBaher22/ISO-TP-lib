@@ -94,8 +94,8 @@ class ClientDownloadRequest:
                     'flashing_retries': ecu.flashing_retries,
                     'roll_back_needed': ecu.roll_back_needed,
                     'roll_back_done' : ecu.roll_back_done,
-                    'roll_back_delta' : ecu.roll_back_delta,
-                    'old_version_data_records': ecu.old_version_data_records
+                    'roll_back_delta' : [record.to_dict() for record in ecu.roll_back_delta],
+                    'old_version_data_records': [record.to_dict() for record in ecu.old_version_data_records]
 
                 } for ecu in self.flashed_ecus
             ],
