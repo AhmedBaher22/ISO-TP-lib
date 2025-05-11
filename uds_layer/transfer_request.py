@@ -33,31 +33,31 @@ class TransferRequest:
         self.status = TransferStatus.CREATED
         self.NRC: Optional[int] = None
         self._logger = Logger(ProtocolType.UDS)
-        self.compressed_data:bytearray=None
+
 
         self.current_trans_ind=0
         self._logger.log_message(
             log_type=LogType.INITIALIZATION,
             message=f"{self.get_req()} NEW Transfer Request has been initialized"
         )
-        if self.compression_method != CompressionMethod.NO_COMPRESSION:
-            self._logger.log_message(
-                log_type=LogType.INITIALIZATION,
-                message=f"{self.get_req()}  Transfer Request need compression of type : {self.compression_method.name}"
-            )            
-            if self.compression_method == CompressionMethod.LZ4:
-                self._logger.log_message(
-                    log_type=LogType.INITIALIZATION,
-                    message=f"{self.get_req()}  compression started procession for Transfer Request"
-                )   
-                print(self.data)
-                self.compressed_data=lz4_compress(bytearray(self.data))
-                decopressed=lz4_decompress(self.compressed_data)
-                print(decopressed)
-                self._logger.log_message(
-                    log_type=LogType.INITIALIZATION,
-                    message=f"{self.get_req()}  compression finished , here is compressed data: {self.compressed_data}"
-                )   
+        # if self.compression_method != CompressionMethod.NO_COMPRESSION:
+        #     self._logger.log_message(
+        #         log_type=LogType.INITIALIZATION,
+        #         message=f"{self.get_req()}  Transfer Request need compression of type : {self.compression_method.name}"
+        #     )            
+        #     if self.compression_method == CompressionMethod.LZ4:
+        #         self._logger.log_message(
+        #             log_type=LogType.INITIALIZATION,
+        #             message=f"{self.get_req()}  compression started procession for Transfer Request"
+        #         )   
+        #         print(self.data)
+        #         self.compressed_data=lz4_compress(bytearray(self.data))
+        #         decopressed=lz4_decompress(self.compressed_data)
+        #         print(decopressed)
+        #         self._logger.log_message(
+        #             log_type=LogType.INITIALIZATION,
+        #             message=f"{self.get_req()}  compression finished , here is compressed data: {self.compressed_data}"
+        #         )   
 
     def calculate_steps_number(self):
         if self.data_size > self.max_number_of_block_length:

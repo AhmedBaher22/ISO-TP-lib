@@ -110,17 +110,28 @@ class CANCommunication:
     def _initialize_bus(self):
         """Initialize the CAN bus with the provided configuration."""
         try:
-            # Validate configuration before initialization
             self.config.validate()
 
-            self.bus = can.Bus(
-                interface=self.config.interface.value,
-                channel=self.config.channel,
-                app_name=self.config.app_name,
-                fd=self.config.fd_flag,
-                bitrate=self.config.bitrate,
-                serial=self.config.serial_number
-            )
+            if self.config.interface == CANInterface.SOCKETCAN:
+                print("Before")
+                self.bus = can.Bus(
+                    interface="socketcan",
+                    channel=f"can0",  # For SocketCAN, use 'can0', 'vcan0', etc.
+                    bitrate=f"{self.config.bitrate}"
+                )
+                print("After")
+            elif self.config.interface == CANInterface.VECTOR:
+                self.bus = can.Bus(
+                    interface="vector",
+                    channel=self.config.channel,
+                    app_name=self.config.app_name,
+                    fd=self.config.fd_flag,
+                    bitrate=self.config.bitrate,
+                    serial=self.config.serial_number
+                )
+            else:
+                raise CANConfigurationError("Unsupported CAN interface")
+
             self.logger.log_message(log_type=LogType.INITIALIZATION, message="CAN bus initialized successfully")
 
         except CANConfigurationError as e:
@@ -128,12 +139,14 @@ class CANCommunication:
             raise
 
         except Exception as e:
+            print(e)
             error = CANInitializationError(
                 message="Failed to initialize CAN bus",
                 original_exception=e
             )
             self.logger.log_message(log_type=LogType.ERROR, message=f"{error}")
             raise error
+
 
     def set_filters(self, filters: List[Dict]):
         """

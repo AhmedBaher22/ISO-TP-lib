@@ -2,8 +2,8 @@ from enum import Enum, auto
 
 
 class CANInterface(Enum):
-    VECTOR = "vector"
     SOCKETCAN = "socketcan"
+    VECTOR = "vector"
     KVASER = "kvaser"
     PCAN = "pcan"
     IXXAT = "ixxat"
