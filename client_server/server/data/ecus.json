@@ -1,0 +1,26 @@
+[
+    {
+        "id": "ECU001",
+        "name": "Engine_Control_Module",
+        "model_number": "ECM_2023",
+        "version_ids": ["ECM_V1", "ECM_V2", "ECM_V3"]
+    },
+    {
+        "id": "ECU002",
+        "name": "Transmission_Control_Module",
+        "model_number": "TCM_2023",
+        "version_ids": ["TCM_V1", "TCM_V2"]
+    },
+    {
+        "id": "ECU003",
+        "name": "Brake_Control_Module",
+        "model_number": "BCM_2023",
+        "version_ids": ["BCM_V1", "BCM_V2"]
+    },
+    {
+        "id": "ECU004",
+        "name": "Battery_Management_System",
+        "model_number": "BMS_2023",
+        "version_ids": ["BMS_V1", "BMS_V2", "BMS_V3"]
+    }
+]

@@ -1,3 +1,4 @@
+from time import sleep
 from bitarray import bitarray
 from typing import Callable, List, Optional, Tuple
 import sys
@@ -14,6 +15,7 @@ from logger import Logger, LogType, ProtocolType
 from iso_tp_layer.Address import Address
 from uds_layer.FlashingECU import FlashingECU
 from hex_parser.SRecordParser import DataRecord
+from compressor.compressor import Compressor,CompressionAlgorithm
 # class Address:
 #     def __init__(self, addressing_mode: int = 0, txid: Optional[int] = None, rxid: Optional[int] = None):
 #         self.addressing_mode = addressing_mode
@@ -28,6 +30,7 @@ class UdsClient:
         self._pending_servers: List[Server] = []
         self._isotp_send: Callable = None
         self._logger = Logger(ProtocolType.UDS)
+        self.num:int=0
         self._logger.log_message(
             log_type=LogType.INITIALIZATION,
             message="UDS client Tool has been initialized successfully"
@@ -64,8 +67,8 @@ class UdsClient:
             message=f"message receivid: {[hex(x) for x in data]} is being proccessed ..."
         )
         
-        diagnostic_address,data=self.extract_diagnostic_address(data=data)
-        # diagnostic_address=address._rxid
+        # diagnostic_address,data=self.extract_diagnostic_address(data=data)
+        diagnostic_address=address._rxid
         service_id = data[0]
 
         if service_id == 0x7F:  # Negative response
@@ -245,7 +248,7 @@ class UdsClient:
 
         if len(message) <= 4095:
             message = bytearray(message)
-            message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
+            # message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
 
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
@@ -253,7 +256,7 @@ class UdsClient:
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
                 message = bytearray(message)
-                chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
+                # chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
         self._logger.log_message(
@@ -292,24 +295,59 @@ class UdsClient:
                                 checksum_required: CheckSumMethod,
                                 is_multiple_segments:bool=False,
                                 flashing_ECU_req:FlashingECU=None) -> None:
-        # Create TransferRequest object
-        transfer_request = TransferRequest(
-            recv_DA=recv_DA,
-            data=data,
-            encryption_method=encryption_method,
-            compression_method=compression_method,
-            memory_address=memory_address,
-            checksum_required=checksum_required,
-            is_multiple_segments=is_multiple_segments,
-            flashing_ECU_REQ=flashing_ECU_req
+        transfer_request:TransferRequest=None                        
+        if compression_method != CompressionMethod.NO_COMPRESSION:
+            if compression_method == CompressionMethod.LZ4:
+                compressor=Compressor(algorithm=CompressionAlgorithm.LZ4)
+                self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=f"compressing data is being precessing, data before compression has length:{len(data)}"
+                )
+                deCompressed_data=compressor.compress(data=data)
+                self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=f"compressing data is done successfully, data after compression has length:{len(data)}"
+                )
 
-        )
+                # Create TransferRequest object
+                transfer_request = TransferRequest(
+                    recv_DA=recv_DA,
+                    data=deCompressed_data,
+                    encryption_method=encryption_method,
+                    compression_method=compression_method,
+                    memory_address=memory_address,
+                    checksum_required=checksum_required,
+                    is_multiple_segments=is_multiple_segments,
+                    flashing_ECU_REQ=flashing_ECU_req,
+                    deCompressed_data=data
+
+                )
+            else:
+                self._logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=f"compressing data is done successfully, data after compression has length:{len(data)}"
+                )
+        else:
+                # Create TransferRequest object
+            transfer_request = TransferRequest(
+                recv_DA=recv_DA,
+                data=data,
+                encryption_method=encryption_method,
+                compression_method=compression_method,
+                memory_address=memory_address,
+                checksum_required=checksum_required,
+                is_multiple_segments=is_multiple_segments,
+                flashing_ECU_REQ=flashing_ECU_req,
+                deCompressed_data=bytearray()
+
+            )
+
 
         # Find server with matching CAN ID
         server = next((s for s in self._servers if s.can_id == recv_DA), None)
         if server:
             # Get request download message
-            message = server.erase_memory(transfer_request)
+            message = server.security_access(transfer_request,1)
             if message != [0x00]:  # Check if request was successful
                 # Create address object for ISO-TP
                 address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)
@@ -318,7 +356,7 @@ class UdsClient:
 
                 self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"{transfer_request.get_req()} ERASE memory for diagnostic address {hex(recv_DA)}send successfully with messaage: {[hex(x) for x in message]}"
+                    message=f"{transfer_request.get_req()} security access for diagnostic address {hex(recv_DA)} with security level 1 send successfully with messaage: {[hex(x) for x in message]}"
                 )
 
         else:
@@ -332,8 +370,104 @@ class UdsClient:
     def Flash_ECU(self,segments:List[DataRecord], recv_DA: int,
                                 encryption_method: EncryptionMethod,
                                 compression_method: CompressionMethod,
-                                checksum_required: CheckSumMethod) -> None:
-        newFlashingECUrequest=FlashingECU(segments=segments,recv_DA=recv_DA,checksum_required=checksum_required,encryption_method=encryption_method,compression_method=compression_method)
+                                checksum_required: CheckSumMethod,
+                                on_successfull_flashing:Callable,
+                                on_failing_flashing:Callable,
+                                flashed_ecu_number:int) -> None:
+        #happy all scenario 
+        # sleep(10)
+        # on_successfull_flashing(flashed_ecu_number)
+        #one time failure without roll-back
+        # sleep(10)
+        # if self.num ==0:
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=False)
+        # elif self.num==1:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+
+        #one time failure with roll-back
+        # sleep(10)
+        # if self.num ==0:
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=True)
+        # elif self.num==1:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+
+        # 3 times failure without roll-back
+        # sleep(3)
+        # if self.num < 3:
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=False)
+        # elif self.num==3:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+        
+        #2 times failure without roll-back
+        # if self.num < 2:
+        #     sleep(3)
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=False)
+        # else:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+        
+        #3 times failure with roll-back
+        # if self.num < 3:
+        #     sleep(3)
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=True)
+        # else:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+        
+        #4 times failure with roll-back
+        # if self.num < 4:
+        #     sleep(3)
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=True)
+        # else:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+
+        # #6 times failure with roll-back
+        # if self.num < 6:
+        #     sleep(3)
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=True)
+        # else:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+
+        # always fail
+        # if self.num < 7:
+        #     sleep(3)
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=True)
+        # else:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+
+        # #always fail
+        # if self.num < 14:
+        #     sleep(3)
+        #     self.num+=1
+        #     on_failing_flashing(flashed_ecu_number,erasing_happen=True)
+        # else:
+        #     sleep(10)
+        #     self.num+=1
+        #     on_successfull_flashing(flashed_ecu_number)
+        # return
+        newFlashingECUrequest=FlashingECU(segments=segments,recv_DA=recv_DA,checksum_required=checksum_required,encryption_method=encryption_method,compression_method=compression_method,successfull_flashing_response=on_successfull_flashing,failed_flashing_response=on_failing_flashing,flashed_ecu_number=flashed_ecu_number)
         newFlashingECUrequest.current_number_of_segments_send=0
         newFlashingECUrequest.status=FlashingECUStatus.CREATED
         self._logger.log_message(
@@ -349,6 +483,7 @@ class UdsClient:
                     log_type=LogType.ACKNOWLEDGMENT,
                     message=f"[FLASH_REQUEST-{newFlashingECUrequest.ID}] Flashing ECU REQUEST is being processing sending segment number :{newFlashingECUrequest.current_number_of_segments_send} to ECU with DA:{hex( newFlashingECUrequest.recv_DA)}  -STATUS:{newFlashingECUrequest.status.name}"
                 )
+
             self.transfer_NEW_data_to_ecu(recv_DA=newFlashingECUrequest.recv_DA,
                                         data=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].data,
                                         memory_address=newFlashingECUrequest.segments[newFlashingECUrequest.current_number_of_segments_send].address,

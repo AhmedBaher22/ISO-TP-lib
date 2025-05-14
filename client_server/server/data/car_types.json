@@ -1,0 +1,26 @@
+[
+    {
+        "name": "ModelX",
+        "model_number": "MX2023",
+        "manufactured_count": 100,
+        "car_ids": [
+            "MX2023-001",
+            "MX2023-002",
+            "MX2023-003",
+            "MX2023-004",
+            "MX2023-005"
+        ],
+        "ecu_ids": ["ECU001", "ECU002", "ECU003"]
+    },
+    {
+        "name": "ModelY",
+        "model_number": "MY2023",
+        "manufactured_count": 50,
+        "car_ids": [
+            "MY2023-001",
+            "MY2023-002",
+            "MY2023-003"
+        ],
+        "ecu_ids": ["ECU001", "ECU002", "ECU004"]
+    }
+]

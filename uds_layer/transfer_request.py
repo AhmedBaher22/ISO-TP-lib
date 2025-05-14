@@ -3,6 +3,7 @@ import math
 from uds_layer.transfer_enums import EncryptionMethod,CompressionMethod, TransferStatus
 from logger import Logger, LogType, ProtocolType
 from uds_layer.FlashingECU import FlashingECU, FlashingECUStatus
+
 class TransferRequest:
     def __init__(self, recv_DA: int, data: bytearray, 
                  encryption_method: EncryptionMethod,
@@ -10,7 +11,8 @@ class TransferRequest:
                  memory_address: bytearray,
                  checksum_required: bool,
                  is_multiple_segments:bool=False,
-                 flashing_ECU_REQ:FlashingECU=None):
+                 flashing_ECU_REQ:FlashingECU=None,
+                 deCompressed_data:bytearray=None):
         self.recv_DA = recv_DA
         self.data = data
         self.encryption_method = encryption_method
@@ -19,7 +21,9 @@ class TransferRequest:
         self.checksum_required = checksum_required
         self.is_multiple_segments=is_multiple_segments
         self.flashing_ECU_REQ:FlashingECU=flashing_ECU_REQ
+        self.security_level = None  
         self.iteration: int = 1
+        self.deCompressed_data:bytearray=deCompressed_data
         
         # Computed or later initialized attributes
         self.data_size = len(data)
@@ -31,11 +35,31 @@ class TransferRequest:
         self.NRC: Optional[int] = None
         self._logger = Logger(ProtocolType.UDS)
 
+
         self.current_trans_ind=0
         self._logger.log_message(
             log_type=LogType.INITIALIZATION,
             message=f"{self.get_req()} NEW Transfer Request has been initialized"
         )
+        # if self.compression_method != CompressionMethod.NO_COMPRESSION:
+        #     self._logger.log_message(
+        #         log_type=LogType.INITIALIZATION,
+        #         message=f"{self.get_req()}  Transfer Request need compression of type : {self.compression_method.name}"
+        #     )            
+        #     if self.compression_method == CompressionMethod.LZ4:
+        #         self._logger.log_message(
+        #             log_type=LogType.INITIALIZATION,
+        #             message=f"{self.get_req()}  compression started procession for Transfer Request"
+        #         )   
+        #         print(self.data)
+        #         self.compressed_data=lz4_compress(bytearray(self.data))
+        #         decopressed=lz4_decompress(self.compressed_data)
+        #         print(decopressed)
+        #         self._logger.log_message(
+        #             log_type=LogType.INITIALIZATION,
+        #             message=f"{self.get_req()}  compression finished , here is compressed data: {self.compressed_data}"
+        #         )   
+
     def calculate_steps_number(self):
         if self.data_size > self.max_number_of_block_length:
             self.steps_number = math.ceil(self.data_size / self.max_number_of_block_length)

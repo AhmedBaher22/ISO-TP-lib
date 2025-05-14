@@ -20,6 +20,7 @@ class ProtocolType(Enum):
     UDS = "UDS"
     CAN = "CAN"
     HEX_PARSER = "HEX_PARSER"
+    HMI_CLIENT="HMI-CLIENT"
 
 
 class Logger:

@@ -1,0 +1,62 @@
+[
+    {
+        "id": "ECM_V1",
+        "version_number": "1.0.0",
+        "compatible_car_types": ["ModelX", "ModelY"],
+        "hex_file_path": "hex_files/hello.srec"
+    },
+    {
+        "id": "ECM_V2",
+        "version_number": "1.1.0",
+        "compatible_car_types": ["ModelX", "ModelY"],
+        "hex_file_path": "hex_files/ECM_1_1_0.hex"
+    },
+    {
+        "id": "ECM_V3",
+        "version_number": "1.2.0",
+        "compatible_car_types": ["ModelX", "ModelY"],
+        "hex_file_path": "hex_files/ECM_1_2_0.hex"
+    },
+    {
+        "id": "TCM_V1",
+        "version_number": "1.0.0",
+        "compatible_car_types": ["ModelX", "ModelY"],
+        "hex_file_path": "hex_files/TCM_1_0_0.hex"
+    },
+    {
+        "id": "TCM_V2",
+        "version_number": "1.1.0",
+        "compatible_car_types": ["ModelX", "ModelY"],
+        "hex_file_path": "hex_files/TCM_1_1_0.hex"
+    },
+    {
+        "id": "BCM_V1",
+        "version_number": "1.0.0",
+        "compatible_car_types": ["ModelX"],
+        "hex_file_path": "hex_files/BCM_1_0_0.hex"
+    },
+    {
+        "id": "BCM_V2",
+        "version_number": "1.1.0",
+        "compatible_car_types": ["ModelX"],
+        "hex_file_path": "hex_files/hello.srec"
+    },
+    {
+        "id": "BMS_V1",
+        "version_number": "1.0.0",
+        "compatible_car_types": ["ModelY"],
+        "hex_file_path": "hex_files/BMS_1_0_0.hex"
+    },
+    {
+        "id": "BMS_V2",
+        "version_number": "1.1.0",
+        "compatible_car_types": ["ModelY"],
+        "hex_file_path": "hex_files/hello.srec"
+    },
+    {
+        "id": "BMS_V3",
+        "version_number": "1.2.0",
+        "compatible_car_types": ["ModelY"],
+        "hex_file_path": "hex_files/BMS_1_2_0.hex"
+    }
+]

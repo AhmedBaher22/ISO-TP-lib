@@ -2,15 +2,15 @@ from enum import Enum
 
 class EncryptionMethod(Enum):
     NO_ENCRYPTION = 0x0
-    SEC_P_256_R1 = 0x40
+    SEC_P_256_R1 = 0x01
 
 
 
 class CompressionMethod(Enum):
     NO_COMPRESSION = 0x0
-    RLE = 0x1
+    LZ4 = 0x1
     HUFFMAN = 0x2
-    LZ77 = 0x3
+    RLE = 0x3
 
 class CheckSumMethod(Enum):
     NO_CHECKSUM = 0x0
@@ -18,6 +18,8 @@ class CheckSumMethod(Enum):
     CRC_32=0X2
     
 class TransferStatus(Enum):
+    REQUESTING_SEED = "requesting_seed"
+    SENDING_KEY = "sending_key"
     CREATED = "created"
     MEMORY_ERASED="memory erased"
     SENDING_BLOCKS_IN_PROGRESS = "sendingBlocksInProgress"

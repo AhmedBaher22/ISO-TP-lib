@@ -4,8 +4,9 @@ from enum import Enum, auto
 class SessionType(Enum):
     NONE = 0
     DEFAULT = 1
-    EXTENDED = 2
-    PROGRAMMING = 3
+    PROGRAMMING = 2
+    EXTENDED = 3
+    
 
 
 class OperationType(Enum):
@@ -17,6 +18,7 @@ class OperationType(Enum):
     REQUEST_TRANSFER_EXIT = auto()
     COMMUNICATION_CONTROL =auto()
     ERASE_MEMORY=auto()
+    SECURITY_ACCESS=auto()
 
 class OperationStatus(Enum):
     PENDING = auto()

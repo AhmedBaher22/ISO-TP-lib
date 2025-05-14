@@ -1,0 +1,21 @@
+{
+    "server_settings": {
+        "default_host": "localhost",
+        "default_port": 5000,
+        "connection_timeout": 30,
+        "retry_limit": 3,
+        "retry_delay": 5
+    },
+    "update_settings": {
+        "check_interval": 3600,
+        "download_chunk_size": 8192,
+        "temp_directory": "temp_downloads",
+        "backup_directory": "backups"
+    },
+    "logging_settings": {
+        "log_level": "INFO",
+        "log_file": "client.log",
+        "max_log_size": 10485760,
+        "backup_count": 5
+    }
+}

@@ -100,7 +100,8 @@ class Server:
             OperationType.TRANSFER_DATA: [SessionType.PROGRAMMING],
             OperationType.REQUEST_DOWNLOAD: [SessionType.PROGRAMMING],
             OperationType.REQUEST_TRANSFER_EXIT: [SessionType.PROGRAMMING],
-            OperationType.ERASE_MEMORY:[SessionType.EXTENDED, SessionType.PROGRAMMING]
+            OperationType.ERASE_MEMORY:[SessionType.EXTENDED, SessionType.PROGRAMMING],
+            OperationType.SECURITY_ACCESS:[SessionType.EXTENDED, SessionType.PROGRAMMING]
         }
 
         required_sessions = session_requirements.get(operation_type, [])
@@ -215,7 +216,6 @@ class Server:
     def ecu_reset(self, reset_type: int) -> List[int]:
         if not self.check_access_required(OperationType.ECU_RESET):
             error_msg = f"Error: Insufficient session level for ECU_RESET. Current session: {self._session}"
-            
             self.add_log(error_msg)
             return [0x00]
 
@@ -273,6 +273,7 @@ class Server:
                     self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
                     message=success_msg)
+                    transfer_request.successfull_flashing_response(transfer_request.Flashing_Request_ID)
             
             elif operation_status == 0x7F:  # Negative response
                 nrc = message[0]
@@ -294,7 +295,18 @@ class Server:
                 #print(error_msg)
                 self.add_log(error_msg)
                 operation.status = OperationStatus.REJECTED
+                transfer_request = next((req for req in self.Flash_ECU_Segments_Request 
+                        if req.status == FlashingECUStatus.CLOSED_SUCCESSFULLY), None)
+                
+                if transfer_request != None:
 
+                    transfer_request.status=FlashingECUStatus.REJECTED
+                    success_msg = f"{transfer_request.get_req()}ECU with diagnostic address : {self.can_id} reset successfully after flashing. the ECU is running with the new updates successfully"
+                    self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=success_msg)
+                    transfer_request.successfull_flashing_response(transfer_request.flashed_ecu_number)
+                    transfer_request.failed_flashing_response(ecu_number=transfer_request.Flashing_Request_ID,erasing_happen=True)
             # Move operation to completed operations
             self.remove_pending_operation(operation)
             self.add_completed_operation(operation)
@@ -318,13 +330,13 @@ class Server:
 
 
         # Calculate DataFormatIdentifier
-        data_format_identifier = (transfer_request.compression_method.value << 4) | transfer_request.encryption_method.value
+        data_format_identifier = (transfer_request.compression_method.value << 4)
 
         # Calculate AddressAndLengthFormatIdentifier
         address_length = len(transfer_request.memory_address)
         size_length = len(str(transfer_request.data_size))
-        address_length_format_identifier = (address_length << 4) | size_length
-
+        address_length_format_identifier = (size_length << 4) | address_length
+        
         # Prepare message
         message = [0x34, data_format_identifier, address_length_format_identifier]
         
@@ -419,6 +431,7 @@ class Server:
             log_type=LogType.error,
             message=error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
 
     def transfer_data(self, transfer_request: TransferRequest) -> List[int]:
@@ -533,6 +546,7 @@ class Server:
             log_type=LogType.ERROR,
             message=error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
     def request_transfer_exit(self, transfer_request: TransferRequest) -> List[int]:
         self._logger.log_message(
@@ -609,6 +623,7 @@ class Server:
             log_type=LogType.ERROR,
             message=error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
     def communication_control(self, sub_function: CommunicationControlSubFunction, 
                             control_type: CommunicationControlType) -> List[int]:
@@ -710,7 +725,8 @@ class Server:
         # Calculate AddressAndLengthFormatIdentifier
         address_length = len(transfer_request.memory_address)
         size_length = len(str(transfer_request.data_size))
-        address_length_format_identifier = (address_length << 4) | size_length
+        address_length_format_identifier = (size_length << 4) | address_length
+        
         # Prepare message
         message = [0x31, 0x01, 0xFF, 0x00, address_length_format_identifier]
         # Add memory address
@@ -719,7 +735,7 @@ class Server:
         # Add memory size
         size_bytes = transfer_request.data_size.to_bytes(size_length, byteorder='big')
         message.extend(size_bytes)
-        message.append(0x00)  # Reserved byte
+        # message.append(0x00)  # Reserved byte
 
         # Create and add operation
         operation = Operation(OperationType.ERASE_MEMORY, message)
@@ -743,10 +759,15 @@ class Server:
         return message
 
     def on_erase_memory_respond(self, message: List[int]):
+
         self._logger.log_message(
             log_type=LogType.DEBUG,
             message=f"the message received is erase memory respond . messgae:{[hex(x) for x in message]} "
         )
+
+        transfer_request = next((req for req in self.transfer_requests 
+                if req.status == TransferStatus.CREATED), None)
+           
         if message[0] == 0x71:  # Positive response
             # Find matching operation based on routine identifier bytes
             operation = next((op for op in self._pending_operations 
@@ -808,6 +829,8 @@ class Server:
                 error_msg = f"Memory Erase Failed - NRC: {hex(nrc)} - {nrc_descriptions.get(nrc, 'Unknown Error')}"
                 #print(error_msg)
                 self.add_log(error_msg)
+                
+                transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
 
 
     def check_memory(self, transfer_request: TransferRequest) -> List[int]:
@@ -826,8 +849,11 @@ class Server:
 
         # Calculate and add checksum based on method
         if transfer_request.checksum_required == CheckSumMethod.CRC_16:
-            
-            checksum = self.calculate_crc16(transfer_request.data)
+            checksum:bytearray=None
+            if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
+                checksum = self.calculate_crc16(transfer_request.deCompressed_data)
+            else:
+                checksum = self.calculate_crc16(transfer_request.data)
             
             message.extend(checksum)
             
@@ -835,8 +861,12 @@ class Server:
         elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
             try:
                 
-                checksum = self.calculate_crc32(transfer_request.data)
-                
+                checksum:bytearray=None
+                if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
+                    checksum = self.calculate_crc32(transfer_request.deCompressed_data)
+                else:
+                    checksum = self.calculate_crc32(transfer_request.data)
+                    
                 message.extend(checksum)
                 
                 log_msg = f"{transfer_request.get_req()} Using CRC-32 checksum: {[hex(x) for x in checksum]}"
@@ -919,6 +949,7 @@ class Server:
                         f"{nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}")
             #print(error_msg)
             self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,erasing_happen=True)
             
     def get_pending_operations(self):
         return self._pending_operations
@@ -999,6 +1030,10 @@ class Server:
         if flashing_ECU_Request.encryption_method == EncryptionMethod.SEC_P_256_R1:
             alldata = bytearray()
             for x in flashing_ECU_Request.segments:
+                self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=f"length : {len(x.data)}"
+                )
                 alldata.extend(x.data)
             #print(alldata)
             #print(type(alldata))
@@ -1082,31 +1117,39 @@ class Server:
             self.add_log(error_msg)
             return
 
-        if message[0] == 0x71:  # Positive response
-            if (message[1] == 0x01 and 
-                message[2] == 0xFF and 
-                message[3] == 0x02):  # Validate routine identifier
-                
-                flashing_ecu_req.status = FlashingECUStatus.CLOSED_SUCCESSFULLY
-                success_msg = (f"{flashing_ecu_req.get_req()}Finalize programming Success - Flashing verified ")
-                self._logger.log_message(
-                    log_type=LogType.ACKNOWLEDGMENT,
-                    message=success_msg
-                )
-                #print(success_msg)
-                self.add_log(success_msg)
-                success_msg = f"{flashing_ecu_req.get_req()} Flashing completed successfully for ECU with diagnostic address : {self.can_id}"
-                self._logger.log_message(
-                log_type=LogType.ACKNOWLEDGMENT,
-                message=success_msg)
-                self.add_log(success_msg)
-                message=self.ecu_reset(reset_type=0X01)
-                if message !=0x0:
-                    self.clientSend(message=message,server_can_id=self.can_id)
-                    success_msg = f"{flashing_ecu_req.get_req()} HARD RESET SERVICE for ECU with diagnostic address : {self.can_id} send successfully"
+        if message[0] == 0x71:
+            try:  # Positive response
+                if (message[1] == 0x01 and 
+                    message[2] == 0xFF and 
+                    message[3] == 0x02):  # Validate routine identifier
+                    
+                    flashing_ecu_req.status = FlashingECUStatus.CLOSED_SUCCESSFULLY
+                    success_msg = (f"{flashing_ecu_req.get_req()}Finalize programming Success - Flashing verified ")
+                    self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=success_msg
+                    )
+                    #print(success_msg)
+                    self.add_log(success_msg)
+                    success_msg = f"{flashing_ecu_req.get_req()} Flashing completed successfully for ECU with diagnostic address : {self.can_id}"
                     self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=success_msg)                
+                    message=success_msg)
+                    self.add_log(success_msg)
+                    message=self.ecu_reset(reset_type=0X01)
+                    if message !=0x0:
+                        flashing_ecu_req.successfull_flashing_response(0)
+                        self.clientSend(message=message,server_can_id=self.can_id)
+                        success_msg = f"{flashing_ecu_req.get_req()} HARD RESET SERVICE for ECU with diagnostic address : {self.can_id} send successfully"
+                        self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=success_msg)
+                    
+            except Exception as e:
+                self._logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=e
+                )    
                 
         elif message[0] == 0x7F:  # Negative response
             flashing_ecu_req.status = TransferStatus.REJECTED
@@ -1130,6 +1173,7 @@ class Server:
                         f"{nrc_descriptions.get(flashing_ecu_req.NRC, 'Unknown Error')}")
             #print(error_msg)
             self.add_log(error_msg)
+            flashing_ecu_req.failed_flashing_response(ecu_number=flashing_ecu_req.Flashing_Request_ID,erasing_happen=True) 
 
 # def calculate_crc32(data: bytearray) -> bytearray:
 #     crc = zlib.crc32(data) & 0xFFFFFFFF
@@ -1141,3 +1185,277 @@ class Server:
 # #print(checksu)
 # data.extend(checksu)
 # #print(data)
+    def security_access(self, transfer_request: TransferRequest, security_level: int) -> List[int]:
+        """
+        Prepare security access request seed message
+        
+        Args:
+            transfer_request: The transfer request object
+            security_level: The security level (1, 2, 3, etc.)
+        
+        Returns:
+            List[int]: UDS message for requesting seed
+        """
+        self._logger.log_message(
+            log_type=LogType.DEBUG,
+            message=f"{transfer_request.get_req()}Security access request seed for level {security_level} for {transfer_request.recv_DA} begin preparing"
+        )
+        
+        # Check if operation is allowed in current session
+        if not self.check_access_required(OperationType.SECURITY_ACCESS):
+            error_msg = f"Error: Insufficient session level for SECURITY_ACCESS. Current session: {self._session}"
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
+            self.add_log(error_msg)
+            return [0x00]
+        
+        # Calculate sub-function for request seed (odd values)
+        sub_function = (security_level * 2) - 1  # Level 1=0x01, Level 2=0x03, Level 3=0x05, etc.
+        
+        # Prepare message: Service ID + Sub-function
+        message = [0x27, sub_function]
+        
+        # Update transfer request status
+        transfer_request.status = TransferStatus.REQUESTING_SEED
+        transfer_request.security_level = security_level
+        
+        log_msg = f"{transfer_request.get_req()}Created SECURITY_ACCESS request seed for level {security_level}, Diagnostic address {hex(transfer_request.recv_DA)}. Message: {[hex(x) for x in message]}"
+        self._logger.log_message(
+            log_type=LogType.INFO,
+            message=log_msg
+        )
+        self.add_log(log_msg)
+        
+        return message
+
+
+    def on_security_access_request_seed_respond(self, message: List[int]):
+        """
+        Handle security access request seed response
+        
+        Args:
+            message: Response message from ECU
+        """
+        # Find transfer request with REQUESTING_SEED status
+        transfer_request = next((req for req in self.transfer_requests 
+                            if req.status == TransferStatus.REQUESTING_SEED), None)
+        
+        if not transfer_request:
+            error_msg = "No pending security access request found"
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
+            self.add_log(error_msg)
+            return
+        
+        self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"{transfer_request.get_req()}Security access request seed respond for {hex(transfer_request.recv_DA)} received with message: {[hex(x) for x in message]}"
+        )
+        
+        if message[0] == 0x67:  # Positive response
+            self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=f"{transfer_request.get_req()}Security access request seed respond for {hex(transfer_request.recv_DA)} is positive"
+            )
+            
+            # Extract seed from response (skip service ID and sub-function)
+            seed_bytes = message[2:]
+            
+            # Check if seed is all zeros (already unlocked)
+            if all(byte == 0 for byte in seed_bytes):
+                self._logger.log_message(
+                    log_type=LogType.INFO,
+                    message=f"{transfer_request.get_req()}Security level {transfer_request.security_level} already unlocked for {hex(transfer_request.recv_DA)}"
+                )
+                
+                # Security already unlocked, proceed to erase memory
+                message = self.erase_memory(transfer_request)
+                if message != [0x00]:  # Check if request was successful
+                    self.clientSend(message=message, server_can_id=self.can_id)
+                    self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=f"{transfer_request.get_req()} ERASE memory for diagnostic address {hex(transfer_request.recv_DA)} send successfully with message: {[hex(x) for x in message]}"
+                    )
+            else:
+                # Generate key from seed using recommended algorithm
+                # Convert seed bytes to 32-bit integer
+                if len(seed_bytes) >= 4:
+                    seed = int.from_bytes(seed_bytes[:4], 'big')
+                else:
+                    # Pad with zeros if seed is less than 4 bytes
+                    seed_padded = seed_bytes + [0] * (4 - len(seed_bytes))
+                    seed = int.from_bytes(seed_padded, 'big')
+                
+                # Generate key using recommended algorithm
+                key = self.generate_recommended_key(seed, transfer_request.security_level)
+                
+                # Convert key back to bytes
+                key_bytes = key.to_bytes(4, 'big')
+                
+                # Prepare send key message
+                # Sub-function for send key (even values)
+                sub_function = transfer_request.security_level * 2  # Level 1=0x02, Level 2=0x04, Level 3=0x06, etc.
+                
+                # Create send key message
+                send_key_message = [0x27, sub_function]
+                send_key_message.extend(key_bytes)
+                
+                # Update status
+                transfer_request.status = TransferStatus.SENDING_KEY
+                
+                # Send key message
+                self.clientSend(message=send_key_message, server_can_id=self.can_id)
+                self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=f"{transfer_request.get_req()}Security access send key for {hex(transfer_request.recv_DA)} sent with message: {[hex(x) for x in send_key_message]}"
+                )
+        
+        elif message[0] == 0x7F and message[1] == 0x27:  # Negative response
+            self._logger.log_message(
+                log_type=LogType.INFO,
+                message=f"Security access request seed respond for {transfer_request.recv_DA} is negative"
+            )
+            
+            transfer_request.NRC = message[2]
+            transfer_request.status = TransferStatus.REJECTED
+            
+            nrc_descriptions = {
+                0x10: "General Reject",
+                0x11: "Service Not Supported",
+                0x12: "Sub-Function Not Supported",
+                0x13: "Invalid Message Length Or Invalid Format",
+                0x22: "Conditions Not Correct",
+                0x24: "Request Sequence Error",
+                0x31: "Request Out Of Range",
+                0x36: "Exceeded Number Of Attempts",
+                0x37: "Required Time Delay Not Expired"
+            }
+            
+            error_msg = f"Security Access Request Seed Failed - NRC: {hex(transfer_request.NRC)} - {nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}"
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
+            self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(
+                ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,
+                erasing_happen=False
+            )
+
+
+    def on_security_access_send_key_respond(self, message: List[int]):
+        """
+        Handle security access send key response
+        
+        Args:
+            message: Response message from ECU
+        """
+        # Find transfer request with SENDING_KEY status
+        transfer_request = next((req for req in self.transfer_requests 
+                            if req.status == TransferStatus.SENDING_KEY), None)
+        
+        if not transfer_request:
+            error_msg = "No pending security access send key found"
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
+            self.add_log(error_msg)
+            return
+        
+        self._logger.log_message(
+            log_type=LogType.ACKNOWLEDGMENT,
+            message=f"{transfer_request.get_req()}Security access send key respond for {hex(transfer_request.recv_DA)} received with message: {[hex(x) for x in message]}"
+        )
+        
+        if message[0] == 0x67:  # Positive response
+            self._logger.log_message(
+                log_type=LogType.ACKNOWLEDGMENT,
+                message=f"{transfer_request.get_req()}Security access send key respond for {hex(transfer_request.recv_DA)} is positive"
+            )
+            
+            # Security access successful, proceed to erase memory
+            message = self.erase_memory(transfer_request)
+            if message != [0x00]:  # Check if request was successful
+                self.clientSend(message=message, server_can_id=self.can_id)
+                self._logger.log_message(
+                    log_type=LogType.ACKNOWLEDGMENT,
+                    message=f"{transfer_request.get_req()} ERASE memory for diagnostic address {hex(transfer_request.recv_DA)} send successfully with message: {[hex(x) for x in message]}"
+                )
+        
+        elif message[0] == 0x7F and message[1] == 0x27:  # Negative response
+            self._logger.log_message(
+                log_type=LogType.INFO,
+                message=f"Security access send key respond for {transfer_request.recv_DA} is negative"
+            )
+            
+            transfer_request.NRC = message[2]
+            transfer_request.status = TransferStatus.REJECTED
+            
+            nrc_descriptions = {
+                0x10: "General Reject",
+                0x11: "Service Not Supported",
+                0x12: "Sub-Function Not Supported",
+                0x13: "Invalid Message Length Or Invalid Format",
+                0x22: "Conditions Not Correct",
+                0x24: "Request Sequence Error",
+                0x31: "Request Out Of Range",
+                0x35: "Invalid Key",
+                0x36: "Exceeded Number Of Attempts",
+                0x37: "Required Time Delay Not Expired"
+            }
+            
+            error_msg = f"Security Access Send Key Failed - NRC: {hex(transfer_request.NRC)} - {nrc_descriptions.get(transfer_request.NRC, 'Unknown Error')}"
+            self._logger.log_message(
+                log_type=LogType.ERROR,
+                message=error_msg
+            )
+            self.add_log(error_msg)
+            transfer_request.flashing_ECU_REQ.failed_flashing_response(
+                ecu_number=transfer_request.flashing_ECU_REQ.Flashing_Request_ID,
+                erasing_happen=False
+            )
+
+
+    def generate_recommended_key(self, seed: int, security_level: int) -> int:
+        """
+        Generate key using recommended algorithm
+        
+        Args:
+            seed: The seed value received from ECU
+            security_level: The security level (1, 2, 3, etc.)
+        
+        Returns:
+            int: Generated key
+        """
+        # Level-specific masks
+        level_masks = {
+            1: 0x5A5A5A5A,  # Level 1
+            2: 0xA5A5A5A5,  # Level 2
+            3: 0x12345678,  # Level 3 (programming)
+            4: 0x87654321   # Level 4+
+        }
+        
+        # Get mask for the security level (default to level 1 mask if not found)
+        mask = level_masks.get(security_level, level_masks[1])
+        
+        key = seed
+        
+        # 1. Bit rotation based on level
+        rotation = (security_level * 3) % 32
+        key = ((key << rotation) | (key >> (32 - rotation))) & 0xFFFFFFFF
+        
+        # 2. XOR with level-specific mask
+        key ^= mask
+        
+        # 3. Simple scrambling
+        key = ((key & 0xAAAAAAAA) >> 1) | ((key & 0x55555555) << 1)
+        
+        # 4. Final XOR with inverted seed
+        key ^= (~seed & 0xFFFFFFFF)
+        
+        return key & 0xFFFFFFFF
