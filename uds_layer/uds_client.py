@@ -347,7 +347,7 @@ class UdsClient:
         server = next((s for s in self._servers if s.can_id == recv_DA), None)
         if server:
             # Get request download message
-            message = server.erase_memory(transfer_request)
+            message = server.security_access(transfer_request,1)
             if message != [0x00]:  # Check if request was successful
                 # Create address object for ISO-TP
                 address = Address(addressing_mode=0, txid=self._client_id, rxid=recv_DA)
@@ -356,7 +356,7 @@ class UdsClient:
 
                 self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"{transfer_request.get_req()} ERASE memory for diagnostic address {hex(recv_DA)}send successfully with messaage: {[hex(x) for x in message]}"
+                    message=f"{transfer_request.get_req()} security access for diagnostic address {hex(recv_DA)} with security level 1 send successfully with messaage: {[hex(x) for x in message]}"
                 )
 
         else:

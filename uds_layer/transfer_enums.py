@@ -18,6 +18,8 @@ class CheckSumMethod(Enum):
     CRC_32=0X2
     
 class TransferStatus(Enum):
+    REQUESTING_SEED = "requesting_seed"
+    SENDING_KEY = "sending_key"
     CREATED = "created"
     MEMORY_ERASED="memory erased"
     SENDING_BLOCKS_IN_PROGRESS = "sendingBlocksInProgress"

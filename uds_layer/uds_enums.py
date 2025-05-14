@@ -18,6 +18,7 @@ class OperationType(Enum):
     REQUEST_TRANSFER_EXIT = auto()
     COMMUNICATION_CONTROL =auto()
     ERASE_MEMORY=auto()
+    SECURITY_ACCESS=auto()
 
 class OperationStatus(Enum):
     PENDING = auto()

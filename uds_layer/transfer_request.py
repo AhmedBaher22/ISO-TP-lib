@@ -21,6 +21,7 @@ class TransferRequest:
         self.checksum_required = checksum_required
         self.is_multiple_segments=is_multiple_segments
         self.flashing_ECU_REQ:FlashingECU=flashing_ECU_REQ
+        self.security_level = None  
         self.iteration: int = 1
         self.deCompressed_data:bytearray=deCompressed_data
         
