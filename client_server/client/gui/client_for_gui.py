@@ -307,10 +307,11 @@ class DownloadCompleteState(ClientState):
                 new_version_path = self.client.db.get_ecu_version_path(ecu_name=ecu_name, version=new_version)
                 
                 parser = SRecordParser()
+                parser2 = SRecordParser()
                 parser.parse_file(filename=str(old_version_path))
                 old_version_data_records = parser._merged_records
-                parser.parse_file(filename=str(new_version_path))
-                new_version_data_records = parser._merged_records
+                parser2.parse_file(filename=str(new_version_path))
+                new_version_data_records = parser2._merged_records
                 
                 delta_records = deltaGenerator.generate_delta(old_version=old_version_data_records, new_version=new_version_data_records)
                 roll_back_delta = deltaGenerator.generate_delta(old_version=new_version_data_records, new_version=old_version_data_records)
@@ -640,7 +641,7 @@ class ECUUpdateClient:
                     from iso_tp_layer.Address import Address
                     from uds_layer.uds_enums import SessionType
                     
-                    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
+                    ecu_address = Address(addressing_mode=0, txid=0x55, rxid=0x55)
                     self.uds_client.add_server(ecu_address, SessionType.PROGRAMMING)
                     time.sleep(1)
                     

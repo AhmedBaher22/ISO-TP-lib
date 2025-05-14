@@ -128,6 +128,7 @@ class SRecordParser:
         sum_bytes = sum(byte_values)
         calculated_checksum = 0xFF - (sum_bytes & 0xFF)
         return calculated_checksum == provided_checksum
+        return True
 
     def _sort_records(self):
         """Sorts the records based on the address (from lowest to highest)."""

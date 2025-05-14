@@ -20,20 +20,20 @@ from uds_layer.transfer_enums import EncryptionMethod, CompressionMethod, CheckS
 from app_initialization import init_uds_client
 from hex_parser.SRecordParser import DataRecord, SRecordParser
 from delta_generator.DeltaGenerator import DeltaGenerator, DeltaAlgorithm
-def handle_successful_flashing(self,ecu_number:int):
-    pass
-def handle_failed_flashing(self,ecu_number:int,erasing_happen:bool):
+def handle_successful_flashing(ecu_number:int):
+    print("\n\ndonneee\n\n")
+def handle_failed_flashing(ecu_number:int,erasing_happen:bool):
     pass
 def main():
     parser = SRecordParser()
     parser2 = SRecordParser()
-    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/old_app.srec")
-    parser2.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/new_app.srec")
+    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/timer2.srec")
+    parser2.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/timer5.srec")
     old_data_records=parser.get_merged_records()
     new_data_records=parser2.get_merged_records()
     deltagenerator=DeltaGenerator(algorithm=DeltaAlgorithm.SENDING_COMPLETE_SECTOR)
     # print('*'*100)
-    # delta_records=deltagenerator.generate_delta(old_version=old_data_records,new_version=new_data_records)
+    delta_records=deltagenerator.generate_delta(old_version=old_data_records,new_version=new_data_records)
     # print(parser._merged_records)
     # print(parser._records)
     client = init_uds_client()
@@ -44,12 +44,12 @@ def main():
     ecu_address = Address(addressing_mode=0, txid=0X55, rxid=0X55)
     client.add_server(ecu_address, SessionType.PROGRAMMING)
     servers: List[Server] = client.get_servers()
-    sleep(1)
+    sleep(2)
 
     flag=True
     while flag:
         if len(servers) > 0:
-            client.Flash_ECU(segments=new_data_records ,recv_DA=servers[0].can_id,
+            client.Flash_ECU(segments=delta_records ,recv_DA=servers[0].can_id,
                                             encryption_method=EncryptionMethod.SEC_P_256_R1,
                                             compression_method=CompressionMethod.LZ4,
                                             checksum_required=CheckSumMethod.CRC_32,

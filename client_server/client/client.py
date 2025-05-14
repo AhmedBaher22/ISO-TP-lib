@@ -691,11 +691,11 @@ class ECUUpdateClient:
                 else:
                     logging.info("=== Initializing Communication with ECU ===")
                     #here should be a function that retrieves  the DA address of ecu from it's name
-                    ecu_address = Address(addressing_mode=0, txid=0x33, rxid=0x33)
+                    ecu_address = Address(addressing_mode=0, txid=55, rxid=0x55)
                     self.uds_client.add_server(ecu_address, SessionType.PROGRAMMING)
                     sleep(1)
                     servers: List[Server] = self.uds_client.get_servers()
-                    if not servers[self.current_download.flashed_order_index]:
+                    if not(len(servers) > 0):
                         logging.info(f"Error initializing Programming session with ECU to be updated, ecu name: {self.current_download.flashed_ecus[self.current_download.flashed_order_index].ecu_name}")
                         self.handle_failed_flashing(self.current_download.flashed_order_index,erasing_happen=False)
                         return

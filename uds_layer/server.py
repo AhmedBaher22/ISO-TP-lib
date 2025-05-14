@@ -272,7 +272,7 @@ class Server:
                     self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
                     message=success_msg)
-                    transfer_request.successfull_flashing_response(ecu_number=transfer_request.Flashing_Request_ID)
+                    transfer_request.successfull_flashing_response(transfer_request.Flashing_Request_ID)
             
             elif operation_status == 0x7F:  # Negative response
                 nrc = message[0]
@@ -1116,32 +1116,39 @@ class Server:
             self.add_log(error_msg)
             return
 
-        if message[0] == 0x71:  # Positive response
-            if (message[1] == 0x01 and 
-                message[2] == 0xFF and 
-                message[3] == 0x02):  # Validate routine identifier
-                
-                flashing_ecu_req.status = FlashingECUStatus.CLOSED_SUCCESSFULLY
-                success_msg = (f"{flashing_ecu_req.get_req()}Finalize programming Success - Flashing verified ")
-                self._logger.log_message(
-                    log_type=LogType.ACKNOWLEDGMENT,
-                    message=success_msg
-                )
-                #print(success_msg)
-                self.add_log(success_msg)
-                success_msg = f"{flashing_ecu_req.get_req()} Flashing completed successfully for ECU with diagnostic address : {self.can_id}"
-                self._logger.log_message(
-                log_type=LogType.ACKNOWLEDGMENT,
-                message=success_msg)
-                self.add_log(success_msg)
-                message=self.ecu_reset(reset_type=0X01)
-                if message !=0x0:
-                    self.clientSend(message=message,server_can_id=self.can_id)
-                    success_msg = f"{flashing_ecu_req.get_req()} HARD RESET SERVICE for ECU with diagnostic address : {self.can_id} send successfully"
+        if message[0] == 0x71:
+            try:  # Positive response
+                if (message[1] == 0x01 and 
+                    message[2] == 0xFF and 
+                    message[3] == 0x02):  # Validate routine identifier
+                    
+                    flashing_ecu_req.status = FlashingECUStatus.CLOSED_SUCCESSFULLY
+                    success_msg = (f"{flashing_ecu_req.get_req()}Finalize programming Success - Flashing verified ")
+                    self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=success_msg
+                    )
+                    #print(success_msg)
+                    self.add_log(success_msg)
+                    success_msg = f"{flashing_ecu_req.get_req()} Flashing completed successfully for ECU with diagnostic address : {self.can_id}"
                     self._logger.log_message(
                     log_type=LogType.ACKNOWLEDGMENT,
                     message=success_msg)
-               
+                    self.add_log(success_msg)
+                    message=self.ecu_reset(reset_type=0X01)
+                    if message !=0x0:
+                        flashing_ecu_req.successfull_flashing_response(0)
+                        self.clientSend(message=message,server_can_id=self.can_id)
+                        success_msg = f"{flashing_ecu_req.get_req()} HARD RESET SERVICE for ECU with diagnostic address : {self.can_id} send successfully"
+                        self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=success_msg)
+                    
+            except Exception as e:
+                self._logger.log_message(
+                    log_type=LogType.ERROR,
+                    message=e
+                )    
                 
         elif message[0] == 0x7F:  # Negative response
             flashing_ecu_req.status = TransferStatus.REJECTED
