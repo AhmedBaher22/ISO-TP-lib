@@ -13,7 +13,7 @@ from ECDSA_handler.ECDSA import ECDSAManager, ECDSAConstants
 from compressor.compressor import Compressor, CompressionAlgorithm
 def main():
     parser = SRecordParser()
-    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/new_app.srec")
+    parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/blu.srec")
     # print(parser._merged_records)
     # print(parser._records)
     segments:DataRecord=[]
@@ -30,10 +30,6 @@ def main():
     # print(type(alldata))
     # Create ECDSA manager instance
     ecdsa = ECDSAManager()
-    
-    
-    
-    
 
     signature, status = ecdsa.sign_message(bytearray(alldata))
 

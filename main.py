@@ -28,7 +28,7 @@ def main():
     parser = SRecordParser()
     parser2 = SRecordParser()
     parser.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/timer2.srec")
-    parser2.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/timer5.srec")
+    parser2.parse_file(filename="/home/debian/Desktop/SDVSOTA/ISO-TP-lib/timer8.srec")
     old_data_records=parser.get_merged_records()
     new_data_records=parser2.get_merged_records()
     deltagenerator=DeltaGenerator(algorithm=DeltaAlgorithm.SENDING_COMPLETE_SECTOR)
@@ -36,6 +36,7 @@ def main():
     delta_records=deltagenerator.generate_delta(old_version=old_data_records,new_version=new_data_records)
     # print(parser._merged_records)
     # print(parser._records)
+
     client = init_uds_client()
 
     # opening session control
@@ -49,7 +50,7 @@ def main():
     flag=True
     while flag:
         if len(servers) > 0:
-            client.Flash_ECU(segments=delta_records ,recv_DA=servers[0].can_id,
+            client.Flash_ECU(segments=old_data_records ,recv_DA=servers[0].can_id,
                                             encryption_method=EncryptionMethod.SEC_P_256_R1,
                                             compression_method=CompressionMethod.LZ4,
                                             checksum_required=CheckSumMethod.CRC_32,

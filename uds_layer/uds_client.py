@@ -67,8 +67,8 @@ class UdsClient:
             message=f"message receivid: {[hex(x) for x in data]} is being proccessed ..."
         )
         
-        # diagnostic_address,data=self.extract_diagnostic_address(data=data)
-        diagnostic_address=address._rxid
+        diagnostic_address,data=self.extract_diagnostic_address(data=data)
+        # diagnostic_address=address._rxid
         service_id = data[0]
 
         if service_id == 0x7F:  # Negative response
@@ -128,6 +128,13 @@ class UdsClient:
                 server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_ecu_reset_respond(0x7F, [data[2]], None)
+            elif requested_service == 0x27:
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
+                if server:
+                    if data[1]== 0x1 : 
+                        server.on_security_access_request_seed_respond(data)
+                    else:
+                        server.on_security_access_send_key_respond(data)
         elif service_id == 0x74:  # Positive response to Request Download
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
@@ -194,7 +201,13 @@ class UdsClient:
                     reset_type = operation.message[1]
                     # Pass any additional data (like power down time) in the message
                     server.on_ecu_reset_respond(0x51, data[1:], reset_type)
-
+        elif service_id == 0x67:
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
+            if server:
+                if data[1]== 0x1 : 
+                    server.on_security_access_request_seed_respond(data)
+                else:
+                    server.on_security_access_send_key_respond(data)
         elif service_id == 0x50:  # Positive response to Session Control
             
             server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)
@@ -248,7 +261,7 @@ class UdsClient:
 
         if len(message) <= 4095:
             message = bytearray(message)
-            # message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
+            message=self.append_diagnostic_address(server_can_id=server_can_id,message=message)
 
             self._isotp_send(message, address, self.on_success_send, self.on_fail_send)
         else:
@@ -256,7 +269,7 @@ class UdsClient:
             for i in range(0, len(message), 4095):
                 chunk = message[i:i + 4095]
                 message = bytearray(message)
-                # chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
+                chunk=self.append_diagnostic_address(server_can_id=server_can_id,message=chunk)
                 self._isotp_send(chunk, address, self.on_success_send, self.on_fail_send)
 
         self._logger.log_message(

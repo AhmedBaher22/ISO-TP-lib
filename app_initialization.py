@@ -41,8 +41,8 @@ def init_uds_client(
         if not isotp_config:
             isotp_config = IsoTpConfig(
                 max_block_size=8,
-                timeout=1000,
-                stmin=10,
+                timeout=5000,
+                stmin=20,
                 on_recv_success=client.receive_message,
                 on_recv_error=client.on_fail_receive,
                 recv_id=0x55
