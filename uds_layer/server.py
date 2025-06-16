@@ -861,11 +861,19 @@ class Server:
         elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
             try:
                 
-                checksum:bytearray=None
+                checksum: bytearray = None
                 if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
-                    checksum = self.calculate_crc32(transfer_request.deCompressed_data)
+                    data_to_check = transfer_request.decompressed_data.copy()
+                    # Pad with 0xF bytes if length not divisible by 4
+                    while len(data_to_check) % 4 != 0:
+                        data_to_check.append(0xF)
+                    checksum = self.calculate_crc32(data_to_check)
                 else:
-                    checksum = self.calculate_crc32(transfer_request.data)
+                    data_to_check = transfer_request.data.copy()
+                    # Pad with 0xF bytes if length not divisible by 4
+                    while len(data_to_check) % 4 != 0:
+                        data_to_check.append(0xF)
+                    checksum = self.calculate_crc32(data_to_check)
                     
                 message.extend(checksum)
                 

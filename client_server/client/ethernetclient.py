@@ -1022,14 +1022,14 @@ class BeagleBoneFlashingServer:
             if not ecu_address:
                 raise Exception(f"Failed to get address configuration for ECU {current_ecu.ecu_number}")
             
-            # self.uds_client.add_server(ecu_address, SessionType.PROGRAMMING)
-            # sleep(1)
+            self.uds_client.add_server(ecu_address, SessionType.PROGRAMMING)
+            sleep(1)
             
-            # servers: List[Server] = self.uds_client.get_servers()
-            # if not (len(servers) > 0):
-            #     logger.error(f"Error initializing Programming session with ECU to be updated, ecu name: {current_ecu.ecu_name}")
-            #     self.handle_failed_flashing(self.current_download.flashed_order_index, erasing_happen=False)
-            #     return
+            servers: List[Server] = self.uds_client.get_servers()
+            if not (len(servers) > 0):
+                logger.error(f"Error initializing Programming session with ECU to be updated, ecu name: {current_ecu.ecu_name}")
+                self.handle_failed_flashing(self.current_download.flashed_order_index, erasing_happen=False)
+                return
             
             data_records: List[DataRecord]
             flash_type = ""
@@ -1059,18 +1059,18 @@ class BeagleBoneFlashingServer:
             self.send_flashing_progress(current_ecu.ecu_number, "FLASHING", 
                                       f"Flashing {current_ecu.ecu_name} ({flash_type})")
             
-            time.sleep(5)
-            self.handle_successful_flashing(0)
-            # self.uds_client.Flash_ECU(
-            #     segments=data_records,
-            #     recv_DA=servers[0].can_id,
-            #     encryption_method=EncryptionMethod.SEC_P_256_R1,
-            #     compression_method=CompressionMethod.LZ4,
-            #     checksum_required=CheckSumMethod.CRC_32,
-            #     on_successfull_flashing=self.handle_successful_flashing,
-            #     on_failing_flashing=self.handle_failed_flashing,
-            #     flashed_ecu_number=self.current_download.flashed_order_index
-            # )
+            # time.sleep(5)
+            # self.handle_successful_flashing(0)
+            self.uds_client.Flash_ECU(
+                segments=data_records,
+                recv_DA=servers[0].can_id,
+                encryption_method=EncryptionMethod.SEC_P_256_R1,
+                compression_method=CompressionMethod.LZ4,
+                checksum_required=CheckSumMethod.CRC_32,
+                on_successfull_flashing=self.handle_successful_flashing,
+                on_failing_flashing=self.handle_failed_flashing,
+                flashed_ecu_number=self.current_download.flashed_order_index
+            )
             
         except Exception as e:
             logger.error(f"UDS flashing error: {e}")
