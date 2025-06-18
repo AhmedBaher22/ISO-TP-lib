@@ -861,7 +861,7 @@ class Server:
         elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
             try:
                 
-                checksum:bytearray=None
+                checksum: bytearray = None
                 if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
                     newdata=transfer_request.deCompressed_data
                     while len(newdata) %4 != 0 :
