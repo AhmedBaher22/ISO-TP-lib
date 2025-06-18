@@ -128,6 +128,13 @@ class UdsClient:
                 server = self._find_server_by_can_id(diagnostic_address, self._servers)
                 if server:
                     server.on_ecu_reset_respond(0x7F, [data[2]], None)
+            elif requested_service == 0x27:
+                server = self._find_server_by_can_id(diagnostic_address, self._servers)
+                if server:
+                    if data[1]== 0x1 : 
+                        server.on_security_access_request_seed_respond(data)
+                    else:
+                        server.on_security_access_send_key_respond(data)
         elif service_id == 0x74:  # Positive response to Request Download
             server = self._find_server_by_can_id(diagnostic_address, self._servers)
             if server:
@@ -194,7 +201,13 @@ class UdsClient:
                     reset_type = operation.message[1]
                     # Pass any additional data (like power down time) in the message
                     server.on_ecu_reset_respond(0x51, data[1:], reset_type)
-
+        elif service_id == 0x67:
+            server = self._find_server_by_can_id(diagnostic_address, self._servers)
+            if server:
+                if data[1]== 0x1 : 
+                    server.on_security_access_request_seed_respond(data)
+                else:
+                    server.on_security_access_send_key_respond(data)
         elif service_id == 0x50:  # Positive response to Session Control
             
             server = self._find_server_by_can_id(diagnostic_address, self._pending_servers)
@@ -374,9 +387,9 @@ class UdsClient:
                                 on_successfull_flashing:Callable,
                                 on_failing_flashing:Callable,
                                 flashed_ecu_number:int) -> None:
-        #happy all scenario 
-        # sleep(10)
-        # on_successfull_flashing(flashed_ecu_number)
+        # happy all scenario 
+        sleep(6)
+        on_successfull_flashing(flashed_ecu_number)
         #one time failure without roll-back
         # sleep(10)
         # if self.num ==0:

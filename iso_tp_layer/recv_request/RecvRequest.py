@@ -145,11 +145,11 @@ class RecvRequest:
         Change the state of the recv_request.
         """
         self._state = state
-        if self._state.__class__.__name__ in {"ErrorState", "FinalState"}:
-            self.logger.log_message(
-                log_type=LogType.RECEIVE,
-                message=f"[RecvRequest-{self._id}] State changed to {self._state.__class__.__name__}"
-            )
+        # if self._state.__class__.__name__ in {"ErrorState", "FinalState"}:
+        self.logger.log_message(
+            log_type=LogType.RECEIVE,
+            message=f"[RecvRequest-{self._id}] State changed to {self._state.__class__.__name__}"
+        )
 
     def get_state(self):
         return self._state.__class__.__name__
@@ -208,6 +208,10 @@ class RecvRequest:
 
         self._timeout_thread = threading.Thread(target=monitor_timeout, daemon=True)
         self._timeout_thread.start()
+        self.logger.log_message(
+            log_type=LogType.RECEIVE,
+            message="Started timer"
+        )
 
     def reset_timeout_timer(self):
         """

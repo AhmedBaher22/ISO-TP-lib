@@ -861,11 +861,17 @@ class Server:
         elif transfer_request.checksum_required == CheckSumMethod.CRC_32:
             try:
                 
-                checksum:bytearray=None
+                checksum: bytearray = None
                 if transfer_request.compression_method != CompressionMethod.NO_COMPRESSION:
-                    checksum = self.calculate_crc32(transfer_request.deCompressed_data)
+                    newdata=transfer_request.deCompressed_data
+                    while len(newdata) %4 != 0 :
+                        newdata.append(0xFF)
+                    checksum = self.calculate_crc32(newdata)
                 else:
-                    checksum = self.calculate_crc32(transfer_request.data)
+                    newdata=transfer_request.data
+                    while len(newdata) %4 != 0 :
+                        newdata.append(0xFF)
+                    checksum = self.calculate_crc32(newdata)
                     
                 message.extend(checksum)
                 
@@ -1220,7 +1226,7 @@ class Server:
         # Update transfer request status
         transfer_request.status = TransferStatus.REQUESTING_SEED
         transfer_request.security_level = security_level
-        
+        self.transfer_requests.append(transfer_request)
         log_msg = f"{transfer_request.get_req()}Created SECURITY_ACCESS request seed for level {security_level}, Diagnostic address {hex(transfer_request.recv_DA)}. Message: {[hex(x) for x in message]}"
         self._logger.log_message(
             log_type=LogType.INFO,
@@ -1281,39 +1287,44 @@ class Server:
                         message=f"{transfer_request.get_req()} ERASE memory for diagnostic address {hex(transfer_request.recv_DA)} send successfully with message: {[hex(x) for x in message]}"
                     )
             else:
-                # Generate key from seed using recommended algorithm
-                # Convert seed bytes to 32-bit integer
-                if len(seed_bytes) >= 4:
-                    seed = int.from_bytes(seed_bytes[:4], 'big')
-                else:
-                    # Pad with zeros if seed is less than 4 bytes
-                    seed_padded = seed_bytes + [0] * (4 - len(seed_bytes))
-                    seed = int.from_bytes(seed_padded, 'big')
-                
-                # Generate key using recommended algorithm
-                key = self.generate_recommended_key(seed, transfer_request.security_level)
-                
-                # Convert key back to bytes
-                key_bytes = key.to_bytes(4, 'big')
-                
-                # Prepare send key message
-                # Sub-function for send key (even values)
-                sub_function = transfer_request.security_level * 2  # Level 1=0x02, Level 2=0x04, Level 3=0x06, etc.
-                
-                # Create send key message
-                send_key_message = [0x27, sub_function]
-                send_key_message.extend(key_bytes)
-                
-                # Update status
-                transfer_request.status = TransferStatus.SENDING_KEY
-                
-                # Send key message
-                self.clientSend(message=send_key_message, server_can_id=self.can_id)
-                self._logger.log_message(
-                    log_type=LogType.ACKNOWLEDGMENT,
-                    message=f"{transfer_request.get_req()}Security access send key for {hex(transfer_request.recv_DA)} sent with message: {[hex(x) for x in send_key_message]}"
-                )
-        
+                try:
+                    # Generate key from seed using recommended algorithm
+                    # Convert seed bytes to 32-bit integer
+                    if len(seed_bytes) >= 4:
+                        seed = int.from_bytes(seed_bytes[:4], 'big')
+                    else:
+                        # Pad with zeros if seed is less than 4 bytes
+                        seed_padded = seed_bytes + [0] * (4 - len(seed_bytes))
+                        seed = int.from_bytes(seed_padded, 'big')
+                    
+                    # Generate key using recommended algorithm
+                    key = self.generate_recommended_key(seed, transfer_request.security_level)
+                    
+                    # Convert key back to bytes
+                    key_bytes = key.to_bytes(4, 'big')
+                    
+                    # Prepare send key message
+                    # Sub-function for send key (even values)
+                    sub_function = transfer_request.security_level * 2  # Level 1=0x02, Level 2=0x04, Level 3=0x06, etc.
+                    
+                    # Create send key message
+                    send_key_message = [0x27, sub_function]
+                    send_key_message.extend(key_bytes)
+                    
+                    # Update status
+                    transfer_request.status = TransferStatus.SENDING_KEY
+                    
+                    # Send key message
+                    self.clientSend(message=send_key_message, server_can_id=self.can_id)
+                    self._logger.log_message(
+                        log_type=LogType.ACKNOWLEDGMENT,
+                        message=f"{transfer_request.get_req()}Security access send key for {hex(transfer_request.recv_DA)} sent with message: {[hex(x) for x in send_key_message]}"
+                    )
+                except Exception as e:
+                    self._logger.log_message(
+                        log_type=LogType.ERROR,
+                        message=e
+                    ) 
         elif message[0] == 0x7F and message[1] == 0x27:  # Negative response
             self._logger.log_message(
                 log_type=LogType.INFO,
